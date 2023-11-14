@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.github.raf</groupId>
+    <artifactId>raf-framework</artifactId>
+    <packaging>pom</packaging>
+    <version>${revision}</version>
+    <name>raf-framework</name>
+    <description>raf-framework is a fast microservices framework</description>
+    <url>https://gitee.com/middle-platforms/raf-framework.git</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>Jerry</id>
+            <name>Jerry</name>
+            <email>19772614@qq.com</email>
+        </developer>
+    </developers>
+
+    <properties>
+        <main.basedir>${basedir}</main.basedir>
+        <revision>2.0.0-SNAPSHOT</revision>
+        <maven.flatten.verion>1.2.1</maven.flatten.verion>
+    </properties>
+
+    <modules>
+        <module>raf-framework-autoconfigure</module>
+        <module>raf-framework-dependencies</module>
+        <module>raf-framework-starter</module>
+        <module>raf-framework-parent</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${maven.flatten.verion}</version>
+                <inherited>true</inherited>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,378 @@
+{
+  "properties": [
+    {
+      "sourceType": "com.raf.framework.autoconfigure.servlet.log.AuditProperties",
+      "name": "raf.log.level",
+      "type": "java.lang.String",
+      "defaultValue": "RSP_HEADERS",
+      "description": "输入输出日志级别枚举 BASIC，REQ_HEADERS，REQ_BODY，RSP_HEADERS，RSP_BODY"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.servlet.shutdown.TomcatGracefulShutdownProperties",
+      "name": "raf.tomcat.shutdown.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "tomcat优雅停机开关"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.servlet.shutdown.TomcatGracefulShutdownProperties",
+      "name": "raf.tomcat.shutdown.waitTime",
+      "type": "java.lang.Integer",
+      "defaultValue": 30,
+      "description": "优雅停机等待时间，超过时间强行关闭"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.servlet.cors.CorsProperties",
+      "name": "raf.cors.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "跨域配置开关"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.servlet.cors.CorsProperties",
+      "name": "raf.cors.path",
+      "type": "java.lang.String",
+      "defaultValue": "/**",
+      "description": "跨域针对的路径"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.servlet.cors.CorsProperties",
+      "name": "raf.cors.allowOrigins",
+      "type": "java.util.ArrayList",
+      "defaultValue": "*",
+      "description": "可以通过数组进行添加"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.servlet.cors.CorsProperties",
+      "name": "raf.cors.allowHeaders",
+      "type": "java.util.ArrayList",
+      "defaultValue": "*",
+      "description": "可以通过数组进行添加"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.servlet.cors.CorsProperties",
+      "name": "raf.cors.allowMethods",
+      "type": "java.util.ArrayList",
+      "defaultValue": "*",
+      "description": "可以通过数组进行添加"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.servlet.cors.CorsProperties",
+      "name": "raf.cors.allowExposeHeaders",
+      "type": "java.util.ArrayList",
+      "defaultValue": "",
+      "description": "可以通过数组进行添加"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.spring.async.ThreadPoolProperties",
+      "name": "raf.executor.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "异步线程池开关"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.spring.async.ThreadPoolProperties",
+      "name": "raf.executor.corePoolSize",
+      "type": "java.lang.Integer",
+      "defaultValue": 10,
+      "description": "核心线程大小"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.spring.async.ThreadPoolProperties",
+      "name": "raf.executor.maxPoolSize",
+      "type": "java.lang.Integer",
+      "defaultValue": 120,
+      "description": "最大线程大小"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.spring.async.ThreadPoolProperties",
+      "name": "raf.executor.queueCapacity",
+      "type": "java.lang.Integer",
+      "defaultValue": 100,
+      "description": "队列大小"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.spring.async.ThreadPoolProperties",
+      "name": "raf.executor.keepAliveSeconds",
+      "type": "java.lang.Integer",
+      "defaultValue": 5,
+      "description": "核心线程存活时间"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.spring.async.ThreadPoolProperties",
+      "name": "raf.executor.threadNamePrefix",
+      "type": "java.lang.String",
+      "defaultValue": "raf-async-thread-pool-",
+      "description": "线程名前缀"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.spring.async.ThreadPoolProperties",
+      "name": "raf.executor.metricEnabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "开启线程池监控开关"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.feign.FeignRetryProperties",
+      "name": "raf.feign-retry.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "feign重试开关"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.feign.FeignRetryProperties",
+      "name": "raf.feign-retry.max-attempts",
+      "type": "java.lang.Integer",
+      "defaultValue": 5,
+      "description": "feign重试次数"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.feign.FeignRetryProperties",
+      "name": "raf.feign-retry.period",
+      "type": "java.lang.Long",
+      "defaultValue": 100,
+      "description": "间隔时间 ms"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.feign.FeignRetryProperties",
+      "name": "raf.feign-retry.maxPeriod",
+      "type": "java.lang.Long",
+      "defaultValue": 1000,
+      "description": "最大间隔时间 ms"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.sentry.SentryProperties",
+      "name": "raf.sentry.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "sentry开启开关"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.sentry.SentryProperties",
+      "name": "raf.sentry.dsn",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "sentry DNS地址"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.snowflake.SnowFlakeProperties",
+      "name": "raf.Snowflake.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Snowflake开关"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.snowflake.SnowFlakeProperties",
+      "name": "raf.Snowflake.workerId",
+      "type": "java.lang.Long",
+      "defaultValue": 1,
+      "description": "集群id"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.snowflake.SnowFlakeProperties",
+      "name": "raf.Snowflake.dataCenterId",
+      "type": "java.lang.Long",
+      "defaultValue": 1,
+      "description": "机器id"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.jdbc.MultiDsProperties",
+      "name": "raf.dataSource",
+      "type": "java.util.Map<java.lang.String,com.raf.framework.autoconfigure.jdbc.MultiDsProperties.JdbcProperties>",
+      "description": "db多数据源配置"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.okhttp.OkHttpClientProperties",
+      "name": "raf.okhttp.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "okhttp启动开关"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.okhttp.OkHttpClientProperties",
+      "name": "raf.okhttp.connectTimeout",
+      "type": "java.lang.String",
+      "description": "连接超时"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.okhttp.OkHttpClientProperties",
+      "name": "raf.okhttp.readTimeout",
+      "type": "java.lang.String",
+      "description": "读超时"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.okhttp.OkHttpClientProperties",
+      "name": "raf.okhttp.writeTimeout",
+      "type": "java.lang.String",
+      "description": "写超时"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.okhttp.OkHttpClientProperties",
+      "name": "raf.okhttp.retryOnConnectionFailure",
+      "type": "java.lang.String",
+      "description": "是否重连"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.okhttp.OkHttpClientProperties",
+      "name": "raf.okhttp.followRedirects",
+      "type": "java.lang.String",
+      "description": "followRedirects"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.okhttp.OkHttpClientProperties",
+      "name": "raf.okhttp.followSslRedirects",
+      "type": "java.lang.String",
+      "description": "followSslRedirects"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.okhttp.OkHttpClientProperties",
+      "name": "raf.okhttp.connection.maxIdleConnections",
+      "type": "java.lang.String",
+      "description": "maxIdleConnections"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.okhttp.OkHttpClientProperties",
+      "name": "raf.okhttp.connection.keepAliveDuration",
+      "type": "java.lang.String",
+      "description": "keepAliveDuration"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.okhttp.OkHttpClientProperties",
+      "name": "raf.okhttp.level",
+      "type": "java.lang.String",
+      "description": "level"
+    },
+    {
+      "sourceType": "com.raf.framework.autoconfigure.rabbitmq.RabbitMqProperties",
+      "name": "raf.rabbit.enabled",
+      "type": "java.lang.String",
+      "defaultValue": false,
+      "description": "rabbit开关"
+    },
+    {
+      "name": "raf.rabbit.addresses",
+      "type": "java.lang.String",
+      "description": "Description for raf.rabbit.addresses."
+    },
+    {
+      "name": "raf.rabbit.username",
+      "type": "java.lang.String",
+      "description": "Description for raf.rabbit.username."
+    },
+    {
+      "name": "raf.rabbit.password",
+      "type": "java.lang.String",
+      "description": "Description for raf.rabbit.password."
+    },
+    {
+      "name": "raf.rabbit.consumer.group",
+      "type": "java.lang.String",
+      "description": "Description for raf.rabbit.consumer.group."
+    },
+    {
+      "name": "raf.rabbit.provider.exchange",
+      "type": "java.lang.String",
+      "description": "Description for raf.rabbit.provider.exchange."
+    },
+    {
+      "name": "raf.rabbit.provider.ack",
+      "type": "java.lang.String",
+      "description": "Description for raf.rabbit.provider.ack."
+    },
+    {
+      "name": "raf.rabbit.delay.deadExchange",
+      "type": "java.lang.String",
+      "description": "Description for raf.rabbit.delay.deadExchange."
+    },
+    {
+      "name": "raf.rabbit.delay.receiveExchange",
+      "type": "java.lang.String",
+      "description": "Description for raf.rabbit.delay.receiveExchange."
+    },
+    {
+      "name": "raf.rabbit.delay.queuePrefix",
+      "type": "java.lang.String",
+      "description": "Description for raf.rabbit.delay.queuePrefix."
+    },
+    {
+      "name": "raf.redisson.threads",
+      "type": "java.lang.String",
+      "description": "Description for raf.redisson.threads."
+    },
+    {
+      "name": "raf.redisson.single.host",
+      "type": "java.lang.String",
+      "description": "Description for raf.redisson.single.host."
+    },
+    {
+      "name": "raf.redisson.single.port",
+      "type": "java.lang.String",
+      "description": "Description for raf.redisson.single.port."
+    },
+    {
+      "name": "raf.redisson.single.password",
+      "type": "java.lang.String",
+      "description": "Description for raf.redisson.single.password."
+    },
+    {
+      "name": "raf.redisson.single.database",
+      "type": "java.lang.String",
+      "description": "Description for raf.redisson.single.database."
+    },
+    {
+      "name": "nacos.addr",
+      "type": "java.lang.String",
+      "description": "nacos.addr"
+    },
+    {
+      "name": "nacos.namespace",
+      "type": "java.lang.String",
+      "description": "nacos.namespace"
+    },
+    {
+      "name": "redis.host",
+      "type": "java.lang.String",
+      "description": "redis.host"
+    },
+    {
+      "name": "redis.port",
+      "type": "java.lang.Integer",
+      "description": "redis.port"
+    },
+    {
+      "name": "redis.password",
+      "type": "java.lang.String",
+      "description": "redis.password"
+    },
+    {
+      "name": "db.addr",
+      "type": "java.lang.String",
+      "description": "db.addr"
+    },
+    {
+      "name": "db.username",
+      "type": "java.lang.String",
+      "description": "db.username"
+    },
+    {
+      "name": "db.password",
+      "type": "java.lang.String",
+      "description": "db.password"
+    },
+    {
+      "name": "mq.addr",
+      "type": "java.lang.String",
+      "description": "mq.addr"
+    },
+    {
+      "name": "mq.username",
+      "type": "java.lang.String",
+      "description": "mq.username"
+    },
+    {
+      "name": "mq.password",
+      "type": "java.lang.String",
+      "description": "mq.password"
+    }
+  ]
+}

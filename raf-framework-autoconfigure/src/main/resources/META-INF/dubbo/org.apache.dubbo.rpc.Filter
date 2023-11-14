@@ -1,0 +1,3 @@
+custExceptionFilter=com.raf.framework.autoconfigure.dubbo.CustExceptionFilter
+custTraceFilter=com.raf.framework.autoconfigure.dubbo.CustTraceFilter
+validFilter=com.raf.framework.autoconfigure.dubbo.ValidFilter

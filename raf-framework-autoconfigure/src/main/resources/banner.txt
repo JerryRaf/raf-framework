@@ -1,0 +1,12 @@
+${AnsiColor.BLUE}
+____      _    _____
+|  _ \    / \  |  ___|
+| |_) |  / _ \ | |_
+|  _ <  / ___ \|  _|
+|_| \_\/_/   \_\_|
+
+Spring Boot Version: 2.7.14.RELEASE
+Spring Cloud Version: 2021.0.5
+Spring Cloud Alibaba Version: 2021.0.5.0
+Raf Framework Version: 2.0.0-SNAPSHOT
+${AnsiColor.WHITE}

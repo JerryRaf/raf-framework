@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.github.raf</groupId>
+        <artifactId>raf-framework</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <artifactId>raf-framework-dependencies</artifactId>
+    <packaging>pom</packaging>
+    <name>raf-framework-dependencies</name>
+    <description>raf-framework-dependencies</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <resource.delimiter>@</resource.delimiter>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.version>3.10.1</maven.compiler.version>
+        <maven.source.version>3.2.1</maven.source.version>
+
+        <!--base-->
+        <spring.boot.version>2.7.14</spring.boot.version>
+        <spring.cloud.version>2021.0.5</spring.cloud.version>
+        <aliababa.dependencies.version>2021.0.5.0</aliababa.dependencies.version>
+
+        <!--middleware-->
+        <nacos.verion>2.2.4</nacos.verion>
+        <mariadb.version>3.1.4</mariadb.version>
+        <mybatis.version>3.5.6</mybatis.version>
+        <mybatis.plus.version>3.2.0</mybatis.plus.version>
+        <mybatis.spring.version>2.0.3</mybatis.spring.version>
+        <pagehelper.version>5.3.3</pagehelper.version>
+
+        <redisson.version>3.23.5</redisson.version>
+        <dubbo.starter.version>3.2.5</dubbo.starter.version>
+        <sentry.version>1.7.28</sentry.version>
+        <okhttp.version>4.9.3</okhttp.version>
+        <okhttp.okio.version>3.6.0</okhttp.okio.version>
+        <jasypt.starter.version>3.0.3</jasypt.starter.version>
+
+        <swagger.all.version>2.0.2.RELEASE</swagger.all.version>
+        <swagger.annotations.version>1.6.11</swagger.annotations.version>
+        <swagger.bootstrap.version>1.9.6</swagger.bootstrap.version>
+
+        <logbook.version>2.3.0</logbook.version>
+        <logback.core.version>1.2.11</logback.core.version>
+        <logback.classic.version>1.2.11</logback.classic.version>
+        <spring.context.version>1.0.11</spring.context.version>
+        <gson.version>2.8.9</gson.version>
+
+        <jackson.version>2.15.2</jackson.version>
+        <snakeyaml.version>2.1</snakeyaml.version>
+        <io.netty.version>4.1.96.Final</io.netty.version>
+        <xstream.version>1.4.20</xstream.version>
+
+        <!--common util-->
+        <lombok.version>1.18.28</lombok.version>
+        <commons.lang.version>3.12.0</commons.lang.version>
+        <commons-io.version>2.11.0</commons-io.version>
+        <guava.version>32.0.0-jre</guava.version>
+        <hutool.version>5.8.22</hutool.version>
+        <security.version>1.1.1</security.version>
+        <transmittable.version>2.12.0</transmittable.version>
+
+        <!--Spring Cloud-->
+        <feign-form.version>3.8.0</feign-form.version>
+        <brave.version>5.8.0</brave.version>
+
+        <!--micrometer-->
+        <micrometer.prometheus.version>1.10.2</micrometer.prometheus.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring.cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${aliababa.dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!--middleware-->
+            <dependency>
+                <groupId>com.alibaba.nacos</groupId>
+                <artifactId>nacos-client</artifactId>
+                <version>${nacos.verion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mariadb.jdbc</groupId>
+                <artifactId>mariadb-java-client</artifactId>
+                <version>${mariadb.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.spring</groupId>
+                <artifactId>spring-context-support</artifactId>
+                <version>${spring.context.version}</version>
+            </dependency>
+
+            <!--mybatis-->
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>${mybatis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis-spring</artifactId>
+                <version>${mybatis.spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper</artifactId>
+                <version>${pagehelper.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus</artifactId>
+                <version>${mybatis.plus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.sentry</groupId>
+                <artifactId>sentry</artifactId>
+                <version>${sentry.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-spring-boot-starter</artifactId>
+                <version>${dubbo.starter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-spring-boot-actuator</artifactId>
+                <version>${dubbo.starter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.core.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.classic.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec</artifactId>
+                <version>${io.netty.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-common</artifactId>
+                <version>${io.netty.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-handler</artifactId>
+                <version>${io.netty.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.thoughtworks.xstream</groupId>
+                <artifactId>xstream</artifactId>
+                <version>${xstream.version}</version>
+            </dependency>
+
+            <!--第三方组件包-->
+            <dependency>
+                <groupId>com.spring4all</groupId>
+                <artifactId>swagger-spring-boot-starter</artifactId>
+                <version>${swagger.all.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.swagger</groupId>
+                        <artifactId>swagger-annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.swagger</groupId>
+                        <artifactId>swagger-models</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger.annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-models</artifactId>
+                <version>${swagger.annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>swagger-bootstrap-ui</artifactId>
+                <version>${swagger.bootstrap.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-kotlin</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>logging-interceptor</artifactId>
+                <version>${okhttp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okio</groupId>
+                <artifactId>okio</artifactId>
+                <version>${okhttp.okio.version}</version>
+            </dependency>
+
+            <!--公共库-->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons.lang.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-core</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-crypto</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-rsa</artifactId>
+                <version>${security.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>transmittable-thread-local</artifactId>
+                <version>${transmittable.version}</version>
+            </dependency>
+            <!--配置文件敏感数据加密-->
+            <dependency>
+                <groupId>com.github.ulisesbocchio</groupId>
+                <artifactId>jasypt-spring-boot-starter</artifactId>
+                <version>${jasypt.starter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-bom</artifactId>
+                <version>${logbook.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!--spring cloud-->
+            <dependency>
+                <groupId>io.github.openfeign.form</groupId>
+                <artifactId>feign-form</artifactId>
+                <version>${feign-form.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.openfeign.form</groupId>
+                <artifactId>feign-form-spring</artifactId>
+                <version>${feign-form.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.zipkin.brave</groupId>
+                <artifactId>brave-bom</artifactId>
+                <version>${brave.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!--监控-->
+            <dependency>
+                <groupId>io.micrometer</groupId>
+                <artifactId>micrometer-registry-prometheus</artifactId>
+                <version>${micrometer.prometheus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-actuator</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.github.raf</groupId>
+                <artifactId>raf-framework-autoconfigure</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.raf</groupId>
+                <artifactId>raf-framework-springmvc-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.raf</groupId>
+                <artifactId>raf-framework-jdbc-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.raf</groupId>
+                <artifactId>raf-framework-mybatis-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.raf</groupId>
+                <artifactId>raf-framework-redis-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.raf</groupId>
+                <artifactId>raf-framework-okhttp-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.raf</groupId>
+                <artifactId>raf-framework-sentry-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.raf</groupId>
+                <artifactId>raf-framework-dubbo-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.raf</groupId>
+                <artifactId>raf-framework-rabbit-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.raf</groupId>
+                <artifactId>raf-framework-swagger-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.raf</groupId>
+                <artifactId>raf-framework-nacos-config-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.raf</groupId>
+                <artifactId>raf-framework-nacos-discovery-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.raf</groupId>
+                <artifactId>raf-framework-monitor-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.raf</groupId>
+                <artifactId>raf-framework-cloud-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.raf</groupId>
+                <artifactId>raf-framework-eureka-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.raf</groupId>
+                <artifactId>raf-framework-sleuth-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven.source.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!--需要jar有main class,公共jar需禁用该插件-->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring.boot.version}</version>
+                    <configuration>
+                        <excludes>
+                            <exclude>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                            </exclude>
+                        </excludes>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

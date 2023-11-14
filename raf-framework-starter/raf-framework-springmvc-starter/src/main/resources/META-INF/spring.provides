@@ -1,0 +1,1 @@
+provides: spring-boot-starter-web,jackson,logbook,jasypt-spring-boot-starter

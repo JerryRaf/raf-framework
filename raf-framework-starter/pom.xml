@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.github.raf</groupId>
+        <artifactId>raf-framework-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../raf-framework-parent</relativePath>
+    </parent>
+    <artifactId>raf-framework-starter</artifactId>
+    <name>raf-framework-starter</name>
+    <description>raf-framework-starter</description>
+    <packaging>pom</packaging>
+
+    <properties>
+        <main.basedir>${basedir}/..</main.basedir>
+    </properties>
+
+    <modules>
+        <module>raf-framework-starter-parent</module>
+
+        <module>raf-framework-springmvc-starter</module>
+
+        <module>raf-framework-cloud-starter</module>
+        <module>raf-framework-sleuth-starter</module>
+
+        <module>raf-framework-nacos-config-starter</module>
+        <module>raf-framework-nacos-discovery-starter</module>
+
+        <module>raf-framework-jdbc-starter</module>
+        <module>raf-framework-mybatis-starter</module>
+        <module>raf-framework-redis-starter</module>
+        <module>raf-framework-rabbit-starter</module>
+        <module>raf-framework-dubbo-starter</module>
+
+        <module>raf-framework-sentry-starter</module>
+        <module>raf-framework-okhttp-starter</module>
+        <module>raf-framework-swagger-starter</module>
+        <module>raf-framework-monitor-starter</module>
+    </modules>
+
+</project>

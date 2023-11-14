@@ -1,0 +1,1 @@
+provides: raf-framework-jdbc-starter, mybatis, mybatis-spring, pagehelper, mybatis-plus

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="false">
+    <!-- 文件路径 默认/data/logs -->
+    <springProperty name="log_home" scope="context" source="logging.file.path" defaultValue="/data/logs"/>
+    <!-- 文件名 默认为应用名称 -->
+    <springProperty name="app_name" scope="context" source="spring.application.name" defaultValue="default"/>
+    <!-- 单文件最大值 默认200MB -->
+    <springProperty name="log.max.size" scope="context" source="log.max.size" defaultValue="200MB"/>
+    <!--文件保留的最大数量 默认24*183=4,392 183天 重启应用会重算 -->
+    <springProperty name="log.max.history" scope="context" source="log.max.history" defaultValue="4320"/>
+
+    <!--格式化输出：%d表示日期。%-4level：级别从左显示4个字符宽度。%t表示线程名。%msg：日志消息，%n是换行符 -->
+    <property name="log_pattern_color"
+              value="%red(%d{yyyy-MM-dd HH:mm:ss.SSS}) %magenta(%-4level) %green([%X{traceId}]) %highlight([%t]) %boldMagenta(%logger{50}) - %cyan(%msg%n)"/>
+    <property name="log_pattern"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-4level [%X{traceId}] [%t] %logger{50} - %msg%n"/>
+
+    <!-- 控制台输出 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${log_pattern_color}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- LOG日志文件 -->
+    <appender name="LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log_home}/${app_name}/application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${log_home}/${app_name}/%d{yyyy-MM-dd, aux}/application_%d{HH}.%i.log
+            </FileNamePattern>
+            <MaxHistory>${log.max.history}</MaxHistory>
+            <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <MaxFileSize>${log.max.size}</MaxFileSize>
+            </TimeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${log_pattern}</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="LOG-ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 获取调用者信息，影响性能 -->
+        <includeCallerData>false</includeCallerData>
+        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+        <queueSize>1000</queueSize>
+        <!-- 添加附加的appender,最多只能添加一个 -->
+        <appender-ref ref="LOG"/>
+    </appender>
+
+    <!--日志屏蔽-->
+    <logger name="com.alibaba.nacos" level="ERROR"/>
+    <logger name="com.alibaba.nacos.client.naming" level="WARN"/>
+    <logger name="sun.net.www.protocol.http.HttpURLConnection" level="WARN"/>
+    <logger name="c.a.cloud.nacos.client.NacosPropertySourceBuilder" level="OFF"/>
+    <logger name="o.s.c.b.c.PropertySourceBootstrapConfiguration" level="OFF"/>
+
+    <logger name="io.lettuce.core.protocol" level="ERROR"/>
+    <logger name="o.springframework.boot.actuate.endpoint.EndpointId" level="ERROR"/>
+    <logger name="org.springframework.context.annotation.ConfigurationClassPostProcessor" level="ERROR"/>
+    <logger name="org.springframework.boot.actuate.endpoint.EndpointId" level="ERROR"/>
+    <logger name="com.netflix.config.sources.URLConfigurationSource" level="ERROR"/>
+    <logger name="io.seata.config.FileConfiguration" level="ERROR"/>
+    <logger name="org.springframework.context.support" level="ERROR"/>
+    <logger name="io.seata.core.rpc.netty.RmNettyRemotingClient" level="ERROR"/>
+    <logger name="io.seata.core.rpc.netty.TmNettyRemotingClient" level="ERROR"/>
+    <logger name="io.seata.core.rpc.netty.NettyPoolableFactory" level="ERROR"/>
+    <logger name="io.seata.core.rpc.netty.NettyClientChannelManager" level="ERROR"/>
+
+    <logger name="org.apache.dubbo.spring.boot.context.event" level="ERROR"/>
+    <logger name="org.apache.dubbo.common.logger.LoggerFactory" level="ERROR"/>
+
+    <springProfile name="default,local,dev,test">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="LOG-ASYNC"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="uat,gray,prod">
+        <root level="INFO">
+            <appender-ref ref="LOG-ASYNC"/>
+        </root>
+    </springProfile>
+
+</configuration>
