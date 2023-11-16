@@ -590,15 +590,15 @@ raf.sentry:
 采用jasypt对敏感配置信息进行统一的加解密
 
 input：明文/密文；password：秘钥
-java -cp jasypt-1. 9.3.jar org.jasypt.intf.cli.JasyptPBEStringEncryptionCLI input='xxxx' password='xxxx' algorithm=PBEWITHHMACSHA512ANDAES_256 ivGeneratorClassName=org.jasypt.iv.RandomIvGenerator
-java -cp jasypt-1. 9.3.jar org.jasypt.intf.cli.JasyptPBEStringDecryptionCLI input='xxxx' password='xxxx' algorithm=PBEWITHHMACSHA512ANDAES_256 ivGeneratorClassName=org.jasypt.iv.RandomIvGenerator
+java -cp jasypt-1.9.3.jar org.jasypt.intf.cli.JasyptPBEStringEncryptionCLI input='xxxx' password='xxxx' algorithm=PBEWITHHMACSHA512ANDAES_256 ivGeneratorClassName=org.jasypt.iv.RandomIvGenerator
+java -cp jasypt-1.9.3.jar org.jasypt.intf.cli.JasyptPBEStringDecryptionCLI input='xxxx' password='xxxx' algorithm=PBEWITHHMACSHA512ANDAES_256 ivGeneratorClassName=org.jasypt.iv.RandomIvGenerator
 
 在nacos配置使用
 1. 配置秘钥
    jasypt.encryptor.password=xxxx
 
 2. 使用加密后的值
-   xxx.pwd=ENC(gVSS/lDEq/J8RG4Af48mPbcPReadKnXXXXkOprEh/Hghn1paGZHfiqUPj4lnQDtt)
+   xxx.pwd=ENC(xxxxxx)
 
 ### 其它配置使用
 ```
