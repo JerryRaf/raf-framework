@@ -730,7 +730,7 @@ http状态码
 </layers>
 ```
 
-由于SpringBoot 2.3.x 已经支持打包分层，所以maven插件已配置强制分层打包
+由于SpringBoot 2.3.x 已经支持打包分层，所以maven插件已强制配置分层打包
 
 ```
 推送公共包
