@@ -64,20 +64,12 @@ Maven 3.5.2+
 ## 框架介绍
 ```
 raf-framework(聚合，仓库信息介绍）
-raf-framework-dependencies（配置管理，版本管理,插件管理）
-raf-framework-parent（框架父工程）
-raf-framework-starter（聚合）
-raf-framework-redis-starter（组件）
-
-raf-framework(聚合，仓库信息，介绍）
-raf-framework-dependencies（配置管理，版本管理,插件管理）
-raf-framework-parent（框架父工程）
 raf-framework-autoconfigure（基本库）
+raf-framework-dependencies（配置管理，版本管理,插件管理）
+raf-framework-parent（框架父工程）
 
-raf-framework-dependencies
-raf-framework-starter-parent（所有新项目父工程)
-
-#Starter组件
+raf-framework-starter（聚合）
+raf-framework-starter-parent（新项目父工程)
 raf-framework-springmvc-starter (基础starter，jasypt)
 raf-framework-cloud-starter（基于springcloud feign调用构建微服务）
 raf-framework-sleuth-starter
@@ -91,7 +83,6 @@ raf-framework-rabbit-starter
 raf-framework-monitor-starter
 raf-framework-sentry-starter
 raf-framework-swagger-starter
-raf-framework-starter-parent（新项目父工程）
 ```
 
 ## 如何使用 (参考示例项目:co-demo)
