@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>raf-framework-starter</artifactId>
+    <name>raf-framework-starter</name>
+    <description>raf-framework-starter</description>
+    <packaging>pom</packaging>
+
+    <parent>
+        <groupId>io.github.jerryraf</groupId>
+        <artifactId>raf-framework-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../raf-framework-parent</relativePath>
+    </parent>
+
+    <modules>
+        <module>raf-framework-web-starter</module>
+        <module>raf-framework-gateway-starter</module>
+        <module>raf-framework-nacos-config-starter</module>
+        <module>raf-framework-nacos-discovery-starter</module>
+        <module>raf-framework-datasource-starter</module>
+        <module>raf-framework-mybatis-starter</module>
+        <module>raf-framework-redis-starter</module>
+        <module>raf-framework-mongodb-starter</module>
+        <module>raf-framework-rabbit-starter</module>
+        <module>raf-framework-rocketmq-starter</module>
+        <module>raf-framework-kafka-starter</module>
+        <module>raf-framework-elasticsearch-starter</module>
+        <module>raf-framework-shardingsphere-starter</module>
+        <module>raf-framework-dubbo-starter</module>
+        <module>raf-framework-sentry-starter</module>
+        <module>raf-framework-okhttp-starter</module>
+        <module>raf-framework-openapi-starter</module>
+        <module>raf-framework-monitor-starter</module>
+    </modules>
+</project>

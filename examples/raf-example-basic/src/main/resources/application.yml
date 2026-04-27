@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: raf-example-basic
+
+server:
+  port: 8080
+
+raf:
+  log:
+    enabled: true
+    level: REQ_BODY
+  cors:
+    enabled: true

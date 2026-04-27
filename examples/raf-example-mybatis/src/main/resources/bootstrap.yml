@@ -1,0 +1,199 @@
+server:
+  port: 8080
+  shutdown: graceful
+
+spring:
+  application:
+    name: mybatis-example
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
+# ========================================
+# Multi-DataSource Configuration
+# ========================================
+# This example demonstrates:
+# 1. Master-Slave Read-Write Splitting
+# 2. Multiple Database Support
+# 3. Connection Pool Configuration
+# ========================================
+
+spring.datasource:
+  # ========== Primary Database (Master) ==========
+  primary-master:
+    name: primary-master
+    url: jdbc:mysql://localhost:3306/example_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root123}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    # Druid Connection Pool Settings
+    initial-size: 10
+    min-idle: 10
+    max-active: 50
+    max-wait: 10000
+    test-on-borrow: false
+    test-on-return: false
+    test-while-idle: true
+    time-between-eviction-runs-millis: 60000
+    min-evictable-idle-time-millis: 300000
+    validation-query: SELECT 1
+    keep-alive: true
+    pool-prepared-statements: true
+    max-pool-prepared-statement-per-connection-size: 20
+
+    # Druid Monitoring
+    filters: stat,wall
+    connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=2000
+
+  # ========== Primary Database (Slave) ==========
+  primary-slave:
+    name: primary-slave
+    url: jdbc:mysql://localhost:3307/example_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root123}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    # Slave typically has larger pool for read operations
+    initial-size: 5
+    min-idle: 5
+    max-active: 100
+    max-wait: 30000
+    test-on-borrow: false
+    test-on-return: false
+    test-while-idle: true
+    time-between-eviction-runs-millis: 60000
+    min-evictable-idle-time-millis: 300000
+    validation-query: SELECT 1
+    keep-alive: true
+    pool-prepared-statements: true
+    max-pool-prepared-statement-per-connection-size: 20
+    filters: stat
+
+  # ========== Secondary Database (Optional) ==========
+  secondary-master:
+    name: secondary-master
+    url: jdbc:mysql://localhost:3306/example_db2?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root123}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    initial-size: 5
+    min-idle: 5
+    max-active: 20
+    max-wait: 10000
+    test-while-idle: true
+    validation-query: SELECT 1
+
+# ========================================
+# MyBatis Configuration
+# ========================================
+mybatis:
+  # Mapper XML locations
+  mapper-locations: classpath*:mapper/**/*.xml
+
+  # Optional: MyBatis config file (can be omitted if using Spring Boot defaults)
+  # config-file: mybatis-config.xml
+
+  # Type aliases package
+  type-aliases-package: io.github.jerryraf.examples.mybatis.entity
+
+  # Configuration properties (alternative to mybatis-config.xml)
+  configuration:
+    # Enable camelCase mapping
+    map-underscore-to-camel-case: true
+
+    # Enable lazy loading
+    lazy-loading-enabled: true
+    aggressive-lazy-loading: false
+
+    # Use generated keys
+    use-generated-keys: true
+
+    # JDBC type for null values
+    jdbc-type-for-null: NULL
+
+    # Log implementation (for development)
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# ========================================
+# MyBatis-Plus Configuration
+# ========================================
+mybatis-plus:
+  # Global configuration
+  global-config:
+    # Database configuration
+    db-config:
+      # Primary key type (AUTO, NONE, INPUT, ASSIGN_ID, ASSIGN_UUID)
+      id-type: AUTO
+
+      # Table name prefix
+      # table-prefix: t_
+
+      # Logic delete configuration
+      logic-delete-field: isDeleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+    # Banner
+    banner: true
+
+  # Configuration
+  configuration:
+    # Log SQL (for development only)
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+    # Cache
+    cache-enabled: true
+
+    # Call setters on nulls
+    call-setters-on-nulls: true
+
+# ========================================
+# Pagination Configuration
+# ========================================
+# MyBatis-Plus built-in pagination plugin
+# No additional configuration needed
+# Usage: Page<User> page = new Page<>(1, 10);
+#        userMapper.selectPage(page, queryWrapper);
+
+# ========================================
+# Logging Configuration
+# ========================================
+logging:
+  level:
+    root: INFO
+    io.github.jerryraf.examples.mybatis: DEBUG
+    io.github.jerryraf.examples.mybatis.dao: DEBUG
+    # Druid SQL logging
+    druid.sql.Statement: DEBUG
+    druid.sql.ResultSet: DEBUG
+
+# ========================================
+# Development Profile (H2 Database)
+# ========================================
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    primary-master:
+      url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      username: sa
+      password:
+      driver-class-name: org.h2.Driver
+
+    primary-slave:
+      url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      username: sa
+      password:
+      driver-class-name: org.h2.Driver
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

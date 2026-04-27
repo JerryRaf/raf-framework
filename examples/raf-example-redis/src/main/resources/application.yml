@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: raf-example-redis
+
+server:
+  port: 8081
+
+raf:
+  redis:
+    enabled: true
+    host: ${REDIS_HOST:127.0.0.1}
+    port: ${REDIS_PORT:6379}
+    # password: ${REDIS_PASSWORD:}
+
+  redisson:
+    enabled: true
+    address: redis://${REDIS_HOST:127.0.0.1}:${REDIS_PORT:6379}
+
+  log:
+    enabled: true
+    level: REQ_BODY

@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    paths:
+      - 'raf-framework-*/**'
+      - 'pom.xml'
+      - '.github/workflows/**'
+    branches:
+      - "master"
+  pull_request:
+    branches:
+      - main
+      - master
+      - springboot3.x
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Build and test
+        run: mvn clean test --no-transfer-progress

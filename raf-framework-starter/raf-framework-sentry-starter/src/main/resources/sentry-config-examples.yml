@@ -1,0 +1,99 @@
+# Sentry 配置示例
+
+## 场景 1: 基础配置（未接入 APM）
+raf:
+  sentry:
+    enabled: true
+    dsn: https://your-key@sentry.io/project-id
+    trace-id-source: framework
+
+---
+
+## 场景 2: 生产环境配置（已接入 SkyWalking）
+raf:
+  sentry:
+    enabled: true
+    dsn: ${SENTRY_DSN}  # 从环境变量读取
+    trace-id-source: apm  # 使用 SkyWalking 的 traceId
+    environment: production
+    release: ${spring.application.name}-${project.version}
+
+    # 异常过滤
+    exception-filter:
+      enabled: true
+      report-business-exception: false
+      exclude-exceptions:
+        - com.example.RateLimitException
+        - com.example.CircuitBreakerException
+
+    # 性能监控
+    enable-performance: true
+    sample-rate: 1.0
+    traces-sample-rate: 0.1
+
+    # 附加标签
+    tags:
+      team: backend
+      region: cn-north
+
+---
+
+## 场景 3: 开发环境配置
+raf:
+  sentry:
+    enabled: false  # 开发环境关闭
+    # 或者使用独立的开发环境 DSN
+    # dsn: https://dev-key@sentry.io/dev-project-id
+    # debug: true
+
+---
+
+## 场景 4: 只上报特定异常
+raf:
+  sentry:
+    enabled: true
+    dsn: https://your-key@sentry.io/project-id
+    exception-filter:
+      enabled: true
+      include-exceptions:
+        - com.example.CriticalException
+        - com.example.DataCorruptionException
+
+---
+
+## 场景 5: 完整配置（所有选项）
+raf:
+  sentry:
+    # 基础配置
+    enabled: true
+    dsn: https://your-key@sentry.io/project-id
+    environment: production
+    release: my-app-v1.0.0
+    server-name: my-app-server
+    debug: false
+    send-default-pii: false
+
+    # TraceId 集成
+    trace-id-source: apm
+
+    # 异常过滤
+    exception-filter:
+      enabled: true
+      report-business-exception: false
+      include-exceptions:
+        - com.raf.framework.autoconfigure.common.exception.SystemException
+        - com.raf.framework.autoconfigure.common.exception.InfrastructureException
+      exclude-exceptions:
+        - com.example.RateLimitException
+
+    # 性能监控
+    enable-performance: true
+    sample-rate: 1.0
+    traces-sample-rate: 0.1
+
+    # 附加标签
+    tags:
+      team: backend
+      region: cn-north
+      version: 3.0.0
+      datacenter: dc1

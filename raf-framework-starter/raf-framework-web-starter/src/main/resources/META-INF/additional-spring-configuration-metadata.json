@@ -1,0 +1,92 @@
+{
+  "groups": [
+    {
+      "name": "raf.async",
+      "type": "com.raf.framework.web.async.RafAsyncProperties",
+      "sourceType": "com.raf.framework.web.async.RafAsyncProperties"
+    },
+    {
+      "name": "raf.cors",
+      "type": "com.raf.framework.web.servlet.cors.CorsProperties",
+      "sourceType": "com.raf.framework.web.servlet.cors.CorsProperties"
+    },
+    {
+      "name": "raf.log",
+      "type": "com.raf.framework.web.servlet.log.AuditProperties$Log",
+      "sourceType": "com.raf.framework.web.servlet.log.AuditProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "raf.async.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable dynamic async thread pools."
+    },
+    {
+      "name": "raf.async.pools",
+      "type": "java.util.Map<java.lang.String,com.raf.framework.web.async.RafAsyncProperties$PoolConfig>",
+      "description": "Named async thread pool configurations."
+    },
+    {
+      "name": "raf.cors.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable CORS filter registration."
+    },
+    {
+      "name": "raf.cors.path",
+      "type": "java.lang.String",
+      "description": "CORS path pattern, default is /**."
+    },
+    {
+      "name": "raf.cors.allow-origins",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Allowed origins."
+    },
+    {
+      "name": "raf.cors.allow-headers",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Allowed request headers."
+    },
+    {
+      "name": "raf.cors.allow-methods",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Allowed HTTP methods."
+    },
+    {
+      "name": "raf.cors.allow-expose-headers",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Exposed response headers."
+    },
+    {
+      "name": "raf.log.level",
+      "type": "com.raf.framework.web.servlet.log.AuditProperties$LogLevel",
+      "description": "Access log level.",
+      "defaultValue": "RSP_HEADERS"
+    }
+  ],
+  "hints": [
+    {
+      "name": "raf.log.level",
+      "values": [
+        {
+          "value": "OFF"
+        },
+        {
+          "value": "BASIC"
+        },
+        {
+          "value": "REQ_HEADERS"
+        },
+        {
+          "value": "REQ_BODY"
+        },
+        {
+          "value": "RSP_HEADERS"
+        },
+        {
+          "value": "RSP_BODY"
+        }
+      ]
+    }
+  ]
+}
