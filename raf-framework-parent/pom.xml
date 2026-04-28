@@ -8,6 +8,29 @@
     <description>raf-framework-parent</description>
     <packaging>pom</packaging>
     <version>${revision}</version>
+    <url>https://github.com/JerryRaf/raf-framework</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>Jerry</id>
+            <name>Jerry</name>
+            <email>120518134@qq.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/JerryRaf/raf-framework.git</connection>
+        <developerConnection>scm:git:ssh://github.com:JerryRaf/raf-framework.git</developerConnection>
+        <url>https://github.com/JerryRaf/raf-framework/tree/master</url>
+    </scm>
 
     <parent>
         <groupId>io.github.jerryraf</groupId>

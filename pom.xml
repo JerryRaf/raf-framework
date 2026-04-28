@@ -36,6 +36,7 @@
     <properties>
         <revision>3.0.0</revision>
         <maven.flatten.plugin.version>1.7.0</maven.flatten.plugin.version>
+        <maven.gpg.plugin.version>3.2.7</maven.gpg.plugin.version>
         <central.publishing.plugin.version>0.7.0</central.publishing.plugin.version>
     </properties>
 
