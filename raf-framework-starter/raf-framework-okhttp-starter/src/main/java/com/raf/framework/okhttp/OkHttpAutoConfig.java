@@ -11,7 +11,6 @@ import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;

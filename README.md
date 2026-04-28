@@ -12,6 +12,8 @@
 [![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2024.0.1-brightgreen.svg)](https://spring.io/projects/spring-cloud)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.jerryraf/raf-framework-dependencies)](https://central.sonatype.com/artifact/io.github.jerryraf/raf-framework-dependencies)
 [![Build](https://github.com/JerryRaf/raf-framework/actions/workflows/ci.yml/badge.svg)](https://github.com/JerryRaf/raf-framework/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/JerryRaf/raf-framework/actions/workflows/codeql.yml/badge.svg)](https://github.com/JerryRaf/raf-framework/actions/workflows/codeql.yml)
+[![Contributors](https://img.shields.io/github/contributors/JerryRaf/raf-framework)](https://github.com/JerryRaf/raf-framework/graphs/contributors)
 
 [快速开始](#快速开始) · [文档](#核心能力) · [更新日志](CHANGELOG.md) · [提交 Issue](https://github.com/jerry-raf/raf-framework/issues) · [贡献指南](#贡献指南)
 
@@ -28,6 +30,7 @@ RAF Framework 是基于 Spring Boot 3.x 生态构建的企业级微服务开发�
 - **热插拔**：所有组件默认关闭，`raf.{component}.enabled=true` 显式启用，不引入 Starter 则零副作用
 - **零硬编码**：地址、密钥、账号等环境配置全部由外部配置中心（Nacos）注入
 - **统一标准**：响应格式、异常分层、日志规范、追踪传播、版本管理均有统一约定
+- **双接入模式（核心理念）**：同时支持 parent 继承和 BOM 组合，两种接入方式能力一致
 - **生产就绪**：内置慢 SQL 告警、线程池 Prometheus 指标、优雅停机、分布式追踪、Sentry 错误上报
 - **安全合规**：通过 OWASP / Fortify 安全扫描，网关层内置 ECIES 加密、ECDSA 签名、防重放机制
 
@@ -41,9 +44,21 @@ RAF Framework 是基于 Spring Boot 3.x 生态构建的企业级微服务开发�
 - Maven 3.8.8+
 - Spring Boot 3.x 项目
 
-### 第一步：引入 BOM
+### 依赖接入模式（核心理念）
 
-在项目的 `pom.xml` 中统一管理版本：
+RAF Framework 对外提供两种等价接入方式，使用者可按团队习惯选择：
+
+#### 方式 A：Parent 继承（推荐给统一工程规范团队）
+
+```xml
+<parent>
+    <groupId>io.github.jerryraf</groupId>
+    <artifactId>raf-framework-parent</artifactId>
+    <version>${revision}</version>
+</parent>
+```
+
+#### 方式 B：BOM 组合（推荐给已有父工程团队）
 
 ```xml
 <dependencyManagement>
@@ -51,7 +66,7 @@ RAF Framework 是基于 Spring Boot 3.x 生态构建的企业级微服务开发�
         <dependency>
             <groupId>io.github.jerryraf</groupId>
             <artifactId>raf-framework-dependencies</artifactId>
-            <version>3.0.0</version>
+            <version>${revision}</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -59,7 +74,7 @@ RAF Framework 是基于 Spring Boot 3.x 生态构建的企业级微服务开发�
 </dependencyManagement>
 ```
 
-### 第二步：按需引入 Starter
+### 按需引入 Starter
 
 ```xml
 <!-- Web 基础（必须） -->
@@ -136,7 +151,7 @@ raf-framework/
     └── raf-framework-swagger-starter/     # Springdoc + Knife4j 文档
 ```
 
-版本由 `raf-framework-dependencies` BOM 统一管理，使用 `${revision}` 占位符，通过 `flatten-maven-plugin` 在发布时展开。
+版本由根聚合 `pom.xml` 的 `${revision}` 统一管理，`raf-framework-dependencies` 与 `raf-framework-parent` 共享同一版本源；发布通过 `flatten-maven-plugin` 展开为固定版本。
 
 ---
 

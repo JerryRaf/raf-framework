@@ -1,6 +1,7 @@
 package com.raf.framework.sentry.trace;
 
 import com.raf.framework.core.trace.ContextHolder;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**

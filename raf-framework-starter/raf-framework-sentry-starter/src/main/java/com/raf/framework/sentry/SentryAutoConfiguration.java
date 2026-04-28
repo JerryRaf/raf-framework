@@ -4,8 +4,10 @@ import com.raf.framework.sentry.processor.RafSentryEventProcessor;
 import com.raf.framework.sentry.trace.ApmTraceIdProvider;
 import com.raf.framework.sentry.trace.FrameworkTraceIdProvider;
 import com.raf.framework.sentry.trace.TraceIdProvider;
+
 import io.sentry.EventProcessor;
 import io.sentry.Sentry;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,8 +16,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-
-import jakarta.annotation.PostConstruct;
 
 /**
  * Sentry auto-configuration.

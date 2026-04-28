@@ -2,6 +2,8 @@ package com.raf.framework.sentry.processor;
 
 import com.raf.framework.sentry.RafSentryProperties;
 import com.raf.framework.sentry.trace.TraceIdProvider;
+
+import java.util.List;
 import io.sentry.EventProcessor;
 import io.sentry.Hint;
 import io.sentry.SentryEvent;
@@ -9,8 +11,6 @@ import io.sentry.protocol.Contexts;
 import io.sentry.protocol.SentryException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.List;
 
 /**
  * Sentry 事件处理器

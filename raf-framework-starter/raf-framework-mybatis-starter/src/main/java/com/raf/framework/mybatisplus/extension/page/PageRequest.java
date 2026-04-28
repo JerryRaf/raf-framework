@@ -1,11 +1,10 @@
 package com.raf.framework.mybatisplus.extension.page;
 
+import java.io.Serializable;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-
-import java.io.Serializable;
 
 /**
  * Page request parameter with validation

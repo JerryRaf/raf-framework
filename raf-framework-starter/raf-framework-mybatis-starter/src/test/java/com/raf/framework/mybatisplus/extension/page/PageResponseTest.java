@@ -1,11 +1,10 @@
 package com.raf.framework.mybatisplus.extension.page;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.junit.jupiter.api.Test;
-
 import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.*;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for PageResponse

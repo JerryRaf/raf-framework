@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
     <name>raf-framework</name>
     <description>raf-framework is a fast microservices framework</description>
-    <version>3.0.0</version>
+    <version>${revision}</version>
     <url>https://github.com/JerryRaf/raf-framework</url>
 
     <licenses>
@@ -30,15 +30,16 @@
     <scm>
         <connection>scm:git:git://github.com/JerryRaf/raf-framework.git</connection>
         <developerConnection>scm:git:ssh://github.com:JerryRaf/raf-framework.git</developerConnection>
-        <url>https://github.com/JerryRaf/raf-framework/tree/main</url>
+        <url>https://github.com/JerryRaf/raf-framework/tree/master</url>
     </scm>
 
     <properties>
+        <revision>3.0.0</revision>
         <maven.deploy.plugin.version>3.1.4</maven.deploy.plugin.version>
         <maven.source.plugin.version>3.3.0</maven.source.plugin.version>
         <maven.javadoc.plugin.version>3.6.3</maven.javadoc.plugin.version>
         <maven.gpg.plugin.version>3.1.0</maven.gpg.plugin.version>
-        <central.publishing.plugin.version>0.4.0</central.publishing.plugin.version>
+        <central.publishing.plugin.version>0.7.0</central.publishing.plugin.version>
     </properties>
 
     <modules>
@@ -95,6 +96,8 @@
                     <encoding>UTF-8</encoding>
                     <charset>UTF-8</charset>
                     <docencoding>UTF-8</docencoding>
+                    <failOnError>false</failOnError>
+                    <additionalJOption>-Xdoclint:none</additionalJOption>
                 </configuration>
                 <executions>
                     <execution>

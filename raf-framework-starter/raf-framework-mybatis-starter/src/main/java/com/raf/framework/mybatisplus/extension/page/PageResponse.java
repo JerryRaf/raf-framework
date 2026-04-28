@@ -1,11 +1,10 @@
 package com.raf.framework.mybatisplus.extension.page;
 
+import java.io.Serializable;
+import java.util.List;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * Page response result wrapping MyBatis-Plus Page

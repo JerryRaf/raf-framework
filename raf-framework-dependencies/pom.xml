@@ -3,6 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.jerryraf</groupId>
+        <artifactId>raf-framework</artifactId>
+        <version>3.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
     <groupId>io.github.jerryraf</groupId>
     <artifactId>raf-framework-dependencies</artifactId>
     <name>raf-framework-dependencies</name>
@@ -21,10 +29,25 @@
         <developer>
             <id>Jerry</id>
             <name>Jerry</name>
+            <email>120518134@qq.com</email>
         </developer>
     </developers>
 
+    <scm>
+        <connection>scm:git:git://github.com/JerryRaf/raf-framework.git</connection>
+        <developerConnection>scm:git:ssh://github.com:JerryRaf/raf-framework.git</developerConnection>
+        <url>https://github.com/JerryRaf/raf-framework/tree/master</url>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <url>https://central.sonatype.com/api/v1/publisher</url>
+        </repository>
+    </distributionManagement>
+
     <properties>
+        <revision>3.0.0</revision>
         <java.version>17</java.version>
         <resource.delimiter>@</resource.delimiter>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,7 +62,7 @@
         <maven.flatten.plugin.verion>1.7.0</maven.flatten.plugin.verion>
 
         <!--raf framework-->
-        <raf.framework.version>3.0.0</raf.framework.version>
+        <raf.framework.version>${revision}</raf.framework.version>
 
         <!--base-->
         <spring.boot.version>3.4.7</spring.boot.version>
@@ -781,13 +804,7 @@
                             </goals>
                             <configuration>
                                 <updatePomFile>true</updatePomFile>
-                                <pomElements>
-                                    <pluginManagement>keep</pluginManagement>
-                                    <parent>expand</parent>
-                                    <dependencyManagement>keep</dependencyManagement>
-                                    <properties>keep</properties>
-                                    <build>keep</build>
-                                </pomElements>
+                                <flattenMode>ossrh</flattenMode>
                             </configuration>
                         </execution>
                         <execution>

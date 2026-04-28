@@ -1,13 +1,11 @@
 package com.raf.framework.elasticsearch;
 
-import co.elastic.clients.elasticsearch._types.FieldValue;
-import co.elastic.clients.elasticsearch._types.SortOrder;
-import co.elastic.clients.elasticsearch._types.query_dsl.*;
-import co.elastic.clients.json.JsonData;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 
 /**
  * Elasticsearch 辅助工具类

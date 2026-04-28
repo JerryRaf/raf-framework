@@ -23,7 +23,7 @@ spring.datasource:
     name: primary-master
     url: jdbc:mysql://localhost:3306/example_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true&allowPublicKeyRetrieval=true
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root123}
+    password: ${DB_PASSWORD:changeme}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
     # Druid Connection Pool Settings
@@ -50,7 +50,7 @@ spring.datasource:
     name: primary-slave
     url: jdbc:mysql://localhost:3307/example_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true&allowPublicKeyRetrieval=true
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root123}
+    password: ${DB_PASSWORD:changeme}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
     # Slave typically has larger pool for read operations
@@ -74,7 +74,7 @@ spring.datasource:
     name: secondary-master
     url: jdbc:mysql://localhost:3306/example_db2?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root123}
+    password: ${DB_PASSWORD:changeme}
     driver-class-name: com.mysql.cj.jdbc.Driver
     initial-size: 5
     min-idle: 5

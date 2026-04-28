@@ -8,17 +8,29 @@
     <description>raf-framework-parent</description>
     <packaging>pom</packaging>
     <version>${revision}</version>
+    <url>https://github.com/JerryRaf/raf-framework</url>
+
+    <developers>
+        <developer>
+            <id>Jerry</id>
+            <name>Jerry</name>
+            <email>120518134@qq.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/JerryRaf/raf-framework.git</connection>
+        <developerConnection>scm:git:ssh://github.com:JerryRaf/raf-framework.git</developerConnection>
+        <url>https://github.com/JerryRaf/raf-framework/tree/master</url>
+    </scm>
 
     <parent>
         <groupId>io.github.jerryraf</groupId>
         <artifactId>raf-framework-dependencies</artifactId>
-        <version>3.0.0</version>
+        <version>${revision}</version>
         <relativePath>../raf-framework-dependencies</relativePath>
     </parent>
 
-    <properties>
-        <revision>3.0.0</revision>
-    </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -66,11 +78,6 @@
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-rabbit-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-swagger-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -150,10 +157,9 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <inherited>false</inherited>
                 <configuration>
                     <updatePomFile>true</updatePomFile>
-                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    <flattenMode>ossrh</flattenMode>
                 </configuration>
                 <executions>
                     <execution>

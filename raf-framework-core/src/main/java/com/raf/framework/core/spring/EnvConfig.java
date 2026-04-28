@@ -1,11 +1,11 @@
 package com.raf.framework.core.spring;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.lang.NonNull;
 
 /**
  * @author Jerry

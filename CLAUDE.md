@@ -5,11 +5,11 @@ raf-framework 是企业级微服务开发框架，封装中间件接入、异常
 **核心设计原则：**
 - Starter架构模式-组件化模式
 - 高内聚,低耦合
-- maven:组合bom方式
+- Maven 双接入模式（底层核心理念）：同时支持 parent 继承（`raf-framework-parent`）与 BOM 组合（`raf-framework-dependencies`）
 - 热插拔组件，遵循"引入即使用"原则
 - 大部分功能默认关闭，需要时显式启用（`@ConditionalOnProperty`）
 - 框架层不包含硬编码值（地址、密钥等）
-- 使用 flatten-maven-plugin 和 `${revision}` 占位符管理版本（当前 3.0.0）
+- 版本治理：`revision` 由根聚合 POM 统一管理，发布通过 flatten-maven-plugin 展开为固定版本
 - 统一编码规范，符合安全扫描要求（OWASP、Fortify）
 
 ## 技术栈

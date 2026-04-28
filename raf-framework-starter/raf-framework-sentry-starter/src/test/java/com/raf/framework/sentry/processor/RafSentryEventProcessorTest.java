@@ -2,14 +2,14 @@ package com.raf.framework.sentry.processor;
 
 import com.raf.framework.sentry.RafSentryProperties;
 import com.raf.framework.sentry.trace.TraceIdProvider;
+
+import java.util.Collections;
+import java.util.HashSet;
 import io.sentry.Hint;
 import io.sentry.SentryEvent;
 import io.sentry.protocol.SentryException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
-import java.util.HashSet;
 
 /**
  * Tests for RafSentryEventProcessor.

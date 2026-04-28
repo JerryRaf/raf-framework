@@ -1,10 +1,9 @@
 package com.raf.framework.mybatisplus.extension.autoconfigure;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * PageHelper configuration properties

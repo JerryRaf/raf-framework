@@ -1,9 +1,8 @@
 package com.raf.framework.openapi;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for OpenApiAutoConfiguration.

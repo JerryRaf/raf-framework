@@ -1,21 +1,24 @@
 package com.raf.framework.elasticsearch;
 
+import com.raf.framework.core.common.exception.InfrastructureException;
+import com.raf.framework.core.common.result.RafResponseEnum;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.Result;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.*;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import co.elastic.clients.elasticsearch.indices.*;
+import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
+import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
+import co.elastic.clients.elasticsearch.indices.DeleteIndexResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.raf.framework.core.common.exception.InfrastructureException;
-import com.raf.framework.core.common.result.RafResponseEnum;
-import com.raf.framework.core.trace.ContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Elasticsearch 核心操作模板类

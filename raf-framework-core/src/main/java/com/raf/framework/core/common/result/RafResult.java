@@ -1,10 +1,11 @@
 package com.raf.framework.core.common.result;
 
+import com.raf.framework.core.common.exception.base.BaseException;
+import com.raf.framework.core.trace.ContextHolder;
+
 import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.raf.framework.core.common.exception.base.BaseException;
-import com.raf.framework.core.trace.ContextHolder;
 import lombok.Getter;
 
 /**

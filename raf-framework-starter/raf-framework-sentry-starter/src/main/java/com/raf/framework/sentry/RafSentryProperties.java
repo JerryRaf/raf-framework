@@ -1,10 +1,9 @@
 package com.raf.framework.sentry;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import java.util.HashSet;
 import java.util.Set;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Sentry 配置属性
