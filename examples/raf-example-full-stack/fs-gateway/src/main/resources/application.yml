@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: fs-gateway-example
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://fs-user-service
+          predicates:
+            - Path=/api/users/**
+        - id: product-service
+          uri: lb://fs-product-service
+          predicates:
+            - Path=/api/products/**
+        - id: order-service
+          uri: lb://fs-order-service
+          predicates:
+            - Path=/api/orders/**
+
+server:
+  port: 8080
+
+raf:
+  redis:
+    enabled: true
+  gateway:
+    security:
+      anti-replay:
+        enabled: true
+        nonce-expire-seconds: 300

@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>raf-framework-redis-starter</artifactId>
+    <name>raf-framework-redis-starter</name>
     <properties>
         <main.basedir>${basedir}/../..</main.basedir>
     </properties>

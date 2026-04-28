@@ -4,6 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>raf-framework-gateway-starter</artifactId>
+    <name>raf-framework-gateway-starter</name>
 
     <parent>
         <groupId>io.github.jerryraf</groupId>

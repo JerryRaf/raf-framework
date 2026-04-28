@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>raf-framework-mybatis-starter</artifactId>
+    <name>raf-framework-mybatis-starter</name>
     <properties>
         <main.basedir>${basedir}/../..</main.basedir>
     </properties>

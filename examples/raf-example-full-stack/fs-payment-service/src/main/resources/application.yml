@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: fs-payment-service
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/fullstack_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:root123}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+server:
+  port: 8084
+
+rocketmq:
+  name-server: ${ROCKETMQ_ADDR:localhost:9876}
+  consumer:
+    group: payment-consumer-group

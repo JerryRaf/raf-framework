@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.jerryraf</groupId>
+        <artifactId>raf-framework-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../../raf-framework-parent</relativePath>
+    </parent>
+
+    <groupId>io.github.jerryraf.examples</groupId>
+    <artifactId>raf-example-distributed-tx</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+
+    <name>RAF Example - Distributed Transaction</name>
+    <description>Demonstrates Seata AT mode distributed transaction with order/product/payment services</description>
+
+    <modules>
+        <module>tx-api</module>
+        <module>order-service</module>
+        <module>product-service</module>
+        <module>payment-service</module>
+    </modules>
+</project>

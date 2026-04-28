@@ -8,21 +8,6 @@
     <description>raf-framework-parent</description>
     <packaging>pom</packaging>
     <version>${revision}</version>
-    <url>https://github.com/JerryRaf/raf-framework</url>
-
-    <developers>
-        <developer>
-            <id>Jerry</id>
-            <name>Jerry</name>
-            <email>120518134@qq.com</email>
-        </developer>
-    </developers>
-
-    <scm>
-        <connection>scm:git:git://github.com/JerryRaf/raf-framework.git</connection>
-        <developerConnection>scm:git:ssh://github.com:JerryRaf/raf-framework.git</developerConnection>
-        <url>https://github.com/JerryRaf/raf-framework/tree/master</url>
-    </scm>
 
     <parent>
         <groupId>io.github.jerryraf</groupId>
@@ -30,7 +15,6 @@
         <version>${revision}</version>
         <relativePath>../raf-framework-dependencies</relativePath>
     </parent>
-
 
     <dependencyManagement>
         <dependencies>
@@ -159,22 +143,90 @@
                 <artifactId>flatten-maven-plugin</artifactId>
                 <configuration>
                     <updatePomFile>true</updatePomFile>
-                    <flattenMode>ossrh</flattenMode>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    <pomElements>
+                        <parent>remove</parent>
+
+                        <name>keep</name>
+                        <description>keep</description>
+                        <url>keep</url>
+                        <developers>keep</developers>
+                        <scm>keep</scm>
+
+                        <properties>keep</properties>
+                        <dependencyManagement>keep</dependencyManagement>
+                        <pluginManagement>keep</pluginManagement>
+                        <build>keep</build>
+
+                        <repositories>remove</repositories>
+                        <pluginRepositories>remove</pluginRepositories>
+                        <distributionManagement>remove</distributionManagement>
+                    </pomElements>
+                </configuration>
+            </plugin>
+
+            <!-- ===== JavaDoc Plugin ===== -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc.plugin.version}</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <charset>UTF-8</charset>
+                    <docencoding>UTF-8</docencoding>
+                    <failOnError>false</failOnError>
+                    <additionalJOption>-Xdoclint:none</additionalJOption>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>flatten</id>
-                        <phase>process-resources</phase>
+                        <id>attach-javadocs</id>
                         <goals>
-                            <goal>flatten</goal>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- ===== JaCoCo Coverage Plugin ===== -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>flatten.clean</id>
-                        <phase>clean</phase>
+                        <id>report</id>
+                        <phase>verify</phase>
                         <goals>
-                            <goal>clean</goal>
+                            <goal>report</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>check</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${jacoco.check.skip}</skip>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.70</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

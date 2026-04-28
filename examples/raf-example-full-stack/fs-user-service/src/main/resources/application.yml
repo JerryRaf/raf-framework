@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: fs-user-service
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/fullstack_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:root123}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+server:
+  port: 8081
+
+dubbo:
+  registry:
+    address: nacos://${NACOS_ADDR:127.0.0.1:8848}
+  protocol:
+    name: dubbo
+    port: 20880
+  scan:
+    base-packages: io.github.jerryraf.examples.fullstack.user

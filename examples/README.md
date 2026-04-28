@@ -10,6 +10,10 @@
 | [raf-example-redis](./raf-example-redis) | Redis 缓存 + Redisson 分布式锁 | redis-starter |
 | [raf-example-mybatis](./raf-example-mybatis) | **完整的 MyBatis-Plus 多数据源示例** | mybatis-starter, datasource-starter |
 | [raf-example-mq](./raf-example-mq) | RocketMQ 幂等生产/消费 | rocketmq-starter |
+| [raf-example-gateway](./raf-example-gateway) | API 网关 + ECIES 加密 + ECDSA 签名 + 防重放 | gateway-starter, redis-starter |
+| [raf-example-dubbo](./raf-example-dubbo) | Dubbo RPC Provider/Consumer + Nacos 服务发现 | dubbo-starter |
+| [raf-example-distributed-tx](./raf-example-distributed-tx) | Seata AT 模式分布式事务（订单/库存/支付） | dubbo-starter, mybatis-starter |
+| [raf-example-full-stack](./raf-example-full-stack) | 完整电商微服务系统，整合所有技术点 | gateway/dubbo/mybatis/rocketmq/seata |
 
 **raf-example-mybatis 特别说明**：
 - ✅ 完整的生产级示例代码
@@ -119,3 +123,44 @@ mybatis-plus:
 - RocketMQ 幂等消费者（消费前检查）
 - 消息体 JSON 序列化
 - 消费失败重试机制
+
+### raf-example-gateway
+
+演示 API 网关安全能力：
+
+- Spring Cloud Gateway 路由配置（用户/订单/商品服务）
+- ECIES 非对称加密请求体
+- ECDSA 数字签名验证
+- 防重放攻击（Nonce + 时间窗口）
+- TestContainers 集成测试
+
+### raf-example-dubbo
+
+演示 Dubbo RPC 能力（三模块：dubbo-api / dubbo-provider / dubbo-consumer）：
+
+- `@DubboService` Provider 服务注册
+- `@DubboReference` Consumer 服务调用
+- Nacos 服务注册与发现
+- traceId 在 RPC 链路中透明传播
+- MockBean 集成测试（无需真实 Dubbo 连接）
+
+### raf-example-distributed-tx
+
+演示 Seata AT 模式分布式事务（四模块：tx-api / order-service / product-service / payment-service）：
+
+- `@GlobalTransactional` 开启全局事务
+- 订单服务作为事务发起方
+- 库存服务、支付服务作为事务参与方
+- 库存不足时全局回滚演示
+- docker-compose 一键启动 Seata + Nacos + 3 个 MySQL 实例
+
+### raf-example-full-stack
+
+完整电商微服务系统，整合所有 RAF Framework 技术点（五模块：fs-gateway / fs-user-service / fs-product-service / fs-order-service / fs-payment-service）：
+
+- API 网关统一入口（加密 + 签名 + 防重放）
+- Dubbo RPC 服务间调用
+- Seata 分布式事务保障数据一致性
+- RocketMQ 异步消息（支付通知）
+- docker-compose 一键启动全部中间件
+- Postman Collection 覆盖完整下单流程

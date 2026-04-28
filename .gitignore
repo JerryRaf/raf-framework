@@ -43,3 +43,5 @@ nul
 
 # Internal development docs (not for public repo)
 CLAUDE.local.md
+
+docs-site/node_modules

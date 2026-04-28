@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: payment-service-example
+  datasource:
+    url: jdbc:mysql://${MYSQL_PAYMENT_HOST:localhost}:${MYSQL_PAYMENT_PORT:3308}/payment_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:root123}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+server:
+  port: 8083
+
+dubbo:
+  registry:
+    address: nacos://${NACOS_ADDR:127.0.0.1:8848}
+    parameters:
+      namespace: ${NACOS_NAMESPACE:public}
+  protocol:
+    name: dubbo
+    port: 20882
+  scan:
+    base-packages: io.github.jerryraf.examples.tx.payment
+
+seata:
+  enabled: true
+  tx-service-group: payment-service-group
+  service:
+    vgroup-mapping:
+      payment-service-group: default
+  registry:
+    type: nacos
+    nacos:
+      server-addr: ${NACOS_ADDR:127.0.0.1:8848}
+      namespace: ${NACOS_NAMESPACE:public}
+      group: SEATA_GROUP

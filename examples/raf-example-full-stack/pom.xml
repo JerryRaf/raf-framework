@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.jerryraf</groupId>
+        <artifactId>raf-framework-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../../raf-framework-parent</relativePath>
+    </parent>
+
+    <groupId>io.github.jerryraf.examples</groupId>
+    <artifactId>raf-example-full-stack</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+
+    <name>RAF Example - Full Stack</name>
+    <description>Complete e-commerce microservices example integrating all RAF Framework capabilities</description>
+
+    <modules>
+        <module>fs-gateway</module>
+        <module>fs-user-service</module>
+        <module>fs-product-service</module>
+        <module>fs-order-service</module>
+        <module>fs-payment-service</module>
+    </modules>
+</project>

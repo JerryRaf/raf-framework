@@ -30,7 +30,7 @@ RAF Framework 是基于 Spring Boot 3.x 生态构建的企业级微服务开发�
 - **热插拔**：所有组件默认关闭，`raf.{component}.enabled=true` 显式启用，不引入 Starter 则零副作用
 - **零硬编码**：地址、密钥、账号等环境配置全部由外部配置中心（Nacos）注入
 - **统一标准**：响应格式、异常分层、日志规范、追踪传播、版本管理均有统一约定
-- **双接入模式（核心理念）**：同时支持 parent 继承和 BOM 组合，两种接入方式能力一致
+- **双接入模式（核心理念）**：同时支持 parent 继承和 BOM 组合（Maven 单继承限制 + 企业灵活性需求）
 - **生产就绪**：内置慢 SQL 告警、线程池 Prometheus 指标、优雅停机、分布式追踪、Sentry 错误上报
 - **安全合规**：通过 OWASP / Fortify 安全扫描，网关层内置 ECIES 加密、ECDSA 签名、防重放机制
 
@@ -123,6 +123,53 @@ raf:
 
 ## 模块架构
 
+### POM 结构设计
+
+RAF Framework 采用 **三层 POM 架构**，遵循 Spring Boot 设计模式：
+
+```
+raf-framework (root)
+  ├── <revision>3.0.0</revision>          # 唯一版本定义
+  ├── flatten-maven-plugin                # 替换 ${revision} → 3.0.0
+  │
+  ├─→ raf-framework-dependencies (BOM)
+  │     ├── parent: raf-framework
+  │     ├── <dependencyManagement>        # 统一依赖版本管理
+  │     └── 使用 ${project.version}       # 避免 flatten 去除 dependencyManagement
+  │
+  └─→ raf-framework-parent (Parent POM)
+        ├── parent: raf-framework-dependencies
+        ├── <build> 配置                  # 插件、编译配置
+        └── flatten-maven-plugin (ossrh)  # 去除 <parent> 块，自包含
+```
+
+**为什么三层？**
+
+| 使用场景 | 接入方式 | 优势 |
+|---------|---------|------|
+| **公司有统一父 POM** | 只 import `raf-framework-dependencies` (BOM) | 绕过 Maven 单继承限制 |
+| **新项目无约束** | 直接继承 `raf-framework-parent` | 获得完整构建配置 + 依赖管理 |
+
+**版本管理原则**：
+
+| POM | `<revision>` 定义 | 版本来源 |
+|-----|------------------|----------|
+| **raf-framework** (root) | ✅ `<revision>3.0.0</revision>` | 唯一定义处 |
+| **raf-framework-dependencies** | ❌ 不定义 | 从 root 继承，使用 `${project.version}` |
+| **raf-framework-parent** | ❌ 不定义 | 从 dependencies 继承 |
+
+**flatten-maven-plugin 配置**：
+
+| POM | 插件 | 模式 | 作用 |
+|-----|------|------|------|
+| **root** | ✅ | `resolveCiFriendliesOnly` | 替换 `${revision}` 为 `3.0.0` |
+| **dependencies** | ❌ | - | 保留 `<dependencyManagement>` |
+| **parent** | ✅ | `ossrh` | 去除 `<parent>` 块 |
+
+> **参考**：Spring Boot 使用相同模式（`spring-boot-dependencies` + `spring-boot-starter-parent`）
+
+### 功能模块
+
 ```
 raf-framework/
 ├── raf-framework-dependencies/            # BOM：统一管理依赖和插件版本
@@ -130,7 +177,7 @@ raf-framework/
 ├── raf-framework-core/                    # 核心库：所有自动配置实现
 └── raf-framework-starter/                 # 按功能拆分的 Starter
     ├── raf-framework-starter-parent/      # 应用项目父工程
-    ├── raf-framework-web-starter/   # Web 基础 + Jasypt 加密
+    ├── raf-framework-web-starter/         # Web 基础 + Jasypt 加密
     ├── raf-framework-gateway-starter/     # Spring Cloud Gateway 网关
     ├── raf-framework-dubbo-starter/       # Dubbo RPC
     ├── raf-framework-nacos-config-starter/    # Nacos 配置中心
@@ -148,14 +195,74 @@ raf-framework/
     ├── raf-framework-shardingsphere-starter/  # ShardingSphere 分库分表
     ├── raf-framework-monitor-starter/     # Prometheus 监控
     ├── raf-framework-sentry-starter/      # Sentry 错误追踪
-    └── raf-framework-swagger-starter/     # Springdoc + Knife4j 文档
+    └── raf-framework-openapi-starter/     # Springdoc + Knife4j 文档
 ```
 
-版本由根聚合 `pom.xml` 的 `${revision}` 统一管理，`raf-framework-dependencies` 与 `raf-framework-parent` 共享同一版本源；发布通过 `flatten-maven-plugin` 展开为固定版本。
+### 构建与发布
+
+```bash
+# 构建所有模块
+mvn clean install -DskipTests
+
+# 发布到 Maven Central
+mvn clean deploy -Prelease
+
+# 本地仓库结构（install 后）
+~/.m2/repository/io/github/jerryraf/
+  ├── raf-framework/3.0.0/
+  │   └── raf-framework-3.0.0.pom          # ${revision} → 3.0.0
+  ├── raf-framework-dependencies/3.0.0/
+  │   └── raf-framework-dependencies-3.0.0.pom  # 保留 <dependencyManagement>
+  └── raf-framework-parent/3.0.0/
+      └── raf-framework-parent-3.0.0.pom   # 无 <parent> 块
+```
 
 ---
 
 ## 核心能力
+
+### App API 设计规范
+
+#### API 响应与错误处理
+
+详见 [docs-site/components/api-response.md](docs-site/components/api-response.md)
+
+**核心原则**：HTTP 状态码表达传输层语义；响应体 `code` 字段表达业务层语义。
+
+**标准响应结构**：
+
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": { "userId": 1024 },
+  "traceId": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"
+}
+```
+
+**业务码规范**：5 位纯数字 `XXYYY`
+- `XX`（前 2 位）：服务 ID（统一分配）
+- `YYY`（后 3 位）：错误流水号（建议与 HTTP 状态码对齐）
+
+#### API 安全设计
+
+详见 [docs-site/components/api-security.md](docs-site/components/api-security.md)
+
+**安全通信协议**：
+
+1. **请求加密**：所有 App 请求使用 AES-256-GCM 加密，外层使用 ECDSA 签名
+2. **响应加密**：HTTP 200 响应体均为 AES 加密；协议握手失败返回明文 401
+3. **防重放**：时间戳窗口 ±300 秒 + Nonce 唯一性校验（Redis TTL 10 分钟）
+4. **密钥管理**：客户端 EC P-256 密钥对 + ECDH 会话密钥派生
+
+**请求头规范**：
+
+| 请求头 | 说明 |
+|--------|------|
+| `X-App-Key` | 客户端 EC 公钥（注册时下发） |
+| `X-App-Ts` | 13 位 Unix 时间戳（毫秒） |
+| `X-App-Nonce` | 32 位 UUID，一次性使用 |
+| `X-App-Sign` | ECDSA 签名，覆盖 `clientKey+ts+nonce+content` |
 
 ### 统一响应格式
 

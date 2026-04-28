@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: order-service-example
+  datasource:
+    url: jdbc:mysql://${MYSQL_ORDER_HOST:localhost}:${MYSQL_ORDER_PORT:3306}/order_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:root123}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+server:
+  port: 8081
+
+dubbo:
+  registry:
+    address: nacos://${NACOS_ADDR:127.0.0.1:8848}
+    parameters:
+      namespace: ${NACOS_NAMESPACE:public}
+  consumer:
+    check: false
+
+seata:
+  enabled: true
+  tx-service-group: order-service-group
+  service:
+    vgroup-mapping:
+      order-service-group: default
+  registry:
+    type: nacos
+    nacos:
+      server-addr: ${NACOS_ADDR:127.0.0.1:8848}
+      namespace: ${NACOS_NAMESPACE:public}
+      group: SEATA_GROUP

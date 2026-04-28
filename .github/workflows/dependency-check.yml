@@ -1,0 +1,52 @@
+name: Dependency Security Check
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  pull_request:
+    branches: [ "main", "master" ]
+    paths:
+      - '**/pom.xml'
+  workflow_dispatch:
+
+jobs:
+  dependency-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: OWASP Dependency Check
+        run: |
+          mvn org.owasp:dependency-check-maven:check \
+            -DfailBuildOnCVSS=7 \
+            -DsuppressionFile=.github/owasp-suppressions.xml \
+            -Dformats=HTML,SARIF \
+            -DnvdApiKey=${{ secrets.NVD_API_KEY }} \
+            --no-transfer-progress \
+            -pl raf-framework-dependencies,raf-framework-core,raf-framework-starter -am
+
+      - name: Upload SARIF to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: '**/target/dependency-check-report.sarif'
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: target/dependency-check-report.html
+          retention-days: 30

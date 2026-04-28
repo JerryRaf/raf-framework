@@ -9,6 +9,7 @@
         <version>${revision}</version>
     </parent>
     <artifactId>raf-framework-sentry-starter</artifactId>
+    <name>raf-framework-sentry-starter</name>
     <properties>
         <main.basedir>${basedir}/../..</main.basedir>
     </properties>

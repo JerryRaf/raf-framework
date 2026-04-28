@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>raf-framework-okhttp-starter</artifactId>
+    <name>raf-framework-okhttp-starter</name>
     <properties>
         <main.basedir>${basedir}/../..</main.basedir>
     </properties>
