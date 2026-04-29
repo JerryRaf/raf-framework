@@ -27,6 +27,9 @@ jobs:
           java-version: "17"
           cache: maven
 
+      - name: Build project
+        run: mvn clean install -DskipTests --no-transfer-progress
+
       - name: OWASP Dependency Check
         run: |
           mvn org.owasp:dependency-check-maven:aggregate \
