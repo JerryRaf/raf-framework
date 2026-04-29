@@ -67,7 +67,7 @@ mvn clean install -s "D:\Program Files\apache-maven-3.9.10\conf\settings-raf.xml
 raf-framework/
 ├── raf-framework-dependencies/        # 统一依赖与插件版本管理（BOM）
 ├── raf-framework-parent/              # 框架父工程，flatten-maven-plugin 版本占位
-├── raf-framework-autoconfigure/       # 核心库，所有自动配置实现
+├── raf-framework-core/                # 核心库，所有自动配置实现
 ├── raf-framework-starter/             # 按功能拆分的 Starter 集合
 └── examples/                          # 示例项目（完整可运行）
     ├── raf-framework-starter-parent/          # 应用项目父工程（jar 不带版本号）
@@ -174,7 +174,7 @@ mybatis-plus:
 
 ## 核心自动配置
 
-自动配置注册在 `raf-framework-autoconfigure/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`（Spring Boot 3 标准）。
+自动配置注册在 `raf-framework-core/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`（Spring Boot 3 标准）。
 
 **主要配置类：**
 - `SpringContext`, `EnvConfig`, `JacksonConfig` - 基础设施

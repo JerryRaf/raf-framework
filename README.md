@@ -138,7 +138,7 @@ graph TD
         C[raf-framework-starter<br/>18+ 热插拔 Starter]
     end
     subgraph 核心层
-        D[raf-framework-autoconfigure<br/>自动配置 / 异常处理 / 追踪]
+        D[raf-framework-core<br/>自动配置 / 异常处理 / 追踪]
         E[raf-framework-core<br/>零依赖工具库]
     end
     subgraph 中间件层
@@ -459,7 +459,7 @@ raf:
 1. 创建 `*Properties`（`@ConfigurationProperties`）定义配置项
 2. 创建 `*Config`（`@Configuration` + `@ConditionalOnProperty`）实现自动配置
 3. 注册到 `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`
-4. 创建对应 Starter 模块，依赖 `raf-framework-autoconfigure`
+4. 创建对应 Starter 模块，依赖 `raf-framework-core`
 
 ### 异常使用
 

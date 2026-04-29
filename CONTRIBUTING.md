@@ -50,7 +50,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 raf-framework-starter/
 └── raf-framework-{name}-starter/
-    └── pom.xml   # 仅声明对 raf-framework-autoconfigure 的依赖
+    └── pom.xml   # 仅声明对 raf-framework-core 的依赖
 ```
 
 `pom.xml` 示例：
@@ -58,11 +58,11 @@ raf-framework-starter/
 ```xml
 <dependency>
     <groupId>io.github.jerryraf</groupId>
-    <artifactId>raf-framework-autoconfigure</artifactId>
+    <artifactId>raf-framework-core</artifactId>
 </dependency>
 ```
 
-**第 2 步：在 `raf-framework-autoconfigure` 中创建 Properties 类**
+**第 2 步：在 `raf-framework-core` 中创建 Properties 类**
 
 ```java
 @ConfigurationProperties(prefix = "raf.{name}")
@@ -89,7 +89,7 @@ public class {Name}Config {
 
 **第 4 步：注册到自动配置**
 
-在 `raf-framework-autoconfigure/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` 末尾追加：
+在 `raf-framework-core/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` 末尾追加：
 
 ```
 com.raf.framework.autoconfigure.{name}.{Name}Config
@@ -121,7 +121,7 @@ void disabledByDefault() {
 mvn clean test --no-transfer-progress
 
 # 只跑单模块测试（以 redis-starter 为例）
-mvn test -pl raf-framework-autoconfigure --no-transfer-progress \
+mvn test -pl raf-framework-core --no-transfer-progress \
     -Dtest="*Redis*,*Redisson*"
 
 # 跳过测试快速安装
