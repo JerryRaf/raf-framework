@@ -18,10 +18,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
@@ -29,23 +29,22 @@ jobs:
 
       - name: OWASP Dependency Check
         run: |
-          mvn org.owasp:dependency-check-maven:check \
+          mvn org.owasp:dependency-check-maven:aggregate \
             -DfailBuildOnCVSS=7 \
             -DsuppressionFile=.github/owasp-suppressions.xml \
             -Dformats=HTML,SARIF \
             -DnvdApiKey=${{ secrets.NVD_API_KEY }} \
-            --no-transfer-progress \
-            -pl raf-framework-dependencies,raf-framework-core,raf-framework-starter -am
+            --no-transfer-progress
 
       - name: Upload SARIF to GitHub Security
         if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: '**/target/dependency-check-report.sarif'
+          sarif_file: target/dependency-check-report.sarif
 
       - name: Upload HTML report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dependency-check-report
           path: target/dependency-check-report.html
