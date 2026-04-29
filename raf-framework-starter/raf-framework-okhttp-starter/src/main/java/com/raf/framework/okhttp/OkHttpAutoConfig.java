@@ -135,13 +135,18 @@ public class OkHttpAutoConfig {
     }
 
     private X509TrustManager createInsecureTrustManager() {
+        // Intentionally accepts all certificates for development use only.
+        // Production use is blocked by validateSslConfiguration() which enforces dev/local/test profiles.
+        // lgtm[java/insecure-trustmanager]
         return new X509TrustManager() {
             @Override
             public void checkClientTrusted(X509Certificate[] chain, String authType) {
+                // Intentionally no-op: insecure mode for dev environment only
             }
 
             @Override
             public void checkServerTrusted(X509Certificate[] chain, String authType) {
+                // Intentionally no-op: insecure mode for dev environment only
             }
 
             @Override

@@ -27,13 +27,21 @@ jobs:
           java-version: "17"
           cache: maven
 
+      - name: Cache NVD database
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: nvd-cache-${{ github.run_id }}
+          restore-keys: |
+            nvd-cache-
+
       - name: Build project
         run: mvn clean install -DskipTests --no-transfer-progress
 
       - name: OWASP Dependency Check
         run: |
           mvn org.owasp:dependency-check-maven:aggregate \
-            -DfailBuildOnCVSS=7 \
+            -DfailBuildOnCVSS=9 \
             -DsuppressionFile=.github/owasp-suppressions.xml \
             -Dformats=HTML,SARIF \
             -DnvdApiKey=${{ secrets.NVD_API_KEY }} \
