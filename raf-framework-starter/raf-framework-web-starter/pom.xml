@@ -11,9 +11,6 @@
     <artifactId>raf-framework-web-starter</artifactId>
     <name>raf-framework-web-starter</name>
     <description>SpringMVC, Jackson, GlobalException, AccessLog for REST services</description>
-    <properties>
-        <main.basedir>${basedir}/../..</main.basedir>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>

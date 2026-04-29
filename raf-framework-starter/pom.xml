@@ -3,11 +3,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>raf-framework-starter</artifactId>
-    <name>raf-framework-starter</name>
-    <description>raf-framework-starter</description>
-    <packaging>pom</packaging>
-
     <parent>
         <groupId>io.github.jerryraf</groupId>
         <artifactId>raf-framework-parent</artifactId>
@@ -15,18 +10,10 @@
         <relativePath>../raf-framework-parent</relativePath>
     </parent>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>flatten-maven-plugin</artifactId>
-                <configuration>
-                    <updatePomFile>true</updatePomFile>
-                    <flattenMode>oss</flattenMode>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <artifactId>raf-framework-starter</artifactId>
+    <name>raf-framework-starter</name>
+    <description>raf-framework-starter</description>
+    <packaging>pom</packaging>
 
     <modules>
         <module>raf-framework-web-starter</module>

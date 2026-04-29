@@ -11,10 +11,6 @@
 
     <artifactId>raf-framework-monitor-starter</artifactId>
     <name>raf-framework-monitor-starter</name>
-    <properties>
-        <main.basedir>${basedir}/../..</main.basedir>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>io.github.jerryraf</groupId>

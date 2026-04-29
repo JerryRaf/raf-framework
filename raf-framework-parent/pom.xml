@@ -3,41 +3,18 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>raf-framework-parent</artifactId>
-    <name>raf-framework-parent</name>
-    <description>raf-framework-parent</description>
-    <packaging>pom</packaging>
-    <version>${revision}</version>
-    <url>https://github.com/JerryRaf/raf-framework</url>
-
-    <licenses>
-        <license>
-            <name>MIT License</name>
-            <url>https://opensource.org/licenses/MIT</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <id>Jerry</id>
-            <name>Jerry</name>
-            <email>120518134@qq.com</email>
-        </developer>
-    </developers>
-
-    <scm>
-        <connection>scm:git:git://github.com/JerryRaf/raf-framework.git</connection>
-        <developerConnection>scm:git:ssh://github.com:JerryRaf/raf-framework.git</developerConnection>
-        <url>https://github.com/JerryRaf/raf-framework/tree/master</url>
-    </scm>
-
     <parent>
         <groupId>io.github.jerryraf</groupId>
         <artifactId>raf-framework-dependencies</artifactId>
         <version>${revision}</version>
         <relativePath>../raf-framework-dependencies</relativePath>
     </parent>
+
+    <artifactId>raf-framework-parent</artifactId>
+    <name>raf-framework-parent</name>
+    <description>raf-framework-parent</description>
+    <packaging>pom</packaging>
+    <version>${revision}</version>
 
     <dependencyManagement>
         <dependencies>
@@ -164,28 +141,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <configuration>
-                    <updatePomFile>true</updatePomFile>
-                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
-                    <pomElements>
-                        <parent>remove</parent>
-
-                        <name>keep</name>
-                        <description>keep</description>
-                        <url>keep</url>
-                        <developers>keep</developers>
-                        <scm>keep</scm>
-
-                        <properties>keep</properties>
-                        <dependencyManagement>keep</dependencyManagement>
-                        <pluginManagement>keep</pluginManagement>
-                        <build>keep</build>
-
-                        <repositories>remove</repositories>
-                        <pluginRepositories>remove</pluginRepositories>
-                        <distributionManagement>remove</distributionManagement>
-                    </pomElements>
-                </configuration>
             </plugin>
 
             <!-- ===== JavaDoc Plugin ===== -->

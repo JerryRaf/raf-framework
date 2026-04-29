@@ -11,10 +11,6 @@
 
     <artifactId>raf-framework-dubbo-starter</artifactId>
     <name>raf-framework-dubbo-starter</name>
-    <properties>
-        <main.basedir>${basedir}/../..</main.basedir>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>io.github.jerryraf</groupId>

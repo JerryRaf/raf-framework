@@ -10,10 +10,6 @@
     </parent>
     <artifactId>raf-framework-openapi-starter</artifactId>
     <name>raf-framework-openapi-starter</name>
-    <properties>
-        <main.basedir>${basedir}/../..</main.basedir>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>

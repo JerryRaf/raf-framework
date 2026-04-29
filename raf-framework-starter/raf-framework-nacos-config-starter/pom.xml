@@ -11,10 +11,6 @@
 
     <artifactId>raf-framework-nacos-config-starter</artifactId>
     <name>raf-framework-nacos-config-starter</name>
-    <properties>
-        <main.basedir>${basedir}/../..</main.basedir>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

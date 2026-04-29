@@ -3,41 +3,16 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>io.github.jerryraf</groupId>
         <artifactId>raf-framework</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>raf-framework-dependencies</artifactId>
     <name>raf-framework-dependencies</name>
     <description>raf-framework-dependencies</description>
     <packaging>pom</packaging>
-    <url>https://github.com/JerryRaf/raf-framework</url>
-
-    <licenses>
-        <license>
-            <name>MIT License</name>
-            <url>https://opensource.org/licenses/MIT</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <id>Jerry</id>
-            <name>Jerry</name>
-            <email>120518134@qq.com</email>
-        </developer>
-    </developers>
-
-    <scm>
-        <connection>scm:git:git://github.com/JerryRaf/raf-framework.git</connection>
-        <developerConnection>scm:git:ssh://github.com:JerryRaf/raf-framework.git</developerConnection>
-        <url>https://github.com/JerryRaf/raf-framework/tree/master</url>
-    </scm>
 
     <properties>
         <java.version>17</java.version>
@@ -52,7 +27,7 @@
         <maven.source.plugin.version>3.3.1</maven.source.plugin.version>
         <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
 
-        <maven.flatten.plugin.version>1.6.0</maven.flatten.plugin.version>
+        <maven.flatten.plugin.version>1.7.0</maven.flatten.plugin.version>
         <maven.javadoc.plugin.version>3.6.3</maven.javadoc.plugin.version>
         <maven.gpg.plugin.version>3.1.0</maven.gpg.plugin.version>
         <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
@@ -797,33 +772,5 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>flatten-maven-plugin</artifactId>
-                <configuration>
-                    <updatePomFile>true</updatePomFile>
-                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
-                    <pomElements>
-                        <parent>remove</parent>
-
-                        <name>keep</name>
-                        <description>keep</description>
-                        <url>keep</url>
-                        <developers>keep</developers>
-                        <scm>keep</scm>
-
-                        <properties>keep</properties>
-                        <dependencyManagement>keep</dependencyManagement>
-                        <pluginManagement>keep</pluginManagement>
-                        <build>keep</build>
-
-                        <repositories>remove</repositories>
-                        <pluginRepositories>remove</pluginRepositories>
-                        <distributionManagement>remove</distributionManagement>
-                    </pomElements>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
 </project>

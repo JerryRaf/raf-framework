@@ -7,15 +7,14 @@
         <groupId>io.github.jerryraf</groupId>
         <artifactId>raf-framework-parent</artifactId>
         <version>${revision}</version>
-        <relativePath>../raf-framework-parent/pom.xml</relativePath>
+        <relativePath>../raf-framework-parent</relativePath>
     </parent>
+
     <artifactId>raf-framework-core</artifactId>
     <packaging>jar</packaging>
     <name>raf-framework-core</name>
     <description>Core utilities with zero middleware dependencies</description>
-    <properties>
-        <main.basedir>${basedir}/..</main.basedir>
-    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -102,17 +101,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>flatten-maven-plugin</artifactId>
-                <configuration>
-                    <updatePomFile>true</updatePomFile>
-                    <flattenMode>oss</flattenMode>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

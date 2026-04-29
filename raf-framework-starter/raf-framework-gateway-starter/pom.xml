@@ -12,10 +12,6 @@
         <version>${revision}</version>
     </parent>
 
-    <properties>
-        <main.basedir>${basedir}/../..</main.basedir>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>io.github.jerryraf</groupId>
