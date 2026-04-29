@@ -1,6 +1,7 @@
 package com.raf.framework.rabbit;
 
 import com.raf.framework.core.common.exception.BusinessException;
+import com.raf.framework.core.common.exception.InfrastructureException;
 import com.raf.framework.core.common.result.RafResponseEnum;
 import com.raf.framework.core.jackson.JsonService;
 import com.raf.framework.core.snowflake.SnowFlakeBuilder;
@@ -21,10 +22,10 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 @Slf4j
 public class RabbitMqMessageSender {
 
-    private RabbitTemplate rabbitTemplate;
-    private RabbitMqProperties.RabbitMqDelayProvider rabbitMqDelayProvider;
-    private RabbitMessageCacheMgr rabbitMessageCacheMgr;
-    private JsonService json;
+    private final RabbitTemplate rabbitTemplate;
+    private final RabbitMqProperties.RabbitMqDelayProvider rabbitMqDelayProvider;
+    private final RabbitMessageCacheMgr rabbitMessageCacheMgr;
+    private final JsonService json;
 
     public RabbitMqMessageSender(
             RabbitTemplate rabbitTemplate,
@@ -49,8 +50,10 @@ public class RabbitMqMessageSender {
         try {
             rabbitTemplate.convertAndSend(exchange, routeKey, json.toJson(message), data);
         } catch (AmqpException ex) {
-            log.error("RabbitMQ send failed: {}", ex.getMessage());
-            rabbitMessageCacheMgr.addRetry(msgId);
+            log.error("RabbitMQ send failed. exchange:{}, routeKey:{}, msgId:{}",
+                    exchange, routeKey, msgId, ex);
+            Optional.ofNullable(rabbitMessageCacheMgr).ifPresent(cacheMgr -> cacheMgr.addRetry(msgId));
+            throw new InfrastructureException(RafResponseEnum.SERVER_ERROR, "RabbitMQ send failed", ex);
         }
     }
 
@@ -71,7 +74,9 @@ public class RabbitMqMessageSender {
                         processor,
                         data);
             } catch (AmqpException ex) {
-                log.error("RabbitMQ delay send failed: {}", ex.getMessage());
+                log.error("RabbitMQ delay send failed. businessName:{}, msgId:{}",
+                        businessName, msgId, ex);
+                throw new InfrastructureException(RafResponseEnum.SERVER_ERROR, "RabbitMQ delay send failed", ex);
             }
         });
     }
@@ -82,7 +87,7 @@ public class RabbitMqMessageSender {
             send(message, exchange, routeKey);
             return;
         }
-        throw new RuntimeException("Message id is missing, cannot retry send");
+        throw new BusinessException(RafResponseEnum.PARAM_ERROR, "Message id is missing, cannot retry send");
     }
 
     /**

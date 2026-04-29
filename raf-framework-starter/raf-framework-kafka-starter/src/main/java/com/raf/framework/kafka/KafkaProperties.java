@@ -21,12 +21,12 @@ public class KafkaProperties {
     /**
      * Producer configuration
      */
-    private Producer producer;
+    private Producer producer = new Producer();
 
     /**
      * Consumer configuration
      */
-    private Consumer consumer;
+    private Consumer consumer = new Consumer();
 
     /**
      * Whether to enable Kafka
@@ -36,7 +36,7 @@ public class KafkaProperties {
     /**
      * Security configuration
      */
-    private Security security;
+    private Security security = new Security();
 
     @Data
     public static class Producer {

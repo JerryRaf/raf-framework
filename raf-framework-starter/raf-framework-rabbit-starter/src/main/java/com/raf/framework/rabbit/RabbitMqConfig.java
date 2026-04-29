@@ -25,6 +25,7 @@ import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -47,7 +48,7 @@ import org.springframework.util.ResourceUtils;
  */
 @Slf4j
 @Configuration
-@ConditionalOnProperty(value = "raf.rabbit.enabled")
+@ConditionalOnProperty(prefix = "raf.rabbit", name = "enabled", havingValue = "true")
 @ConditionalOnClass(CachingConnectionFactory.class)
 @EnableConfigurationProperties(RabbitMqProperties.class)
 public class RabbitMqConfig implements BeanFactoryPostProcessor, EnvironmentAware, ApplicationContextAware {
@@ -106,7 +107,7 @@ public class RabbitMqConfig implements BeanFactoryPostProcessor, EnvironmentAwar
             connectionFactory.getRabbitConnectionFactory().useSslProtocol(sslContext);
 
         } catch (Exception exception) {
-            log.error("SSL configuration failed", exception);
+            throw new BeanInitializationException("RabbitMQ SSL configuration failed", exception);
         }
         return connectionFactory;
     }
@@ -202,7 +203,7 @@ public class RabbitMqConfig implements BeanFactoryPostProcessor, EnvironmentAwar
         register(beanFactory, binding, listener.getClass().getSimpleName() + "_binding");
 
         // 创建消息监听容器
-        return createMessageListenerContainer(queue, listener, consumerAnnotation.ackModel(), factory);
+        return createMessageListenerContainer(queue, listener, consumerAnnotation.ackModel(), factory, rabbitMqProperties);
     }
 
     /**
@@ -225,12 +226,14 @@ public class RabbitMqConfig implements BeanFactoryPostProcessor, EnvironmentAwar
             Queue queue,
             AbstractRabbitConsumerListener listener,
             AcknowledgeMode model,
-            CachingConnectionFactory factory) {
+            CachingConnectionFactory factory,
+            RabbitMqProperties rabbitMqProperties) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(factory);
+        RabbitMqProperties.RabbitMqConsumer consumer = rabbitMqProperties.getConsumer();
         container.setQueues(queue);
         container.setExposeListenerChannel(true);
-        container.setConcurrentConsumers(1);
-        container.setMaxConcurrentConsumers(3);
+        container.setConcurrentConsumers(consumer != null ? consumer.getConcurrentConsumers() : 1);
+        container.setMaxConcurrentConsumers(consumer != null ? consumer.getMaxConcurrentConsumers() : 3);
         container.setAcknowledgeMode(model);
         container.setMessageListener(listener);
         register(beanFactory, container, queue.getName() + "_listenerContainer");

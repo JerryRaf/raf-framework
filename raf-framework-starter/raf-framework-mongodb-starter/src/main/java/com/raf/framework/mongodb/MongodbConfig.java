@@ -2,6 +2,7 @@ package com.raf.framework.mongodb;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -12,6 +13,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -31,9 +33,10 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass(MongoClient.class)
 @ConditionalOnProperty(prefix = "raf.mongodb", name = "enabled", havingValue = "true")
 @EnableConfigurationProperties(MongodbProperties.class)
-public class MongodbConfig {
+public class MongodbConfig implements DisposableBean {
 
     private final MongodbProperties properties;
+    private final Map<String, MongoClient> additionalClients = new ConcurrentHashMap<>();
 
     public MongodbConfig(MongodbProperties properties) {
         this.properties = properties;
@@ -43,7 +46,7 @@ public class MongodbConfig {
     /**
      * 创建主 MongoClient
      */
-    @Bean
+    @Bean(destroyMethod = "close")
     @Primary
     @ConditionalOnMissingBean(name = "mongoClient")
     public MongoClient mongoClient() {
@@ -83,11 +86,11 @@ public class MongodbConfig {
      */
     @Bean
     @ConditionalOnMissingBean(name = "mongoTemplateMap")
-    public Map<String, MongoTemplate> mongoTemplateMap() {
+    public Map<String, MongoTemplate> mongoTemplateMap(MongoTemplate mongoTemplate) {
         Map<String, MongoTemplate> templateMap = new HashMap<>();
 
         // 添加主数据源
-        templateMap.put("primary", mongoTemplate(mongoDatabaseFactory(mongoClient())));
+        templateMap.put("primary", mongoTemplate);
 
         // 添加其他数据源
         if (properties.getDataSources() != null && !properties.getDataSources().isEmpty()) {
@@ -105,6 +108,7 @@ public class MongodbConfig {
                         : properties.getPool();
 
                 MongoClient client = createMongoClient(config.getUri(), poolConfig);
+                additionalClients.put(name, client);
                 String database = extractDatabase(config.getUri(), config.getDatabase());
                 MongoDatabaseFactory factory = new SimpleMongoClientDatabaseFactory(client, database);
                 MongoTemplate template = new MongoTemplate(factory);
@@ -115,6 +119,19 @@ public class MongodbConfig {
 
         log.info("MongoDB data sources initialized: {}", templateMap.keySet());
         return templateMap;
+    }
+
+    @Override
+    public void destroy() {
+        additionalClients.forEach((name, client) -> {
+            try {
+                client.close();
+                log.info("Closed MongoDB data source: {}", name);
+            } catch (Exception e) {
+                log.warn("Failed to close MongoDB data source: {}", name, e);
+            }
+        });
+        additionalClients.clear();
     }
 
     /**

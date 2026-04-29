@@ -15,6 +15,8 @@ public class AuditProperties {
     @Data
     public static class Log {
         public LogLevel level = LogLevel.RSP_HEADERS;
+        private int payloadMaxLength = 4096;
+        private int maxBodyCacheBytes = 1024 * 1024;
     }
 
     public enum LogLevel {

@@ -41,6 +41,15 @@ public abstract class AbstractKafkaConsumerListener<T> {
      * Process single message
      */
     public void onMessage(ConsumerRecord<String, String> record) {
+        if (!processRecord(record)) {
+            throw new IllegalStateException("Kafka message consumption failed");
+        }
+    }
+
+    /**
+     * Process single message and return whether the record can be committed.
+     */
+    public boolean processRecord(ConsumerRecord<String, String> record) {
         try {
             Header traceIdHeader = record.headers().lastHeader("traceId");
             if (traceIdHeader != null) {
@@ -53,7 +62,7 @@ public abstract class AbstractKafkaConsumerListener<T> {
             // Message size validation
             String value = record.value();
             if (!validateMessage(value, record)) {
-                return;
+                return false;
             }
 
             T message = deserializeMessage(value);
@@ -67,6 +76,7 @@ public abstract class AbstractKafkaConsumerListener<T> {
                 log.debug("Kafka message consumed successfully. topic:{}, partition:{}, offset:{}, key:{}",
                         record.topic(), record.partition(), record.offset(), record.key());
             }
+            return success;
 
         } catch (Exception e) {
             log.error("Kafka message consumption exception. topic:{}, partition:{}, offset:{}, key:{}",

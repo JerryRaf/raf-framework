@@ -115,8 +115,8 @@ public class RafSentryProperties {
          * 默认只上报 SystemException 和 InfrastructureException
          */
         private Set<String> includeExceptions = new HashSet<>(Set.of(
-                "com.raf.framework.autoconfigure.common.exception.SystemException",
-                "com.raf.framework.autoconfigure.common.exception.InfrastructureException"
+                "com.raf.framework.core.common.exception.SystemException",
+                "com.raf.framework.core.common.exception.InfrastructureException"
         ));
 
         /**

@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -75,50 +76,53 @@ public class AccessLogFilter extends OncePerRequestFilter {
         HttpServletRequestAdapter requestWrapper = null;
         ContentCachingResponseWrapper responseWrapper = null;
         AccessJsonLogBuilder accessJsonLogBuilder = null;
+        HttpServletRequest requestToUse = request;
+        HttpServletResponse responseToUse = response;
         try {
             if (isFirstExecution && !(request instanceof HttpServletRequestAdapter)) {
-                byte[] bytes = IOUtils.toByteArray(request.getInputStream());
-                requestWrapper = new HttpServletRequestAdapter(request, bytes);
                 responseWrapper = new ContentCachingResponseWrapper(response);
-
-                String requestPayload = getPayLoad(bytes, request.getCharacterEncoding());
+                responseToUse = responseWrapper;
                 accessJsonLogBuilder = AccessJsonLogBuilder.accessJsonLogBuilder(json, auditProperties)
-                        .put(request)
-                        .addRequestBody(requestPayload);
+                        .put(request);
+
+                if (shouldCacheRequestBody(request)) {
+                    byte[] bytes = IOUtils.toByteArray(request.getInputStream());
+                    requestWrapper = new HttpServletRequestAdapter(request, bytes);
+                    requestToUse = requestWrapper;
+                    accessJsonLogBuilder.addRequestBody(getPayLoad(bytes, request.getCharacterEncoding()));
+                } else {
+                    accessJsonLogBuilder.addRequestBody("[payload omitted: content length exceeds maxBodyCacheBytes]");
+                }
             }
-            filterChain.doFilter(requestWrapper, responseWrapper);
+            filterChain.doFilter(requestToUse, responseToUse);
         } finally {
             try {
-                requestWrapper =
-                        Optional.ofNullable(requestWrapper).orElseGet(() -> getHttpServletRequestAdapter(request));
-                if (requestWrapper != null) {
-                    responseWrapper = Optional.ofNullable(responseWrapper)
-                            .orElseGet(() -> getContentCachingResponseWrapper(response));
+                responseWrapper = Optional.ofNullable(responseWrapper)
+                        .orElseGet(() -> getContentCachingResponseWrapper(response));
 
-                    boolean flag = isLastExecution
-                            && !isBinaryContent(response)
-                            && !isMultipart(response)
-                            && responseWrapper != null
-                            && (LogHolder.currentLogResponse()
-                            || (auditProperties.getLog().level.getLevel()
-                            >= AuditProperties.LogLevel.RSP_HEADERS.getLevel()));
-                    if (flag) {
-                        String responsePayload =
-                                getPayLoad(responseWrapper.getContentAsByteArray(), response.getCharacterEncoding());
-                        responseWrapper.copyBodyToResponse();
+                boolean flag = isLastExecution
+                        && !isBinaryContent(response)
+                        && !isMultipart(response)
+                        && responseWrapper != null
+                        && (LogHolder.currentLogResponse()
+                        || (auditProperties.getLog().level.getLevel()
+                        >= AuditProperties.LogLevel.RSP_HEADERS.getLevel()));
+                if (flag) {
+                    String responsePayload =
+                            getPayLoad(responseWrapper.getContentAsByteArray(), response.getCharacterEncoding());
+                    responseWrapper.copyBodyToResponse();
 
-                        Optional.ofNullable(accessJsonLogBuilder)
-                                .ifPresent(c -> c.addResponseBody(responsePayload, response)
-                                        .put(response)
-                                        .put("COST", watch.getTime())
-                                        .log());
+                    Optional.ofNullable(accessJsonLogBuilder)
+                            .ifPresent(c -> c.addResponseBody(responsePayload, response)
+                                    .put(response)
+                                    .put("COST", watch.getTime())
+                                    .log());
 
-                    } else if (isLastExecution) {
-                        responseWrapper.copyBodyToResponse();
-                        Optional.ofNullable(accessJsonLogBuilder).ifPresent(c -> c.put(response)
-                                .put("COST", watch.getTime())
-                                .log());
-                    }
+                } else if (isLastExecution && responseWrapper != null) {
+                    responseWrapper.copyBodyToResponse();
+                    Optional.ofNullable(accessJsonLogBuilder).ifPresent(c -> c.put(response)
+                            .put("COST", watch.getTime())
+                            .log());
                 }
             } catch (Exception e) {
                 logger.error("accessLogFilter error", e);
@@ -127,11 +131,10 @@ public class AccessLogFilter extends OncePerRequestFilter {
         }
     }
 
-    private HttpServletRequestAdapter getHttpServletRequestAdapter(HttpServletRequest httpServletRequest) {
-        if (httpServletRequest instanceof HttpServletRequestAdapter) {
-            return (HttpServletRequestAdapter) httpServletRequest;
-        }
-        return null;
+    private boolean shouldCacheRequestBody(HttpServletRequest request) {
+        long contentLength = request.getContentLengthLong();
+        int maxBodyCacheBytes = Math.max(0, auditProperties.getLog().getMaxBodyCacheBytes());
+        return contentLength < 0 || contentLength <= maxBodyCacheBytes;
     }
 
     private ContentCachingResponseWrapper getContentCachingResponseWrapper(HttpServletResponse httpServletResponse) {
@@ -147,9 +150,11 @@ public class AccessLogFilter extends OncePerRequestFilter {
             return payload;
         }
         if (buf.length > 0) {
+            payloadMaxLength = Math.max(0, auditProperties.getLog().getPayloadMaxLength());
             int length = Math.min(buf.length, getPayloadMaxLength());
             try {
-                payload = new String(buf, 0, length, characterEncoding);
+                String encoding = StringUtils.defaultIfBlank(characterEncoding, StandardCharsets.UTF_8.name());
+                payload = new String(buf, 0, length, encoding);
             } catch (UnsupportedEncodingException ex) {
                 payload = "[unknown]";
             }

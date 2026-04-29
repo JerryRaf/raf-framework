@@ -17,12 +17,12 @@ public class RabbitMqProperties {
     private String password;
     private String addresses;
     private String virtualHost = "/";
-    private Ssl ssl;
+    private Ssl ssl = new Ssl();
 
-    private RabbitMqConsumer consumer;
-    private RabbitMqProvider provider;
+    private RabbitMqConsumer consumer = new RabbitMqConsumer();
+    private RabbitMqProvider provider = new RabbitMqProvider();
     private RabbitMqDelayProvider delay;
-    private Security security;
+    private Security security = new Security();
 
     @Data
     public static class Ssl {
@@ -49,7 +49,7 @@ public class RabbitMqProperties {
 
     @Data
     public static class RabbitMqConsumer {
-        private String group;
+        private String group = "DEFAULT_RABBIT_GROUP";
         private int concurrentConsumers = 3;
         private int maxConcurrentConsumers = 10;
     }

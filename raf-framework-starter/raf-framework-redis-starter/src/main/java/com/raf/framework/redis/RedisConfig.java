@@ -37,6 +37,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig implements CachingConfigurer {
 
     private final RedisEnhanceProperties properties;
+    private CacheManager cacheManager;
 
     public RedisConfig(RedisEnhanceProperties properties) {
         this.properties = properties;
@@ -47,12 +48,9 @@ public class RedisConfig implements CachingConfigurer {
         ObjectMapper redisMapper = objectMapper.copy();
         redisMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         redisMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
-                .allowIfSubType("com.raf.")
-                .allowIfSubType("java.util.")
-                .allowIfSubType("java.lang.")
-                .allowIfSubType("java.time.")
-                .build();
+        BasicPolymorphicTypeValidator.Builder validatorBuilder = BasicPolymorphicTypeValidator.builder();
+        properties.getTrustedPackages().forEach(validatorBuilder::allowIfSubType);
+        PolymorphicTypeValidator ptv = validatorBuilder.build();
         redisMapper.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_FINAL);
         return new GenericJackson2JsonRedisSerializer(redisMapper);
     }
@@ -103,15 +101,16 @@ public class RedisConfig implements CachingConfigurer {
             });
         }
 
-        return RedisCacheManager.builder(factory)
+        this.cacheManager = RedisCacheManager.builder(factory)
                 .cacheDefaults(defaultCacheConfig)
                 .withInitialCacheConfigurations(customCacheMap)
                 .build();
+        return this.cacheManager;
     }
 
     @Override
     public CacheManager cacheManager() {
-        return null;
+        return cacheManager;
     }
 
     @Override

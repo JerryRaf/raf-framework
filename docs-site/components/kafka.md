@@ -2,9 +2,14 @@
 
 ## 功能概述
 
-- **高吞吐量生产者**：KafkaProducer 封装，支持同步/异步发送
-- **消费者抽象**：AbstractKafkaConsumerListener 统一消费逻辑
-- **消息模型**：KafkaMessage 统一消息结构
+`raf-framework-kafka-starter` 封装 Kafka 生产者、事务发送、消费者注册、traceId 透传和基础安全配置。组件默认关闭，配置 `raf.kafka.enabled=true` 后启用。
+
+- **生产者封装**：`KafkaProducer` 支持 `sendSync`、`sendAsync` 和事务发送
+- **默认可靠发送**：默认 `acks=all`、`enableIdempotence=true`、`isolationLevel=read_committed`
+- **手动提交偏移量**：默认 `enableAutoCommit=false`，`MANUAL_IMMEDIATE` 只在业务处理成功后 ACK
+- **错误反压**：消费失败会抛出异常，不会提交 offset，避免失败消息被静默跳过
+- **事务生产者**：配置 `raf.kafka.producer.transactionalIdPrefix` 后启用，框架初始化 `initTransactions()`
+- **安全接入**：支持 SSL、SASL_PLAINTEXT、SASL_SSL
 
 ## 配置项
 
@@ -12,15 +17,23 @@
 |---|---|---|---|
 | `raf.kafka.enabled` | boolean | `false` | 是否启用 Kafka |
 | `raf.kafka.bootstrapServers` | string | — | Broker 地址，逗号分隔 |
-| `raf.kafka.producer.acks` | string | `1` | 确认机制：0/1/all |
+| `raf.kafka.producer.acks` | string | `all` | 确认机制：`0` / `1` / `all` |
 | `raf.kafka.producer.retries` | int | `3` | 发送失败重试次数 |
-| `raf.kafka.producer.batchSize` | int | `16384` | 批量发送大小（字节） |
-| `raf.kafka.producer.lingerMs` | int | `1` | 批量等待时间（毫秒） |
-| `raf.kafka.producer.bufferMemory` | long | `33554432` | 缓冲区大小（32MB） |
-| `raf.kafka.consumer.groupId` | string | — | 消费者组 ID |
-| `raf.kafka.consumer.autoOffsetReset` | string | `latest` | 偏移量重置策略：earliest/latest |
+| `raf.kafka.producer.batchSize` | int | `16384` | 批量发送大小，单位字节 |
+| `raf.kafka.producer.lingerMs` | int | `0` | 批量等待时间，单位毫秒 |
+| `raf.kafka.producer.bufferMemory` | long | `33554432` | 发送缓冲区大小 |
+| `raf.kafka.producer.compressionType` | string | `none` | 压缩类型：none/gzip/snappy/lz4/zstd |
+| `raf.kafka.producer.enableIdempotence` | boolean | `true` | 是否启用幂等生产者 |
+| `raf.kafka.producer.transactionalIdPrefix` | string | — | 事务生产者前缀，配置后启用事务发送 |
+| `raf.kafka.consumer.groupId` | string | `DEFAULT_CONSUMER_GROUP` | 默认消费者组 ID |
 | `raf.kafka.consumer.enableAutoCommit` | boolean | `false` | 是否自动提交偏移量 |
+| `raf.kafka.consumer.autoOffsetReset` | string | `latest` | 偏移量重置策略 |
 | `raf.kafka.consumer.maxPollRecords` | int | `500` | 单次拉取最大消息数 |
+| `raf.kafka.consumer.isolationLevel` | string | `read_committed` | 消费事务消息隔离级别 |
+| `raf.kafka.consumer.concurrency` | int | `3` | 默认监听容器并发数 |
+| `raf.kafka.security.protocol` | string | `PLAINTEXT` | 安全协议 |
+| `raf.kafka.security.saslMechanism` | string | — | SASL 机制 |
+| `raf.kafka.security.saslJaasConfig` | string | — | SASL JAAS 配置 |
 
 ## 快速接入
 
@@ -37,68 +50,67 @@ raf:
     enabled: true
     bootstrapServers: 127.0.0.1:9092
     producer:
-      acks: 1
-      retries: 3
+      acks: all
+      enableIdempotence: true
     consumer:
-      groupId: my-consumer-group
-      autoOffsetReset: latest
+      groupId: order-consumer-group
       enableAutoCommit: false
+      autoOffsetReset: latest
 ```
 
-## 核心用法
-
-### 发送消息
+## 发送消息
 
 ```java
 @Autowired
 private KafkaProducer kafkaProducer;
 
-// 同步发送
-KafkaMessage message = new KafkaMessage();
-message.setTopic("order-topic");
-message.setKey(orderId.toString());
-message.setBody(orderDTO);
-kafkaProducer.syncSend(message);
+public void publish(OrderDTO order) {
+    KafkaMessage<OrderDTO> message = KafkaMessage.<OrderDTO>builder()
+            .topic("order-topic")
+            .key(order.getOrderId())
+            .body(order)
+            .build();
 
-// 异步发送
-kafkaProducer.asyncSend(message, (metadata, exception) -> {
-    if (exception != null) {
-        log.error("Kafka 发送失败", exception);
-    } else {
-        log.info("发送成功，offset: {}", metadata.offset());
-    }
+    kafkaProducer.sendSync(message);
+    kafkaProducer.sendAsync(message);
+}
+```
+
+## 事务发送
+
+```yaml
+raf:
+  kafka:
+    producer:
+      transactionalIdPrefix: order-service-tx-
+```
+
+```java
+kafkaProducer.executeInTransaction(tx -> {
+    tx.send("order-topic", orderId, orderDTO);
+    tx.send("audit-topic", orderId, auditDTO);
 });
 ```
 
-### 消费消息
+## 消费消息
 
 ```java
-@Component
+@KafkaConsumer(
+        topics = "order-topic",
+        groupId = "${raf.kafka.consumer.groupId}",
+        ackMode = "MANUAL_IMMEDIATE")
 public class OrderKafkaConsumer extends AbstractKafkaConsumerListener<OrderDTO> {
 
-    @KafkaListener(topics = "order-topic", groupId = "order-consumer-group")
     @Override
-    public void listen(ConsumerRecord<String, String> record, Acknowledgment ack) {
-        super.listen(record, ack);
-    }
-
-    @Override
-    protected void handleMessage(OrderDTO orderDTO, ConsumerRecord<String, String> record) {
-        orderService.processOrder(orderDTO);
+    protected void handleMessage(OrderDTO body, ConsumerRecord<String, String> record) {
+        orderService.process(body);
     }
 }
 ```
 
-## 常见问题
+最佳实践：
 
-**Q: 消费者启动后一直没有消息？**
-
-A: 检查 `autoOffsetReset` 配置。`latest` 只消费启动后的新消息，`earliest` 从最早的消息开始消费。
-
-**Q: 消息重复消费如何处理？**
-
-A: 设置 `enableAutoCommit: false`，在业务处理成功后手动调用 `ack.acknowledge()` 提交偏移量，并在业务层实现幂等。
-
-**Q: 生产者发送性能不够？**
-
-A: 调大 `batchSize` 和 `lingerMs`，允许更多消息批量发送。同时确认 `acks: 1` 而非 `all`（`all` 需要等待所有副本确认）。
+- 消费者默认只支持 `SINGLE` 模式；`BATCH` 当前会显式报错，避免容器启动后没有 listener 的隐性故障。
+- 业务处理成功后框架才 ACK；处理失败会抛异常并保留 offset，避免消息丢失。
+- 高可靠场景保持 `acks=all` 和 `enableIdempotence=true`；高吞吐场景可再评估 `lingerMs`、`batchSize`、压缩类型。
+- 生产环境建议启用 SASL/SSL，并把 JAAS、证书密码通过 Jasypt 加密。

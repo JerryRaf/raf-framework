@@ -1,6 +1,9 @@
 package com.raf.framework.redis;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -19,6 +22,17 @@ public class RedisEnhanceProperties {
      */
     private Map<String, CustomCacheConfig> customCache;
 
+    /**
+     * Redis JSON 多态反序列化白名单包前缀。
+     * <p>默认只允许框架业务包和 JDK 基础类型，业务方如需缓存自定义包类型应显式配置。</p>
+     */
+    private List<String> trustedPackages = new ArrayList<>(Arrays.asList(
+            "com.raf.",
+            "java.util.",
+            "java.lang.",
+            "java.time."
+    ));
+
     @Data
     public static class CustomCacheConfig {
         private Duration timeToLive;
@@ -27,4 +41,3 @@ public class RedisEnhanceProperties {
         private boolean useKeyPrefix = true;
     }
 }
-

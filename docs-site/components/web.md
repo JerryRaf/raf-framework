@@ -18,6 +18,8 @@
 | 配置键 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `raf.log.level` | enum | `RSP_HEADERS` | 日志级别：OFF / BASIC / REQ_HEADERS / REQ_BODY / RSP_HEADERS / RSP_BODY |
+| `raf.log.payloadMaxLength` | int | `4096` | 单个请求/响应 body 写入日志的最大字符数 |
+| `raf.log.maxBodyCacheBytes` | int | `1048576` | 请求体最大缓存字节数，超过后不读取 body，避免大请求撑爆内存 |
 
 ### CORS 跨域（raf.cors）
 
@@ -57,7 +59,9 @@
 ```yaml
 raf:
   log:
-    level: REQ_BODY   # 开发环境建议 REQ_BODY，生产环境建议 RSP_HEADERS
+    level: RSP_HEADERS
+    payloadMaxLength: 4096
+    maxBodyCacheBytes: 1048576
   cors:
     enabled: true
     path: /**
@@ -86,8 +90,8 @@ public class UserController {
 ### 异常使用规范
 
 ```java
-// 业务异常（code >= 10000，HTTP 200，WARN 日志，无堆栈）
-throw new BusinessException(10001, "用户不存在");
+// 业务异常（HTTP 200，WARN 日志，无堆栈）
+throw new BusinessException(AppResponseEnum.USER_NOT_FOUND);
 
 // 基础设施异常（第三方服务/数据库错误，HTTP 500）
 throw new InfrastructureException("Redis 连接失败", e);
@@ -154,7 +158,11 @@ A: 确保自定义异常继承了框架的四层异常之一（`BusinessExceptio
 
 **Q: 日志级别设置了 `REQ_BODY` 但看不到请求体？**
 
-A: 框架使用 `ContentCachingRequestWrapper` 包装请求体，确保没有其他 Filter 提前消费了请求流。
+A: 框架会缓存请求体用于日志，但当请求体超过 `raf.log.maxBodyCacheBytes` 时会跳过 body 读取并记录省略标记。生产环境建议使用 `RSP_HEADERS`，只在排障窗口临时打开 `REQ_BODY`/`RSP_BODY`。
+
+**Q: 访问日志会不会泄露敏感信息？**
+
+A: 请求参数中的 password、token、authorization、secret、cookie 等字段会被写为 `***`；手机号、身份证、邮箱、银行卡、地址会做模式脱敏；Cookie 只记录名称并隐藏值。
 
 **Q: 异步线程池的 Bean 名称是什么？**
 

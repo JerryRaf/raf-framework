@@ -9,6 +9,7 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 import com.google.common.collect.Maps;
@@ -40,7 +41,7 @@ public class AuditLogUtil {
         return json;
     }
 
-    private static List<String> whiteHeaders = Arrays.asList(
+    private static final List<String> whiteHeaders = Arrays.asList(
             "x-user-id",
             "x-tenant-id",
             "x-version",
@@ -48,7 +49,22 @@ public class AuditLogUtil {
             "x-forwarded-prefix",
             "x-forwarded-host",
             "x-forwarded-for");
-    private static List<String> sensitiveParams = Arrays.asList("password");
+    private static final List<String> sensitiveParams = Arrays.asList(
+            "password",
+            "passwd",
+            "pwd",
+            "token",
+            "access_token",
+            "refresh_token",
+            "authorization",
+            "secret",
+            "client_secret",
+            "key",
+            "api_key",
+            "credential",
+            "jwt",
+            "session",
+            "cookie");
 
     // Sensitive data masking patterns
     private static final Pattern PHONE_PATTERN = Pattern.compile("(1[3-9]\\d)(\\d{4})(\\d{4})");
@@ -62,8 +78,8 @@ public class AuditLogUtil {
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
-            if (whiteHeaders.contains(headerName)) {
-                headers.put(headerName, request.getHeader(headerName));
+            if (whiteHeaders.contains(headerName.toLowerCase(Locale.ROOT))) {
+                headers.put(headerName, maskSensitiveData(request.getHeader(headerName)));
             }
         }
         return json().toJson(headers);
@@ -72,7 +88,9 @@ public class AuditLogUtil {
     public static String getAllCookies(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (ArrayUtils.isNotEmpty(cookies)) {
-            return json().toJson(cookies);
+            Map<String, Object> maskedCookies = Maps.newHashMapWithExpectedSize(cookies.length);
+            Arrays.stream(cookies).forEach(cookie -> maskedCookies.put(cookie.getName(), "***"));
+            return json().toJson(maskedCookies);
         }
         return StringUtils.EMPTY;
     }
@@ -82,11 +100,11 @@ public class AuditLogUtil {
         Enumeration<String> enumeration = request.getParameterNames();
         while (enumeration.hasMoreElements()) {
             String paramName = enumeration.nextElement();
-            if (sensitiveParams.contains(paramName.toLowerCase())) {
+            if (sensitiveParams.contains(paramName.toLowerCase(Locale.ROOT))) {
                 map.put(paramName, "***");
             } else {
                 String paramValue = request.getParameter(paramName);
-                map.put(paramName, paramValue);
+                map.put(paramName, maskSensitiveData(paramValue));
             }
         }
 

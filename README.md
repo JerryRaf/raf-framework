@@ -327,14 +327,14 @@ mvn clean deploy -Prelease
 
 | 响应码 | 含义 |
 |--------|------|
-| `200`  | 成功 |
-| `401`  | 未授权 |
-| `403`  | 权限不足 |
-| `404`  | 资源未找到 |
-| `500`  | 系统错误 |
-| `700`  | 参数校验失败 |
-| `800`  | 第三方接口错误 |
-| `10000+` | 业务自定义异常（应用层定义） |
+| `0` | 成功 |
+| `10401` | 未授权 |
+| `10403` | 权限不足 |
+| `10404` | 资源未找到 |
+| `10500` | 系统错误 |
+| `10700` | 参数校验失败 |
+| `10800` | 第三方接口错误 |
+| 应用自定义枚举 | 业务异常（应用层实现 `IResponseEnum`） |
 
 ### 异常分层体系
 
@@ -342,7 +342,7 @@ mvn clean deploy -Prelease
 
 | 异常类 | 适用场景 | HTTP 状态 | 日志级别 | 堆栈 |
 |--------|----------|-----------|----------|------|
-| `BusinessException` | 业务规则校验失败，code ≥ 10000 | 200 | WARN | 无（性能优化） |
+| `BusinessException` | 业务规则校验失败，使用应用层 `IResponseEnum` | 200 | WARN | 无（性能优化） |
 | `InfrastructureException` | Redis 超时、Dubbo 调用失败、ES 不可用 | 500 | ERROR | 有 |
 | `SystemException` | 未预期错误（NPE、类型转换等） | 500 | ERROR | 有 |
 | `ProtocolException` | 签名失败、Token 无效、解密失败 | 401 | WARN | 无（性能优化） |
@@ -350,7 +350,7 @@ mvn clean deploy -Prelease
 ```java
 // 使用示例
 if (user == null) {
-    throw new BusinessException(10001, "用户不存在");
+    throw new BusinessException(AppResponseEnum.USER_NOT_FOUND);
 }
 if (!redisClient.ping()) {
     throw new InfrastructureException("Redis 连接失败");
@@ -404,11 +404,11 @@ raf:
 
 | 组件 | 启用配置 | 说明 |
 |------|----------|------|
-| 多数据源 | `raf.dataSource.{name}.enabled=true` | 主从分离，`@DsSelector` 路由 |
-| 分页 | `raf.pagehelper.enabled=true` | PageHelper 集成 |
+| 多数据源 | `raf.datasource.enabled=true` | 基于已存在 DataSource Bean 的 `@DsSelector` 动态路由 |
+| 分页 | `mybatis-plus` 分页插件 | 使用 MyBatis-Plus 内置分页能力 |
 | Redis | `raf.redis.enabled=true` | Lettuce 客户端，集群 / 单机 |
 | Redisson | `raf.redisson.enabled=true` | 分布式锁，支持集群 + SSL |
-| 自定义缓存 | `raf.customCache.enabled=true` | 自定义 TTL 的缓存策略 |
+| 自定义缓存 | `raf.redis.custom-cache` | 自定义 TTL 的缓存策略 |
 | MongoDB | `raf.mongodb.enabled=true` | 支持 `raf.mongodb.dataSources.{name}` 多数据源 |
 | RabbitMQ | `raf.rabbit.enabled=true` | Provider / Consumer 分离，延时队列（死信交换机） |
 | RocketMQ | `raf.rocketmq.enabled=true` | NORMAL / FIFO / DELAY / TRANSACTION 四种消息类型 |
@@ -434,18 +434,18 @@ raf:
 | 微服务 | Spring Cloud Alibaba | 2022.0.0.2 |
 | RPC | Dubbo | 3.3.4 |
 | 注册 / 配置中心 | Nacos Client | 2.5.1 |
-| 数据库 ORM | MyBatis / MyBatis-Plus | 3.5.19 / 3.5.11 |
+| 数据库 ORM | MyBatis / MyBatis-Plus | 3.5.19 / 3.5.16 |
 | 连接池 | Druid | 1.2.24 |
 | 缓存 | Redis (Lettuce) + Redisson | 3.34.1 |
 | 消息队列 | RocketMQ | 5.3.2 |
 | 消息队列 | Kafka | 3.9.0 |
 | 消息队列 | RabbitMQ | Spring AMQP |
-| 文档搜索 | Elasticsearch | 7.17.9 |
+| 文档搜索 | Elasticsearch | 8.19.14 |
 | 文档数据库 | MongoDB | 5.2.1 |
 | 分库分表 | ShardingSphere | 5.5.1 |
 | HTTP 客户端 | OkHttp | 4.12.0 |
 | 加密 | Jasypt Boot | 3.0.5 |
-| 错误追踪 | Sentry | 1.7.28 |
+| 错误追踪 | Sentry | 8.7.0 |
 | 线程池管理 | Dynamic TP | 1.2.1-x |
 | 监控 | Micrometer Prometheus | 1.14.5 |
 | API 文档 | Springdoc + Knife4j | 2.5.0 / 4.5.0 |
@@ -466,7 +466,7 @@ raf:
 ### 异常使用
 
 ```
-业务规则不满足     → BusinessException（code ≥ 10000）
+业务规则不满足     → BusinessException（应用层 IResponseEnum）
 调用 Redis/DB/第三方失败 → InfrastructureException
 未预期的系统错误    → SystemException
 认证 / 签名 / Token 失败 → ProtocolException

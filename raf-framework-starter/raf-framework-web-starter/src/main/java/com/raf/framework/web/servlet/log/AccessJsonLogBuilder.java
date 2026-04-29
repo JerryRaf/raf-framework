@@ -60,7 +60,7 @@ public class AccessJsonLogBuilder {
 
     public AccessJsonLogBuilder addRequestBody(String requestPayLoad) {
         if (auditProperties.getLog().level.getLevel() >= AuditProperties.LogLevel.REQ_BODY.getLevel()) {
-            this.put("Q_BODY", requestPayLoad);
+            this.put("Q_BODY", AuditLogUtil.maskSensitiveData(requestPayLoad));
         }
         return this;
     }
@@ -106,7 +106,7 @@ public class AccessJsonLogBuilder {
             log.error("Failed to read responseBody for access log:", ex);
         }
         if (auditProperties.getLog().level.getLevel() >= AuditProperties.LogLevel.RSP_BODY.getLevel()) {
-            this.put("R_BODY", responsePayLoad);
+            this.put("R_BODY", AuditLogUtil.maskSensitiveData(responsePayLoad));
         }
         return this;
     }

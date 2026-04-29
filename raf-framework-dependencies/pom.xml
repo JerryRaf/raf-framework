@@ -162,7 +162,32 @@
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
+                <artifactId>raf-framework-mongodb-starter</artifactId>
+                <version>${raf.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-rabbit-starter</artifactId>
+                <version>${raf.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.jerryraf</groupId>
+                <artifactId>raf-framework-rocketmq-starter</artifactId>
+                <version>${raf.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.jerryraf</groupId>
+                <artifactId>raf-framework-kafka-starter</artifactId>
+                <version>${raf.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.jerryraf</groupId>
+                <artifactId>raf-framework-elasticsearch-starter</artifactId>
+                <version>${raf.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.jerryraf</groupId>
+                <artifactId>raf-framework-shardingsphere-starter</artifactId>
                 <version>${raf.framework.version}</version>
             </dependency>
             <dependency>

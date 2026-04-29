@@ -2,7 +2,7 @@
 
 ## 功能概述
 
-- **ES 客户端封装**：基于 Elasticsearch Java Client 7.x
+- **ES 客户端封装**：基于 Elasticsearch Java API Client 8.x
 - **索引管理**：自动创建/更新索引映射
 - **文档操作**：增删改查、批量操作
 - **全文搜索**：支持复杂查询 DSL
@@ -12,12 +12,14 @@
 | 配置键 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `raf.elasticsearch.enabled` | boolean | `false` | 是否启用 Elasticsearch |
-| `raf.elasticsearch.hosts` | string | — | ES 节点地址，逗号分隔，格式 `host:port` |
+| `raf.elasticsearch.hosts` | list | — | ES 节点地址列表，格式 `host:port` |
 | `raf.elasticsearch.username` | string | — | 用户名（X-Pack 安全认证） |
 | `raf.elasticsearch.password` | string | — | 密码 |
-| `raf.elasticsearch.connectTimeout` | int | `5000` | 连接超时（毫秒） |
-| `raf.elasticsearch.socketTimeout` | int | `30000` | Socket 超时（毫秒） |
-| `raf.elasticsearch.maxConnTotal` | int | `100` | 最大连接数 |
+| `raf.elasticsearch.connect-timeout` | duration | `10s` | 连接超时 |
+| `raf.elasticsearch.socket-timeout` | duration | `30s` | Socket 超时 |
+| `raf.elasticsearch.connection-request-timeout` | duration | `5s` | 从连接池获取连接的超时 |
+| `raf.elasticsearch.max-connections` | int | `100` | 最大连接数 |
+| `raf.elasticsearch.max-connections-per-route` | int | `50` | 每路由最大连接数 |
 
 ## 快速接入
 
@@ -32,11 +34,12 @@
 raf:
   elasticsearch:
     enabled: true
-    hosts: 127.0.0.1:9200
+    hosts:
+      - 127.0.0.1:9200
     username: elastic
     password: your_password
-    connectTimeout: 5000
-    socketTimeout: 30000
+    connect-timeout: 5s
+    socket-timeout: 30s
 ```
 
 ## 核心用法
@@ -111,7 +114,7 @@ if (bulkResponse.errors()) {
 
 **Q: ES 版本与框架版本不匹配怎么办？**
 
-A: 框架集成的是 ES 7.17.x 客户端。如果你的 ES 服务端版本不同，可以在应用层覆盖 `elasticsearch` 依赖版本。
+A: 框架集成的是 ES 8.19.14 Java API Client。服务端版本建议与客户端主版本保持一致；如需接入 7.x 集群，应在应用层充分验证兼容性。
 
 **Q: 索引映射变更后如何更新？**
 

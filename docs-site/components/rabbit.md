@@ -2,28 +2,38 @@
 
 ## 功能概述
 
-- **Provider/Consumer 分离**：生产者和消费者独立配置，职责清晰
-- **延时队列**：基于死信交换机（DLX）实现延时消息
-- **消息确认机制**：支持手动 ACK，确保消息不丢失
-- **消息缓存管理**：`RabbitMessageCacheMgr` 防止重复消费
-- **发送确认回调**：`AbstractRabbitSenderConfirm` 处理发送失败场景
+`raf-framework-rabbit-starter` 提供 RabbitMQ 生产者、消费者、延时消息和发送确认封装。组件默认关闭，只有配置 `raf.rabbit.enabled=true` 后才会启用。
+
+- **Provider/Consumer 分离**：通过 `raf.rabbit.provider`、`raf.rabbit.consumer` 分别启用发送端和消费端能力
+- **自动声明交换机/队列/绑定**：消费端使用 `@RabbitMqConsumer` 后由框架注册监听容器
+- **手动 ACK**：业务处理成功后框架 ACK，失败时进入 `onFailure` 和 reject 流程
+- **延时消息**：基于死信交换机和 TTL 实现
+- **发送确认**：支持 `AbstractRabbitSenderConfirm`，发送失败会进入缓存重试逻辑
+- **安全加固**：SSL 配置失败会阻止启动；发送失败会抛出 `InfrastructureException`，调用方不会误判为成功
 
 ## 配置项
 
 | 配置键 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `raf.rabbit.enabled` | boolean | `false` | 是否启用 RabbitMQ |
-| `raf.rabbit.host` | string | — | RabbitMQ 主机 |
-| `raf.rabbit.port` | int | `5672` | 端口 |
+| `raf.rabbit.addresses` | string | — | RabbitMQ 地址，如 `127.0.0.1:5672` 或集群逗号分隔 |
 | `raf.rabbit.username` | string | — | 用户名 |
 | `raf.rabbit.password` | string | — | 密码 |
 | `raf.rabbit.virtualHost` | string | `/` | 虚拟主机 |
-| `raf.rabbit.publisher-confirm-type` | enum | `CORRELATED` | 发送确认类型 |
-| `raf.rabbit.publisher-returns` | boolean | `true` | 是否启用消息返回 |
+| `raf.rabbit.provider.ack` | boolean | `true` | 是否启用 publisher confirm/return |
+| `raf.rabbit.consumer.group` | string | `DEFAULT_RABBIT_GROUP` | 消费者组名，用于注册队列 Bean 名称 |
+| `raf.rabbit.consumer.concurrentConsumers` | int | `3` | 初始并发消费者数 |
+| `raf.rabbit.consumer.maxConcurrentConsumers` | int | `10` | 最大并发消费者数 |
+| `raf.rabbit.security.strictTypeValidation` | boolean | `true` | 是否启用消息类型白名单校验 |
+| `raf.rabbit.security.allowedMessageClasses` | set | 空 | 允许的 `@type` 类型白名单；为空时兼容历史消息 |
+| `raf.rabbit.security.maxRetryCount` | int | `3` | 最大重试次数 |
+| `raf.rabbit.ssl.enabled` | boolean | `false` | 是否启用 SSL |
+| `raf.rabbit.ssl.keyStore` | string | — | 客户端证书路径 |
+| `raf.rabbit.ssl.keyStorePassword` | string | — | 客户端证书密码 |
+| `raf.rabbit.ssl.trustStore` | string | — | 信任证书路径 |
+| `raf.rabbit.ssl.trustStorePassword` | string | — | 信任证书密码 |
 
 ## 快速接入
-
-**1. 引入依赖**
 
 ```xml
 <dependency>
@@ -32,101 +42,67 @@
 </dependency>
 ```
 
-**2. 配置**（`application.yml`）
-
 ```yaml
 raf:
   rabbit:
     enabled: true
-    host: 127.0.0.1
-    port: 5672
+    addresses: 127.0.0.1:5672
     username: guest
     password: guest
     virtualHost: /
-    publisher-confirm-type: CORRELATED
-    publisher-returns: true
+    provider:
+      ack: true
+    consumer:
+      group: order-service
+      concurrentConsumers: 3
+      maxConcurrentConsumers: 10
 ```
 
-## 核心用法
-
-### 发送消息
+## 发送消息
 
 ```java
 @Autowired
 private RabbitMqMessageSender messageSender;
 
-// 发送普通消息
-RabbitMqMessage message = new RabbitMqMessage();
-message.setExchange("order.exchange");
-message.setRoutingKey("order.created");
-message.setBody(orderDTO);
-messageSender.send(message);
+public void publishOrderCreated(String orderJson) {
+    RabbitMqMessage message = new RabbitMqMessage();
+    message.setMessage(orderJson);
+    messageSender.send(message, "order.exchange", "order.created");
+}
 
-// 发送延时消息（30 秒后投递）
-messageSender.sendDelay(message, 30000);
+public void publishDelay(String orderJson) {
+    RabbitMqMessage message = new RabbitMqMessage();
+    message.setMessage(orderJson);
+    messageSender.sendDelay(message, "order.timeout", 30);
+}
 ```
 
-### 消费消息
+发送失败会抛出 `InfrastructureException`，业务侧应让事务回滚或进入本地补偿流程，不要在调用点吞掉异常。
+
+## 消费消息
 
 ```java
-@Component
-public class OrderConsumer extends AbstractRabbitConsumerListener<OrderDTO> {
+@RabbitMqConsumer(
+        exchange = "order.exchange",
+        routingKey = "order.created",
+        queue = "order.created.queue")
+public class OrderCreatedConsumer extends AbstractRabbitConsumerListener {
 
     @Override
-    @RabbitListener(queues = "order.queue")
-    public void onMessage(Message message, Channel channel) throws IOException {
-        super.onMessage(message, channel);
+    public void onMessage(RabbitMqMessage message) {
+        orderService.process(message.getMessage());
     }
 
     @Override
-    protected void handleMessage(OrderDTO orderDTO, Message message, Channel channel) throws IOException {
-        // 处理业务逻辑
-        orderService.processOrder(orderDTO);
-        // 手动 ACK
-        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+    public void onFailure(Message message, String error) {
+        failureRecorder.record(message.getBody(), error);
     }
 }
 ```
 
-### 延时队列配置
+最佳实践：
 
-```java
-@Configuration
-public class DelayQueueConfig {
-
-    // 死信交换机
-    @Bean
-    public DirectExchange deadLetterExchange() {
-        return new DirectExchange("order.dlx.exchange");
-    }
-
-    // 延时队列（消息过期后转发到死信交换机）
-    @Bean
-    public Queue delayQueue() {
-        return QueueBuilder.durable("order.delay.queue")
-            .withArgument("x-dead-letter-exchange", "order.dlx.exchange")
-            .withArgument("x-dead-letter-routing-key", "order.timeout")
-            .build();
-    }
-
-    // 实际处理队列
-    @Bean
-    public Queue orderTimeoutQueue() {
-        return new Queue("order.timeout.queue");
-    }
-}
-```
-
-## 常见问题
-
-**Q: 消息发送后没有收到确认回调？**
-
-A: 确认 `publisher-confirm-type: CORRELATED` 已配置，且 `RabbitTemplate` 设置了 `ConfirmCallback`。
-
-**Q: 消费者重复消费同一条消息？**
-
-A: 使用 `RabbitMessageCacheMgr` 做幂等校验，以消息 ID 为 key 判断是否已处理。
-
-**Q: 延时队列消息没有按时投递？**
-
-A: 检查死信交换机和死信队列的绑定关系，确保 `x-dead-letter-exchange` 和 `x-dead-letter-routing-key` 与实际交换机/路由键一致。
+- 消费逻辑必须幂等，使用业务唯一键或 `msgId` 做去重。
+- 生产环境建议配置 DLX/重试队列，不建议无限 requeue。
+- 开启 SSL 时必须保证证书路径和密码正确，配置错误会 fail-fast。
+- 敏感地址、密码使用 Jasypt 加密，不在框架层硬编码。

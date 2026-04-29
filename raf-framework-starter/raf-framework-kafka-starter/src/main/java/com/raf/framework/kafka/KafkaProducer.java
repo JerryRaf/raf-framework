@@ -25,13 +25,25 @@ import org.springframework.beans.factory.DisposableBean;
  * @date 2025/01/01
  */
 @Slf4j
-@RequiredArgsConstructor
 public class KafkaProducer implements DisposableBean {
 
     private final Producer<String, String> producer;
     private final Producer<String, String> transactionalProducer;
     private final JsonService jsonService;
     private final boolean enableTransaction;
+
+    public KafkaProducer(Producer<String, String> producer,
+                         Producer<String, String> transactionalProducer,
+                         JsonService jsonService,
+                         boolean enableTransaction) {
+        this.producer = producer;
+        this.transactionalProducer = transactionalProducer;
+        this.jsonService = jsonService;
+        this.enableTransaction = enableTransaction;
+        if (this.enableTransaction && this.transactionalProducer != null) {
+            this.transactionalProducer.initTransactions();
+        }
+    }
 
     /**
      * Send message synchronously

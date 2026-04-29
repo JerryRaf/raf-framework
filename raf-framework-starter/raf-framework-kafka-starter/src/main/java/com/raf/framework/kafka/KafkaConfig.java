@@ -6,7 +6,6 @@ import com.raf.framework.core.jackson.JsonService;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.CommonClientConfigs;
@@ -35,6 +34,8 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.MessageListener;
+import org.springframework.kafka.listener.AcknowledgingMessageListener;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 
 /**
@@ -87,8 +88,6 @@ public class KafkaConfig implements BeanFactoryPostProcessor, EnvironmentAware, 
     @ConditionalOnProperty(prefix = "raf.kafka.producer", name = "transactionalIdPrefix")
     public ProducerFactory<String, String> transactionalProducerFactory(KafkaProperties properties) {
         Map<String, Object> props = buildProducerConfigs(properties);
-        props.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG,
-                properties.getProducer().getTransactionalIdPrefix() + "-" + UUID.randomUUID().toString());
 
         DefaultKafkaProducerFactory<String, String> factory = new DefaultKafkaProducerFactory<>(props);
         factory.setTransactionIdPrefix(properties.getProducer().getTransactionalIdPrefix());
@@ -152,7 +151,7 @@ public class KafkaConfig implements BeanFactoryPostProcessor, EnvironmentAware, 
         KafkaProperties.Consumer consumerConfig = properties.getConsumer();
         if (consumerConfig != null) {
             factory.setConcurrency(consumerConfig.getConcurrency());
-            factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
+            factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
             factory.getContainerProperties().setPollTimeout(consumerConfig.getPollTimeout());
         }
 
@@ -216,10 +215,20 @@ public class KafkaConfig implements BeanFactoryPostProcessor, EnvironmentAware, 
             containerProperties.setAckMode(ContainerProperties.AckMode.valueOf(annotation.ackMode()));
             containerProperties.setPollTimeout(annotation.pollTimeout());
 
-            if (annotation.containerType() == KafkaConsumer.ContainerType.SINGLE) {
-                containerProperties.setMessageListener(
-                        (org.springframework.kafka.listener.MessageListener<String, String>) listener::onMessage
-                );
+            if (annotation.containerType() != KafkaConsumer.ContainerType.SINGLE) {
+                throw new IllegalStateException("Kafka BATCH container type is not supported yet: " + beanName);
+            }
+
+            ContainerProperties.AckMode ackMode = ContainerProperties.AckMode.valueOf(annotation.ackMode());
+            if (ackMode == ContainerProperties.AckMode.MANUAL
+                    || ackMode == ContainerProperties.AckMode.MANUAL_IMMEDIATE) {
+                containerProperties.setMessageListener((AcknowledgingMessageListener<String, String>) (record, acknowledgment) -> {
+                    if (listener.processRecord(record)) {
+                        acknowledgment.acknowledge();
+                    }
+                });
+            } else {
+                containerProperties.setMessageListener((MessageListener<String, String>) listener::onMessage);
             }
 
             org.springframework.kafka.listener.ConcurrentMessageListenerContainer<String, String> container =

@@ -9,27 +9,17 @@
 
 ## 配置项
 
-### 数据源（raf.dataSource）
+### 数据源路由（raf.datasource）
 
 | 配置键 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `raf.dataSource.{name}.enabled` | boolean | `false` | 是否启用该数据源 |
-| `raf.dataSource.{name}.url` | string | — | JDBC URL |
-| `raf.dataSource.{name}.username` | string | — | 用户名 |
-| `raf.dataSource.{name}.password` | string | — | 密码（支持 Jasypt 加密） |
-| `raf.dataSource.{name}.driverClassName` | string | — | 驱动类名 |
-| `raf.dataSource.{name}.initialSize` | int | `5` | 初始连接数 |
-| `raf.dataSource.{name}.minIdle` | int | `5` | 最小空闲连接数 |
-| `raf.dataSource.{name}.maxActive` | int | `20` | 最大连接数 |
-| `raf.dataSource.{name}.maxWait` | int | `60000` | 获取连接最大等待时间（毫秒） |
-| `raf.dataSource.{name}.slowSqlMillis` | int | `300` | 慢 SQL 告警阈值（毫秒） |
+| `raf.datasource.enabled` | boolean | `false` | 是否启用动态数据源路由 |
+| `raf.datasource.primary` | string | `master` | 默认数据源 Bean 名称 |
+| `raf.datasource.datasources` | list | `[]` | 纳入路由的数据源 Bean 名称列表 |
 
-### 分页（raf.pagehelper）
+### 分页
 
-| 配置键 | 类型 | 默认值 | 说明 |
-|---|---|---|---|
-| `raf.mybatis.pagehelper.properties.helperDialect` | string | `mysql` | 数据库方言 |
-| `raf.mybatis.pagehelper.properties.reasonable` | string | `true` | 分页合理化（页码超出范围时自动修正） |
+推荐使用 MyBatis-Plus 内置分页插件和 `Page<T>` / `IPage<T>`，不再使用 PageHelper。
 
 ## 快速接入
 
@@ -53,21 +43,12 @@
 
 ```yaml
 raf:
-  dataSource:
-    primary-master:
-      enabled: true
-      url: jdbc:mysql://localhost:3306/your_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-      username: root
-      password: ENC(your_encrypted_password)
-      initialSize: 10
-      maxActive: 50
-      slowSqlMillis: 300
-    primary-slave:
-      enabled: true
-      url: jdbc:mysql://localhost:3307/your_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-      username: root
-      password: ENC(your_encrypted_password)
-      maxActive: 100
+  datasource:
+    enabled: true
+    primary: primary-master
+    datasources:
+      - primary-master
+      - primary-slave
 
 mybatis-plus:
   global-config:

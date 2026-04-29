@@ -44,7 +44,7 @@ public @interface KafkaConsumer {
     /**
      * Ack mode: RECORD, BATCH, TIME, COUNT, COUNT_TIME, MANUAL, MANUAL_IMMEDIATE
      */
-    String ackMode() default "MANUAL";
+    String ackMode() default "MANUAL_IMMEDIATE";
 
     /**
      * Poll timeout in milliseconds
