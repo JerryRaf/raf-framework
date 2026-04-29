@@ -1,5 +1,8 @@
 # jar project
 target/
+
+# git worktrees
+.worktrees/
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###
