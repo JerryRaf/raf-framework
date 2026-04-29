@@ -11,6 +11,7 @@
 
     <artifactId>raf-framework-mybatis-starter</artifactId>
     <name>raf-framework-mybatis-starter</name>
+    <description>raf-framework-mybatis-starter</description>
     <dependencies>
         <dependency>
             <groupId>com.baomidou</groupId>

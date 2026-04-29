@@ -10,6 +10,7 @@
     </parent>
     <artifactId>raf-framework-sentry-starter</artifactId>
     <name>raf-framework-sentry-starter</name>
+    <description>raf-framework-sentry-starter</description>
     <dependencies>
         <dependency>
             <groupId>io.github.jerryraf</groupId>

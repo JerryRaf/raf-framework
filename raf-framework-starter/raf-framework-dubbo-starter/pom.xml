@@ -11,6 +11,7 @@
 
     <artifactId>raf-framework-dubbo-starter</artifactId>
     <name>raf-framework-dubbo-starter</name>
+    <description>raf-framework-dubbo-starter</description>
     <dependencies>
         <dependency>
             <groupId>io.github.jerryraf</groupId>

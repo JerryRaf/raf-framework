@@ -11,6 +11,7 @@
 
     <artifactId>raf-framework-redis-starter</artifactId>
     <name>raf-framework-redis-starter</name>
+    <description>raf-framework-redis-starter</description>
     <dependencies>
         <dependency>
             <groupId>io.github.jerryraf</groupId>

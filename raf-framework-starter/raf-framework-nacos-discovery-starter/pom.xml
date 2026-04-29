@@ -11,6 +11,7 @@
 
     <artifactId>raf-framework-nacos-discovery-starter</artifactId>
     <name>raf-framework-nacos-discovery-starter</name>
+    <description>raf-framework-nacos-discovery-starter</description>
     <dependencies>
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

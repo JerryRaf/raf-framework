@@ -11,6 +11,7 @@
 
     <artifactId>raf-framework-monitor-starter</artifactId>
     <name>raf-framework-monitor-starter</name>
+    <description>raf-framework-monitor-starter</description>
     <dependencies>
         <dependency>
             <groupId>io.github.jerryraf</groupId>

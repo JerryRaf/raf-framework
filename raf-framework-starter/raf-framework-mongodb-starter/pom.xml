@@ -11,6 +11,7 @@
 
     <artifactId>raf-framework-mongodb-starter</artifactId>
     <name>raf-framework-mongodb-starter</name>
+    <description>raf-framework-mongodb-starter</description>
     <dependencies>
         <dependency>
             <groupId>io.github.jerryraf</groupId>

@@ -63,6 +63,11 @@
                 <configuration>
                     <updatePomFile>true</updatePomFile>
                     <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    <pomElements>
+                        <url>resolve</url>
+                        <developers>resolve</developers>
+                        <scm>resolve</scm>
+                    </pomElements>
                 </configuration>
                 <executions>
                     <execution>

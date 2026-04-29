@@ -708,6 +708,14 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>flatten-maven-plugin</artifactId>
                     <version>${maven.flatten.plugin.version}</version>
+                    <configuration>
+                        <updatePomFile>true</updatePomFile>
+                        <pomElements>
+                            <url>resolve</url>
+                            <developers>resolve</developers>
+                            <scm>resolve</scm>
+                        </pomElements>
+                    </configuration>
                     <executions>
                         <execution>
                             <id>flatten</id>

@@ -11,6 +11,7 @@
 
     <artifactId>raf-framework-datasource-starter</artifactId>
     <name>raf-framework-datasource-starter</name>
+    <description>raf-framework-datasource-starter</description>
     <dependencies>
         <dependency>
             <groupId>io.github.jerryraf</groupId>

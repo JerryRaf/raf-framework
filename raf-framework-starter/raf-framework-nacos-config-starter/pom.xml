@@ -11,6 +11,7 @@
 
     <artifactId>raf-framework-nacos-config-starter</artifactId>
     <name>raf-framework-nacos-config-starter</name>
+    <description>raf-framework-nacos-config-starter</description>
     <dependencies>
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

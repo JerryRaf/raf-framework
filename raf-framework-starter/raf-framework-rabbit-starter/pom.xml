@@ -11,6 +11,7 @@
 
     <artifactId>raf-framework-rabbit-starter</artifactId>
     <name>raf-framework-rabbit-starter</name>
+    <description>raf-framework-rabbit-starter</description>
     <dependencies>
         <dependency>
             <groupId>io.github.jerryraf</groupId>

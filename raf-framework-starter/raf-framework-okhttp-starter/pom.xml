@@ -11,6 +11,7 @@
 
     <artifactId>raf-framework-okhttp-starter</artifactId>
     <name>raf-framework-okhttp-starter</name>
+    <description>raf-framework-okhttp-starter</description>
     <dependencies>
         <dependency>
             <groupId>io.github.jerryraf</groupId>
