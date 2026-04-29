@@ -26,16 +26,11 @@
         <maven.deploy.plugin.version>3.1.4</maven.deploy.plugin.version>
         <maven.source.plugin.version>3.3.1</maven.source.plugin.version>
         <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
-
         <maven.flatten.plugin.version>1.7.0</maven.flatten.plugin.version>
-        <maven.javadoc.plugin.version>3.6.3</maven.javadoc.plugin.version>
-        <maven.gpg.plugin.version>3.1.0</maven.gpg.plugin.version>
-        <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
-        <jacoco.check.skip>false</jacoco.check.skip>
 
-
-        <!--raf framework-->
-        <raf.framework.version>${project.version}</raf.framework.version>
+        <!--raf framework: keep revision here so resolveCiFriendliesOnly resolves it in <version> elements-->
+        <raf.framework.version>${revision}</raf.framework.version>
+        <revision>3.0.0</revision>
 
         <!--base-->
         <spring.boot.version>3.4.7</spring.boot.version>
@@ -702,6 +697,41 @@
     </dependencyManagement>
 
     <build>
+        <plugins>
+            <!-- Override root flatten config: add properties interpolation so ${revision}
+                 in <properties> is resolved to the actual version in the published BOM -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${maven.flatten.plugin.version}</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    <pomElements>
+                        <url>resolve</url>
+                        <developers>resolve</developers>
+                        <scm>resolve</scm>
+                        <properties>interpolate</properties>
+                    </pomElements>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
                 <plugin>

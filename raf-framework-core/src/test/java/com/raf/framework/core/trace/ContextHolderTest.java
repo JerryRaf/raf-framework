@@ -51,4 +51,62 @@ class ContextHolderTest {
         Assertions.assertNull(ContextHolder.getTenantId());
         Assertions.assertNull(MDC.get(RafConstant.TRACE_ID));
     }
+
+    @Test
+    void shouldReturnExistingTraceIdWhenAlreadySet() {
+        ContextHolder.setTraceId("existing-trace");
+
+        String traceId = ContextHolder.getOrSetTraceId();
+
+        Assertions.assertEquals("existing-trace", traceId);
+    }
+
+    @Test
+    void shouldIgnoreNullOrEmptyTraceId() {
+        ContextHolder.setTraceId(null);
+        Assertions.assertNull(ContextHolder.getTraceId());
+
+        ContextHolder.setTraceId("");
+        Assertions.assertNull(ContextHolder.getTraceId());
+    }
+
+    @Test
+    void shouldSetAndGetTenantId() {
+        ContextHolder.setTenantId("tenant-xyz");
+
+        Assertions.assertEquals("tenant-xyz", ContextHolder.getTenantId());
+    }
+
+    @Test
+    void shouldIgnoreNullOrEmptyTenantId() {
+        ContextHolder.setTenantId("tenant-a");
+        ContextHolder.setTenantId(null);
+        // null should not overwrite existing value
+        Assertions.assertEquals("tenant-a", ContextHolder.getTenantId());
+
+        ContextHolder.setTenantId("");
+        Assertions.assertEquals("tenant-a", ContextHolder.getTenantId());
+    }
+
+    @Test
+    void clearTraceId_removesOnlyTraceId() {
+        ContextHolder.setTraceId("trace-to-remove");
+        ContextHolder.setTenantId("tenant-keep");
+
+        ContextHolder.clearTraceId();
+
+        Assertions.assertNull(ContextHolder.getTraceId());
+        Assertions.assertNull(MDC.get(RafConstant.TRACE_ID));
+        Assertions.assertEquals("tenant-keep", ContextHolder.getTenantId());
+    }
+
+    @Test
+    void setTraceId_generatesNewIdWhenCalledWithoutArg() {
+        String traceId = ContextHolder.setTraceId();
+
+        Assertions.assertNotNull(traceId);
+        Assertions.assertFalse(traceId.isEmpty());
+        Assertions.assertEquals(traceId, ContextHolder.getTraceId());
+        Assertions.assertEquals(traceId, MDC.get(RafConstant.TRACE_ID));
+    }
 }
