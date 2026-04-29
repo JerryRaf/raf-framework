@@ -77,7 +77,7 @@
         <easyexcel.version>4.0.3</easyexcel.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <seata.version>2.2.0</seata.version>
-        <sentinel.version>1.8.8</sentinel.version>
+        <sentinel.version>1.8.9</sentinel.version>
         <jjwt.version>0.12.6</jjwt.version>
         <validation.api.version>3.1.0</validation.api.version>
 
