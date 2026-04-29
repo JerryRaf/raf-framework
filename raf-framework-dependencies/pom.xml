@@ -32,7 +32,7 @@
         <raf.framework.version>${revision}</raf.framework.version>
 
         <!--base-->
-        <spring.boot.version>3.4.7</spring.boot.version>
+        <spring.boot.version>3.5.14</spring.boot.version>
         <spring.cloud.version>2024.0.1</spring.cloud.version>
         <aliababa.dependencies.version>2022.0.0.2</aliababa.dependencies.version>
         <spring.security.version>6.4.4</spring.security.version>
