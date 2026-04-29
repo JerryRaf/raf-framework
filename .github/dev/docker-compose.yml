@@ -1,0 +1,57 @@
+# 本地开发依赖中间件
+# 用法：docker compose -f .github/dev/docker-compose.yml up -d
+#
+# 包含服务：
+#   - Redis 7      → localhost:6379
+#   - MySQL 8      → localhost:3306  (root/raf_dev_123)
+#   - RabbitMQ 3   → localhost:5672  (管理页 http://localhost:15672, guest/guest)
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: raf-dev-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --save "" --appendonly no
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  mysql:
+    image: mysql:8.0
+    container_name: raf-dev-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: raf_dev_123
+      MYSQL_DATABASE: raf_example
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    volumes:
+      - raf-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-praf_dev_123"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: raf-dev-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  raf-mysql-data:
+    driver: local
