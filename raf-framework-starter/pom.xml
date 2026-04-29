@@ -15,6 +15,24 @@
     <description>raf-framework-starter</description>
     <packaging>pom</packaging>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>oss</flattenMode>
+                    <pomElements>
+                        <url>resolve</url>
+                        <developers>resolve</developers>
+                        <scm>resolve</scm>
+                    </pomElements>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <modules>
         <module>raf-framework-web-starter</module>
         <module>raf-framework-gateway-starter</module>
