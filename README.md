@@ -12,7 +12,9 @@
 [![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2024.0.1-brightgreen.svg)](https://spring.io/projects/spring-cloud)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.jerryraf/raf-framework-dependencies)](https://central.sonatype.com/artifact/io.github.jerryraf/raf-framework-dependencies)
 [![Build](https://github.com/JerryRaf/raf-framework/actions/workflows/ci.yml/badge.svg)](https://github.com/JerryRaf/raf-framework/actions/workflows/ci.yml)
+[![Coverage](https://codecov.io/gh/JerryRaf/raf-framework/branch/master/graph/badge.svg)](https://codecov.io/gh/JerryRaf/raf-framework)
 [![CodeQL](https://github.com/JerryRaf/raf-framework/actions/workflows/codeql.yml/badge.svg)](https://github.com/JerryRaf/raf-framework/actions/workflows/codeql.yml)
+[![Security](https://github.com/JerryRaf/raf-framework/actions/workflows/dependency-check.yml/badge.svg)](https://github.com/JerryRaf/raf-framework/actions/workflows/dependency-check.yml)
 [![Contributors](https://img.shields.io/github/contributors/JerryRaf/raf-framework)](https://github.com/JerryRaf/raf-framework/graphs/contributors)
 [![文档](https://img.shields.io/badge/文档-GitHub%20Pages-blue?logo=github)](https://jerryraf.github.io/raf-framework/)
 
