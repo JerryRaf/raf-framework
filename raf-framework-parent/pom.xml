@@ -16,102 +16,6 @@
     <packaging>pom</packaging>
     <version>${revision}</version>
 
-    <dependencyManagement>
-        <dependencies>
-            <!--raf framework internal modules-->
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-web-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-datasource-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-mybatis-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-redis-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-okhttp-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-sentry-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-dubbo-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-rabbit-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-nacos-config-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-nacos-discovery-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-monitor-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-gateway-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-rocketmq-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-kafka-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-elasticsearch-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-mongodb-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.jerryraf</groupId>
-                <artifactId>raf-framework-shardingsphere-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <build>
         <plugins>
             <plugin>
@@ -137,10 +41,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>flatten-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

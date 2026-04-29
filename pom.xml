@@ -27,7 +27,9 @@
         </developer>
     </developers>
 
-    <scm>
+    <scm child.scm.connection.inherit.append.path="false"
+         child.scm.developerConnection.inherit.append.path="false"
+         child.scm.url.inherit.append.path="false">
         <connection>scm:git:git://github.com/JerryRaf/raf-framework.git</connection>
         <developerConnection>scm:git:ssh://github.com:JerryRaf/raf-framework.git</developerConnection>
         <url>https://github.com/JerryRaf/raf-framework/tree/master</url>
@@ -35,7 +37,7 @@
 
     <properties>
         <revision>3.0.0</revision>
-        <maven.flatten.plugin.version>1.7.0</maven.flatten.plugin.version>
+        <maven.flatten.plugin.version>1.7.1</maven.flatten.plugin.version>
         <maven.gpg.plugin.version>3.2.7</maven.gpg.plugin.version>
         <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
         <jacoco.check.skip>false</jacoco.check.skip>
@@ -67,9 +69,7 @@
                     <updatePomFile>true</updatePomFile>
                     <flattenMode>resolveCiFriendliesOnly</flattenMode>
                     <pomElements>
-                        <url>resolve</url>
-                        <developers>resolve</developers>
-                        <scm>resolve</scm>
+                        <parent>resolve</parent>
                     </pomElements>
                 </configuration>
                 <executions>
