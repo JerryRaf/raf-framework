@@ -14,12 +14,17 @@
 [![Build](https://github.com/JerryRaf/raf-framework/actions/workflows/ci.yml/badge.svg)](https://github.com/JerryRaf/raf-framework/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/JerryRaf/raf-framework/actions/workflows/codeql.yml/badge.svg)](https://github.com/JerryRaf/raf-framework/actions/workflows/codeql.yml)
 [![Contributors](https://img.shields.io/github/contributors/JerryRaf/raf-framework)](https://github.com/JerryRaf/raf-framework/graphs/contributors)
+[![文档](https://img.shields.io/badge/文档-GitHub%20Pages-blue?logo=github)](https://jerryraf.github.io/raf-framework/)
 
 [快速开始](#快速开始) · [文档](#核心能力) · [更新日志](CHANGELOG.md) · [提交 Issue](https://github.com/jerry-raf/raf-framework/issues) · [贡献指南](#贡献指南)
 
 </div>
 
 ---
+
+> **raf-framework 不是另一个脚手架，而是一个"中间件接入层"。**
+> 它解决的问题是：每个微服务项目都要重复写 Redis 配置、MQ 消费者、多数据源路由、全局异常处理……
+> raf-framework 把这些横切关注点封装成热插拔 Starter，**引入依赖即生效，不引入零侵入**。
 
 ## 简介
 
@@ -118,6 +123,52 @@ raf:
 ```json
 { "code": 200, "msg": "成功！", "data": {} }
 ```
+
+---
+
+## 架构概览
+
+```mermaid
+graph TD
+    subgraph 应用层
+        A[业务服务 A]
+        B[业务服务 B]
+    end
+    subgraph 接入层
+        C[raf-framework-starter<br/>18+ 热插拔 Starter]
+    end
+    subgraph 核心层
+        D[raf-framework-autoconfigure<br/>自动配置 / 异常处理 / 追踪]
+        E[raf-framework-core<br/>零依赖工具库]
+    end
+    subgraph 中间件层
+        F[Redis]
+        G[MySQL/Druid]
+        H[RocketMQ/Kafka/RabbitMQ]
+        I[Nacos/Dubbo]
+        J[ES/MongoDB/ShardingSphere]
+    end
+    subgraph 版本治理
+        K[raf-framework-dependencies<br/>BOM]
+        L[raf-framework-parent<br/>Parent POM]
+    end
+    A --> C
+    B --> C
+    C --> D
+    D --> E
+    C --> F & G & H & I & J
+    K -.->|BOM 模式| A
+    L -.->|Parent 模式| A
+```
+
+## 与同类方案对比
+
+| 对比维度 | raf-framework | 纯 Spring Boot 脚手架 | JHipster |
+|---|---|---|---|
+| 接入方式 | BOM / Parent 双模式 | 复制粘贴 | 代码生成 |
+| 中间件覆盖 | 18+ Starter | 按需手写 | 有限 |
+| 侵入性 | 零侵入 | 高 | 高 |
+| 升级成本 | 改一行版本号 | 逐文件修改 | 重新生成 |
 
 ---
 
@@ -444,6 +495,16 @@ jasypt:
     algorithm: PBEWITHHMACSHA512ANDAES_256
     password: ${JASYPT_PASSWORD}   # 通过环境变量或启动参数注入，禁止硬编码
 ```
+
+---
+
+## 遇到问题？
+
+| 场景 | 去哪里 |
+|---|---|
+| 使用问题、配置疑惑 | [GitHub Discussions](https://github.com/JerryRaf/raf-framework/discussions) |
+| 发现 Bug | [GitHub Issues（Bug Report）](https://github.com/JerryRaf/raf-framework/issues/new?template=bug_report.md) |
+| 功能建议 | [GitHub Issues（Feature Request）](https://github.com/JerryRaf/raf-framework/issues/new?template=feature_request.md) |
 
 ---
 
