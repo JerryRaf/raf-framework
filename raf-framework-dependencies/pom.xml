@@ -54,7 +54,7 @@
         <druid.starter.version>1.2.24</druid.starter.version>
         <redisson.starter.version>3.34.1</redisson.starter.version>
         <caffeine.version>3.1.8</caffeine.version>
-        <sentry.version>8.7.0</sentry.version>
+        <sentry.version>8.40.0</sentry.version>
         <rocketmq.version>5.3.2</rocketmq.version>
         <kafka.version>3.9.0</kafka.version>
         <elasticsearch.version>8.19.14</elasticsearch.version>
