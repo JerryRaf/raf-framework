@@ -237,7 +237,7 @@ public class FortifyUtil {
     }
 
     /**
-     * .数量=1, /数量必须<=10，不能有window的// \\符号
+     * .数量=1, /数量必须&lt;=10，不能有window的// \\符号
      *
      * @param filePath
      * @return

@@ -32,10 +32,10 @@
         <raf.framework.version>${revision}</raf.framework.version>
 
         <!--base-->
-        <spring.boot.version>3.4.7</spring.boot.version>
+        <spring.boot.version>3.4.8</spring.boot.version>
         <spring.cloud.version>2024.0.1</spring.cloud.version>
         <aliababa.dependencies.version>2022.0.0.2</aliababa.dependencies.version>
-        <spring.security.version>6.4.4</spring.security.version>
+        <spring.security.version>6.4.5</spring.security.version>
         <nacos.client.version>2.5.1</nacos.client.version>
         <dubbo.starter.version>3.3.4</dubbo.starter.version>
         <dubbo.version>3.3.4</dubbo.version>
@@ -527,6 +527,11 @@
             <dependency>
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-netty</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-core</artifactId>
                 <version>${grpc.version}</version>
             </dependency>
             <dependency>

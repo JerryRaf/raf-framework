@@ -103,7 +103,7 @@ public class SpringContext implements ApplicationContextAware {
      * 获取注册对象的类型
      *
      * @param name bean名称
-     * @return Class<?> 注册对象的类型
+     * @return {@code Class<?>} 注册对象的类型
      * @throws NoSuchBeanDefinitionException 如果bean不存在
      */
     public static Class<?> getType(String name) throws NoSuchBeanDefinitionException {

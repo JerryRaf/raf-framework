@@ -44,7 +44,7 @@
  * @author Jerry
  * @date 2026/04/20
  * @see com.raf.framework.sentry.SentryAutoConfiguration
- * @see com.raf.framework.sentry.SentryProperties
+ * @see com.raf.framework.sentry.RafSentryProperties
  * @see com.raf.framework.sentry.trace.TraceIdProvider
  */
 package com.raf.framework.sentry;

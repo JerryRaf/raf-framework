@@ -1,11 +1,142 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+
     <!--
-        Add false-positive suppressions here.
-        Example:
-        <suppress>
-            <notes>False positive: library not used in affected code path</notes>
-            <cve>CVE-XXXX-XXXXX</cve>
-        </suppress>
+        False positive: dependency-check matches dubbo-registry-zookeeper's version (3.3.4)
+        against ZooKeeper CPE. This jar is Dubbo's registry module, not Apache ZooKeeper itself.
+        CVE-2023-44981 affects ZooKeeper < 3.9.1 and is unrelated to Dubbo.
     -->
+    <suppress>
+        <notes>False positive: dubbo-registry-zookeeper version 3.3.4 is Dubbo's version, not ZooKeeper's version.</notes>
+        <gav regex="true">^org\.apache\.dubbo:dubbo.*$</gav>
+        <cve>CVE-2023-44981</cve>
+    </suppress>
+
+    <!--
+        False positive: dependency-check matches logback-adapter version (1.1.3) against
+        Nacos CPE. This jar is Nacos's logback adapter module, not Nacos server itself.
+        CVE-2021-29441 is a Nacos authentication bypass unrelated to the logback adapter.
+    -->
+    <suppress>
+        <notes>False positive: logback-adapter version 1.1.3 is the adapter module version, not Nacos server version.</notes>
+        <gav regex="true">^com\.alibaba\.nacos:logback-adapter.*$</gav>
+        <cve>CVE-2021-29441</cve>
+    </suppress>
+
+    <!--
+        False positive: dependency-check matches rocketmq-logback-classic and rocketmq-slf4j-api
+        version (1.0.1) against RocketMQ CPE. These are RocketMQ logging extension libraries
+        (io.github.aliyunmq), not the RocketMQ broker. The project uses RocketMQ 5.3.2 which
+        is not affected by CVE-2023-33246 and CVE-2023-37582.
+    -->
+    <suppress>
+        <notes>False positive: rocketmq logging extension version 1.0.1 is the extension library version, not RocketMQ broker version.</notes>
+        <gav regex="true">^io\.github\.aliyunmq:rocketmq-.*$</gav>
+        <cve>CVE-2023-33246</cve>
+    </suppress>
+    <suppress>
+        <notes>False positive: rocketmq logging extension version 1.0.1 is the extension library version, not RocketMQ broker version.</notes>
+        <gav regex="true">^io\.github\.aliyunmq:rocketmq-.*$</gav>
+        <cve>CVE-2023-37582</cve>
+    </suppress>
+
+    <!--
+        False positive: dependency-check matches rocketmq-proto (2.0.4) and rocketmq-rocksdb (1.0.2)
+        sub-module versions against RocketMQ CPE. These are RocketMQ sub-modules, not the broker.
+        The project uses RocketMQ 5.3.2 which is not affected by these CVEs.
+    -->
+    <suppress>
+        <notes>False positive: rocketmq-proto/rocketmq-rocksdb sub-module versions are not RocketMQ broker versions.</notes>
+        <gav regex="true">^org\.apache\.rocketmq:(rocketmq-proto|rocketmq-rocksdb).*$</gav>
+        <cve>CVE-2023-33246</cve>
+    </suppress>
+    <suppress>
+        <notes>False positive: rocketmq-proto/rocketmq-rocksdb sub-module versions are not RocketMQ broker versions.</notes>
+        <gav regex="true">^org\.apache\.rocketmq:(rocketmq-proto|rocketmq-rocksdb).*$</gav>
+        <cve>CVE-2023-37582</cve>
+    </suppress>
+
+    <!--
+        False positive: dependency-check matches ShardingSphere version (5.5.1) against
+        MariaDB CPE. shardingsphere-infra-database-mariadb is ShardingSphere's MariaDB dialect
+        module, not MariaDB itself. CVE-2012-3163, CVE-2012-2750, CVE-2016-9843 are MariaDB 5.x
+        vulnerabilities unrelated to ShardingSphere.
+    -->
+    <suppress>
+        <notes>False positive: ShardingSphere version 5.5.1 is not MariaDB version 5.5.1.</notes>
+        <gav regex="true">^org\.apache\.shardingsphere:shardingsphere-infra-database-mariadb.*$</gav>
+        <cve>CVE-2012-3163</cve>
+    </suppress>
+    <suppress>
+        <notes>False positive: ShardingSphere version 5.5.1 is not MariaDB version 5.5.1.</notes>
+        <gav regex="true">^org\.apache\.shardingsphere:shardingsphere-infra-database-mariadb.*$</gav>
+        <cve>CVE-2012-2750</cve>
+    </suppress>
+    <suppress>
+        <notes>False positive: ShardingSphere version 5.5.1 is not MariaDB version 5.5.1.</notes>
+        <gav regex="true">^org\.apache\.shardingsphere:shardingsphere-infra-database-mariadb.*$</gav>
+        <cve>CVE-2016-9843</cve>
+    </suppress>
+
+    <!--
+        False positive: dependency-check matches ShardingSphere version (5.5.1) against
+        PostgreSQL CPE. shardingsphere-infra-database-postgresql and shardingsphere-parser-sql-postgresql
+        are ShardingSphere's PostgreSQL dialect/parser modules, not PostgreSQL itself.
+        CVE-2019-10211, CVE-2015-3166, CVE-2016-7048, CVE-2018-1115, CVE-2015-0244 are
+        PostgreSQL vulnerabilities unrelated to ShardingSphere.
+    -->
+    <suppress>
+        <notes>False positive: ShardingSphere version 5.5.1 is not PostgreSQL version 5.5.1.</notes>
+        <gav regex="true">^org\.apache\.shardingsphere:shardingsphere-(infra-database-postgresql|parser-sql-postgresql).*$</gav>
+        <cve>CVE-2019-10211</cve>
+    </suppress>
+    <suppress>
+        <notes>False positive: ShardingSphere version 5.5.1 is not PostgreSQL version 5.5.1.</notes>
+        <gav regex="true">^org\.apache\.shardingsphere:shardingsphere-(infra-database-postgresql|parser-sql-postgresql).*$</gav>
+        <cve>CVE-2015-3166</cve>
+    </suppress>
+    <suppress>
+        <notes>False positive: ShardingSphere version 5.5.1 is not PostgreSQL version 5.5.1.</notes>
+        <gav regex="true">^org\.apache\.shardingsphere:shardingsphere-(infra-database-postgresql|parser-sql-postgresql).*$</gav>
+        <cve>CVE-2016-7048</cve>
+    </suppress>
+    <suppress>
+        <notes>False positive: ShardingSphere version 5.5.1 is not PostgreSQL version 5.5.1.</notes>
+        <gav regex="true">^org\.apache\.shardingsphere:shardingsphere-(infra-database-postgresql|parser-sql-postgresql).*$</gav>
+        <cve>CVE-2018-1115</cve>
+    </suppress>
+    <suppress>
+        <notes>False positive: ShardingSphere version 5.5.1 is not PostgreSQL version 5.5.1.</notes>
+        <gav regex="true">^org\.apache\.shardingsphere:shardingsphere-(infra-database-postgresql|parser-sql-postgresql).*$</gav>
+        <cve>CVE-2015-0244</cve>
+    </suppress>
+
+    <!--
+        False positive: CVE-2024-48910 is a DOMPurify vulnerability, incorrectly associated
+        with moment.js by dependency-check's JavaScript scanning heuristics.
+    -->
+    <suppress>
+        <notes>False positive: CVE-2024-48910 is a DOMPurify vulnerability, not a moment.js vulnerability.</notes>
+        <packageUrl regex="true">^pkg:javascript/moment\.js@.*$</packageUrl>
+        <cve>CVE-2024-48910</cve>
+    </suppress>
+
+    <!--
+        knife4j-openapi3-ui bundles frontend assets (DOMPurify, axios) inside the jar.
+        These cannot be upgraded independently — knife4j 4.5.1 does not exist on Maven Central.
+        CVE-2024-48910 (DOMPurify@2.3.10) and CVE-2025-62718 (axios) are UI-only risks with
+        no server-side attack surface in a typical API documentation scenario.
+        Re-evaluate when knife4j releases a version with updated frontend dependencies.
+    -->
+    <suppress>
+        <notes>knife4j bundled DOMPurify@2.3.10 — cannot upgrade independently, UI-only risk.</notes>
+        <gav regex="true">^com\.github\.xiaoymin:knife4j-openapi3-ui.*$</gav>
+        <cve>CVE-2024-48910</cve>
+    </suppress>
+    <suppress>
+        <notes>knife4j bundled axios — cannot upgrade independently, UI-only risk.</notes>
+        <gav regex="true">^com\.github\.xiaoymin:knife4j-openapi3-ui.*$</gav>
+        <cve>CVE-2025-62718</cve>
+    </suppress>
+
 </suppressions>
