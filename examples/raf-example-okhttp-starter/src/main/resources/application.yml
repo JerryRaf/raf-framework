@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: raf-example-okhttp-starter
+
+server:
+  port: 8080
+  shutdown: graceful
+
+raf:
+  okhttp:
+    enabled: true
+    channels:
+      # 渠道一：调用 GitHub API（公开接口，无需认证）
+      github:
+        connect-timeout: 3000
+        read-timeout: 10000
+        write-timeout: 5000
+        retry-on-connection-failure: true
+        max-retries: 2
+        level: BASIC
+        connection:
+          max-idle-connections: 5
+          keep-alive-duration: 30000
+
+      # 渠道二：调用内部支付服务（Bearer Token 认证）
+      payment:
+        connect-timeout: 2000
+        read-timeout: 5000
+        write-timeout: 5000
+        max-retries: 1
+        level: HEADERS
+        auth:
+          type: BEARER
+          token: ${PAYMENT_API_TOKEN:test-token}
+        connection:
+          max-idle-connections: 10
+          keep-alive-duration: 60000
+
+      # 渠道三：调用短信服务（Basic 认证）
+      sms:
+        connect-timeout: 2000
+        read-timeout: 8000
+        write-timeout: 3000
+        max-retries: 2
+        level: BASIC
+        auth:
+          type: BASIC
+          username: ${SMS_USERNAME:test}
+          password: ${SMS_PASSWORD:test}

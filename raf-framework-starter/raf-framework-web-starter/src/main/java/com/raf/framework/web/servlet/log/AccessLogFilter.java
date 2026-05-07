@@ -1,0 +1,272 @@
+package com.raf.framework.web.servlet.log;
+
+import com.raf.framework.core.jackson.JsonService;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.regex.Pattern;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.ContentCachingResponseWrapper;
+import org.springframework.web.util.HtmlUtils;
+
+/**
+ * @author Jerry
+ * @date 2019/01/01
+ */
+public class AccessLogFilter extends OncePerRequestFilter {
+
+    @Autowired
+    private JsonService json;
+
+    @Autowired
+    private AuditProperties auditProperties;
+
+    @Getter
+    private Integer payloadMaxLength = 4096;
+
+    private static final String DEFAULT_SKIP_PATTERN =
+            "//null/swagger.*|/csrf|/|/v3/api-docs|/v2/api-docs|/api-docs.*|/swagger.*|/webjars.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/actuator.*|/hystrix.stream";
+
+    private static final Pattern SKIP_PATTERNS = Pattern.compile(DEFAULT_SKIP_PATTERN);
+
+    private boolean unContain(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return !SKIP_PATTERNS.matcher(path).matches();
+    }
+
+    private boolean isNormalRequest(HttpServletRequest request) {
+        return !isMultipart(request) && !isBinaryContent(request) && unContain(request);
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        LogHolder.setCurrentLogResponse(false);
+
+        if (auditProperties.getLog().level.equals(AuditProperties.LogLevel.OFF) || !isNormalRequest(request)) {
+            try {
+                filterChain.doFilter(request, response);
+            } finally {
+                LogHolder.remove();
+            }
+            return;
+        }
+
+        StopWatch watch = new StopWatch();
+        watch.start();
+        final boolean isFirstExecution = !isAsyncDispatch(request);
+        final boolean isLastExecution = !isAsyncStarted(request);
+        HttpServletRequestAdapter requestWrapper = null;
+        ContentCachingResponseWrapper responseWrapper = null;
+        AccessJsonLogBuilder accessJsonLogBuilder = null;
+        HttpServletRequest requestToUse = request;
+        HttpServletResponse responseToUse = response;
+        try {
+            if (isFirstExecution && !(request instanceof HttpServletRequestAdapter)) {
+                responseWrapper = new ContentCachingResponseWrapper(response);
+                responseToUse = responseWrapper;
+                accessJsonLogBuilder = AccessJsonLogBuilder.accessJsonLogBuilder(json, auditProperties)
+                        .put(request);
+
+                if (shouldCacheRequestBody(request)) {
+                    byte[] bytes = IOUtils.toByteArray(request.getInputStream());
+                    requestWrapper = new HttpServletRequestAdapter(request, bytes);
+                    requestToUse = requestWrapper;
+                    accessJsonLogBuilder.addRequestBody(getPayLoad(bytes, request.getCharacterEncoding()));
+                } else {
+                    accessJsonLogBuilder.addRequestBody("[payload omitted: content length exceeds maxBodyCacheBytes]");
+                }
+            }
+            filterChain.doFilter(requestToUse, responseToUse);
+        } finally {
+            try {
+                responseWrapper = Optional.ofNullable(responseWrapper)
+                        .orElseGet(() -> getContentCachingResponseWrapper(response));
+
+                boolean flag = isLastExecution
+                        && !isBinaryContent(response)
+                        && !isMultipart(response)
+                        && responseWrapper != null
+                        && (LogHolder.currentLogResponse()
+                        || (auditProperties.getLog().level.getLevel()
+                        >= AuditProperties.LogLevel.RSP_HEADERS.getLevel()));
+                if (flag) {
+                    String responsePayload =
+                            getPayLoad(responseWrapper.getContentAsByteArray(), response.getCharacterEncoding());
+                    responseWrapper.copyBodyToResponse();
+
+                    Optional.ofNullable(accessJsonLogBuilder)
+                            .ifPresent(c -> c.addResponseBody(responsePayload, response)
+                                    .put(response)
+                                    .put("COST", watch.getTime())
+                                    .log());
+
+                } else if (isLastExecution && responseWrapper != null) {
+                    responseWrapper.copyBodyToResponse();
+                    Optional.ofNullable(accessJsonLogBuilder).ifPresent(c -> c.put(response)
+                            .put("COST", watch.getTime())
+                            .log());
+                }
+            } catch (Exception e) {
+                logger.error("accessLogFilter error", e);
+            }
+            LogHolder.remove();
+        }
+    }
+
+    private boolean shouldCacheRequestBody(HttpServletRequest request) {
+        long contentLength = request.getContentLengthLong();
+        int maxBodyCacheBytes = Math.max(0, auditProperties.getLog().getMaxBodyCacheBytes());
+        return contentLength < 0 || contentLength <= maxBodyCacheBytes;
+    }
+
+    private ContentCachingResponseWrapper getContentCachingResponseWrapper(HttpServletResponse httpServletResponse) {
+        if (httpServletResponse instanceof ContentCachingResponseWrapper) {
+            return (ContentCachingResponseWrapper) httpServletResponse;
+        }
+        return null;
+    }
+
+    private String getPayLoad(byte[] buf, String characterEncoding) {
+        String payload = "";
+        if (buf == null) {
+            return payload;
+        }
+        if (buf.length > 0) {
+            payloadMaxLength = Math.max(0, auditProperties.getLog().getPayloadMaxLength());
+            int length = Math.min(buf.length, getPayloadMaxLength());
+            try {
+                String encoding = StringUtils.defaultIfBlank(characterEncoding, StandardCharsets.UTF_8.name());
+                payload = new String(buf, 0, length, encoding);
+            } catch (UnsupportedEncodingException ex) {
+                payload = "[unknown]";
+            }
+        }
+        return payload;
+    }
+
+    private boolean isMultipart(final HttpServletRequest request) {
+        return request.getContentType() != null && request.getContentType().startsWith("multipart/form-data");
+    }
+
+    private boolean isBinaryContent(final HttpServletRequest request) {
+        if (request.getContentType() == null) {
+            return false;
+        }
+        return request.getContentType().startsWith("image")
+                || request.getContentType().startsWith("video")
+                || request.getContentType().startsWith("audio");
+    }
+
+    private boolean isBinaryContent(final HttpServletResponse response) {
+        return response.getContentType() != null
+                && (response.getContentType().startsWith("image")
+                || response.getContentType().startsWith("video")
+                || response.getContentType().startsWith("audio"));
+    }
+
+    private boolean isMultipart(final HttpServletResponse response) {
+        return response.getContentType() != null
+                && (response.getContentType().startsWith("multipart/form-data")
+                || response.getContentType().startsWith("application/octet-stream"));
+    }
+
+    /**
+     * Request wrapper that trims header/parameter whitespace and escapes XSS characters.
+     */
+    public static class HttpServletRequestAdapter extends HttpServletRequestWrapper {
+
+        private InputStream inputStream;
+
+        public HttpServletRequestAdapter(HttpServletRequest request, byte[] payload) {
+            super(request);
+            inputStream = new ByteArrayInputStream(payload);
+        }
+
+        @Override
+        public ServletInputStream getInputStream() throws IOException {
+            return new ServletInputStream() {
+                @Override
+                public boolean isFinished() {
+                    return false;
+                }
+
+                @Override
+                public boolean isReady() {
+                    return false;
+                }
+
+                @Override
+                public void setReadListener(ReadListener listener) {
+                }
+
+                @Override
+                public int read() throws IOException {
+                    return inputStream.read();
+                }
+            };
+        }
+
+        /**
+         * Returns sanitized values for all occurrences of the named parameter.
+         *
+         * @param name parameter name
+         * @return sanitized parameter values
+         */
+        @Override
+        public String[] getParameterValues(String name) {
+            String[] parameterValues = super.getParameterValues(name);
+            if (null == parameterValues || parameterValues.length == 0) {
+                return new String[0];
+            }
+            return Arrays.stream(parameterValues).map(this::clean).toArray(String[]::new);
+        }
+
+        /**
+         * @param name
+         * @return
+         */
+        @Override
+        public String getHeader(String name) {
+            if (null == name) {
+                return null;
+            }
+            return clean(super.getHeader(name));
+        }
+
+        /**
+         * Returns the sanitized value of the named parameter.
+         *
+         * @param parameter parameter name
+         * @return sanitized parameter value
+         */
+        @Override
+        public String getParameter(String parameter) {
+            if (null == parameter) {
+                return null;
+            }
+            return clean(super.getParameter(parameter));
+        }
+
+        private String clean(String value) {
+            return StringUtils.isEmpty(value) ? "" : HtmlUtils.htmlEscape(value.trim());
+        }
+    }
+}

@@ -1,0 +1,5 @@
+consumerTrace=com.raf.framework.dubbo.ConsumerTraceFilter
+providerTrace=com.raf.framework.dubbo.ProviderTraceFilter
+custGeneric=com.raf.framework.dubbo.CustGenericFilter
+custValid=com.raf.framework.dubbo.ValidFilter
+custException=com.raf.framework.dubbo.CustExceptionFilter

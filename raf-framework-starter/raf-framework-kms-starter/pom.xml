@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.jerryraf</groupId>
+        <artifactId>raf-framework-starter</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>raf-framework-kms-starter</artifactId>
+    <name>raf-framework-kms-starter</name>
+    <description>Multi-cloud KMS integration starter with Jasypt support</description>
+
+    <dependencies>
+        <!-- Core -->
+        <dependency>
+            <groupId>io.github.jerryraf</groupId>
+            <artifactId>raf-framework-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Jasypt (required) -->
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot</artifactId>
+        </dependency>
+
+        <!-- spring-retry (required) -->
+        <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
+
+        <!-- Google Cloud KMS (optional) -->
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-kms</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.google.auth</groupId>
+            <artifactId>google-auth-library-oauth2-http</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.google.auth</groupId>
+            <artifactId>google-auth-library-credentials</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-netty</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Aliyun KMS (optional) -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-core</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-kms</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Huawei Cloud KMS (optional) -->
+        <dependency>
+            <groupId>com.huaweicloud.sdk</groupId>
+            <artifactId>huaweicloud-sdk-core</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.huaweicloud.sdk</groupId>
+            <artifactId>huaweicloud-sdk-kms</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

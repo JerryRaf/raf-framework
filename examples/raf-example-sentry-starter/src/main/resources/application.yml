@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: raf-example-sentry-starter
+
+server:
+  port: 8080
+  shutdown: graceful
+
+raf:
+  sentry:
+    enabled: true
+    dsn: ${SENTRY_DSN:https://example@sentry.io/0}
+    environment: ${spring.profiles.active:dev}
+    release: ${spring.application.name}
+    debug: false
+    trace-id-source: framework   # framework | apm
+    exception-filter:
+      enabled: true
+      report-business-exception: false
+      include-exceptions:
+        - com.raf.framework.autoconfigure.common.exception.SystemException
+        - com.raf.framework.autoconfigure.common.exception.InfrastructureException
+    enable-performance: false
+    sample-rate: 1.0
+    traces-sample-rate: 0.1
+    tags:
+      team: backend
+      env: ${spring.profiles.active:dev}

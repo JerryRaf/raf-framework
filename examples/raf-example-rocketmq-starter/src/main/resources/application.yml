@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: raf-example-rocketmq-starter
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+
+server:
+  port: 8080
+  shutdown: graceful
+
+raf:
+  rocketmq:
+    enabled: true
+    name-server: ${ROCKETMQ_NAMESERVER:localhost:9876}
+    producer:
+      group: raf-example-producer-group
+      send-msg-timeout: 3000
+      retry-times-when-send-failed: 2
+      enable-transaction: true
+    consumer:
+      group: raf-example-consumer-group
+      consume-thread-min: 5
+      consume-thread-max: 20
+  redis:
+    enabled: true

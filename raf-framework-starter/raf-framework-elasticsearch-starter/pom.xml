@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>raf-framework-elasticsearch-starter</artifactId>
+    <name>raf-framework-elasticsearch-starter</name>
+    <description>Elasticsearch Starter for RAF Framework</description>
+    <packaging>jar</packaging>
+
+    <parent>
+        <groupId>io.github.jerryraf</groupId>
+        <artifactId>raf-framework-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../../raf-framework-parent</relativePath>
+    </parent>
+
+    <dependencies>
+        <!--raf autoconfigure-->
+        <dependency>
+            <groupId>io.github.jerryraf</groupId>
+            <artifactId>raf-framework-core</artifactId>
+        </dependency>
+
+        <!-- Elasticsearch Java API Client (8.x) -->
+        <dependency>
+            <groupId>co.elastic.clients</groupId>
+            <artifactId>elasticsearch-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-client</artifactId>
+        </dependency>
+
+        <!-- Jackson for JSON processing -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+</project>

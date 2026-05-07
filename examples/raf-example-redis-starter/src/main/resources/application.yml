@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: raf-example-redis-starter
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: 0
+
+server:
+  port: 8080
+
+raf:
+  redis:
+    enabled: true
+  redisson:
+    enabled: true
+    single:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: 0
+  log:
+    enabled: true
+    level: REQ_BODY

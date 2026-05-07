@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: raf-example-kms-starter
+
+server:
+  port: 8080
+
+raf:
+  kms:
+    enabled: true
+    provider: LOCAL
+    local-keys:
+      aes-biz-key:
+        plain-text: ${KMS_BIZ_KEY:dGVzdC1rZXktMzItYnl0ZXMtcGFkZGluZzEyMzQ1Njc=}
+        description: "业务数据加密密钥（示例，生产请替换）"
+      aes-config-key:
+        plain-text: ${KMS_CONFIG_KEY:Y29uZmlnLWtleS0zMi1ieXRlcy1wYWRkaW5nMTIzNDU=}
+        description: "配置数据加密密钥（示例，生产请替换）"
+  log:
+    enabled: true
+    level: REQ_BODY

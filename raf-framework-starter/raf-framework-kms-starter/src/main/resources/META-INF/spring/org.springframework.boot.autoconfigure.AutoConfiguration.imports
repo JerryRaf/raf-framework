@@ -1,0 +1,2 @@
+com.raf.framework.kms.KmsAutoConfiguration
+com.raf.framework.kms.jasypt.KmsJasyptConfig

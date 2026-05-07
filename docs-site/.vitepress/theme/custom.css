@@ -1,0 +1,95 @@
+/* ─── Google Fonts ─────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ─── RAF Design Tokens ─────────────────────────────────────────────────────── */
+:root {
+  --raf-accent: #f97316;
+  --raf-accent-bg: rgba(249, 115, 22, 0.08);
+  --raf-accent-border: rgba(249, 115, 22, 0.25);
+  --raf-surface: #0f1117;
+  --raf-surface-hover: #161b27;
+  --raf-border: rgba(255, 255, 255, 0.07);
+  --raf-grid: rgba(255, 255, 255, 0.04);
+  --raf-text-primary: #f1f5f9;
+  --raf-text-secondary: #94a3b8;
+}
+
+.dark {
+  --raf-surface: #0c0e14;
+  --raf-surface-hover: #131720;
+}
+
+/* Light mode overrides */
+html:not(.dark) {
+  --raf-surface: #fafafa;
+  --raf-surface-hover: #f4f4f5;
+  --raf-border: rgba(0, 0, 0, 0.08);
+  --raf-grid: rgba(0, 0, 0, 0.03);
+  --raf-text-primary: #0f172a;
+  --raf-text-secondary: #475569;
+  --raf-accent-bg: rgba(249, 115, 22, 0.06);
+  --raf-accent-border: rgba(249, 115, 22, 0.2);
+}
+
+/* ─── Hide the default VitePress features section ───────────────────────────── */
+.VPFeatures {
+  display: none !important;
+}
+
+/* ─── Hero refinements ──────────────────────────────────────────────────────── */
+.VPHero .name {
+  font-family: 'Sora', sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.03em !important;
+}
+
+.VPHero .text {
+  font-family: 'Sora', sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.VPHero .tagline {
+  font-family: 'Sora', sans-serif !important;
+  font-weight: 400 !important;
+}
+
+/* Brand button: orange accent */
+.VPButton.brand {
+  background: var(--raf-accent) !important;
+  border-color: var(--raf-accent) !important;
+  color: #fff !important;
+  font-family: 'Sora', sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  transition: opacity 0.2s ease, transform 0.2s ease !important;
+}
+
+.VPButton.brand:hover {
+  opacity: 0.88 !important;
+  transform: translateY(-1px) !important;
+}
+
+.VPButton.alt {
+  font-family: 'Sora', sans-serif !important;
+  font-weight: 500 !important;
+}
+
+/* ─── Nav & sidebar font ────────────────────────────────────────────────────── */
+.VPNav,
+.VPSidebar,
+.VPContent {
+  font-family: 'Sora', sans-serif;
+}
+
+/* ─── Code blocks: JetBrains Mono ──────────────────────────────────────────── */
+.vp-code,
+code,
+pre {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+}
+
+/* ─── Footer: reduce top padding ───────────────────────────────────────────── */
+.VPFooter {
+  padding-top: 10px !important;
+}

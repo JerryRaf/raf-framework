@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: raf-example-kafka-starter
+
+server:
+  port: 8080
+  shutdown: graceful
+
+raf:
+  kafka:
+    enabled: true
+    bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
+    producer:
+      acks: all
+      retries: 3
+      batch-size: 16384
+      linger-ms: 5
+      compression-type: snappy
+      enable-idempotence: true
+    consumer:
+      group-id: raf-example-group
+      enable-auto-commit: false
+      auto-offset-reset: latest
+      max-poll-records: 100
+      concurrency: 3

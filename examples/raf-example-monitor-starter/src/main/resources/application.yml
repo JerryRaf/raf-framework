@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: raf-example-monitor-starter
+  datasource:
+    url: jdbc:h2:mem:monitordb;DB_CLOSE_DELAY=-1;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+
+server:
+  port: 8080
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized  # 生产环境：仅授权用户可见详情；开发调试可改为 always
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+raf:
+  async:
+    enabled: true
+    pools:
+      order:
+        core-size: 5
+        max-size: 20
+        queue-capacity: 100
+        thread-name-prefix: order-async-
+      report:
+        core-size: 2
+        max-size: 10
+        queue-capacity: 50
+        thread-name-prefix: report-async-

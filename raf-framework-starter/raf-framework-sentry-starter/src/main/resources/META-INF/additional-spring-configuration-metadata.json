@@ -1,0 +1,118 @@
+{
+  "groups": [
+    {
+      "name": "raf.sentry",
+      "type": "com.raf.framework.sentry.RafSentryProperties",
+      "sourceType": "com.raf.framework.sentry.RafSentryProperties"
+    },
+    {
+      "name": "raf.sentry.exception-filter",
+      "type": "com.raf.framework.sentry.RafSentryProperties$ExceptionFilter",
+      "sourceType": "com.raf.framework.sentry.RafSentryProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "raf.sentry.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable Sentry integration.",
+      "defaultValue": false
+    },
+    {
+      "name": "raf.sentry.dsn",
+      "type": "java.lang.String",
+      "description": "Sentry DSN."
+    },
+    {
+      "name": "raf.sentry.trace-id-source",
+      "type": "com.raf.framework.sentry.RafSentryProperties$TraceIdSource",
+      "description": "TraceId source used for tagging Sentry events.",
+      "defaultValue": "FRAMEWORK"
+    },
+    {
+      "name": "raf.sentry.enable-performance",
+      "type": "java.lang.Boolean",
+      "description": "Enable Sentry performance tracing.",
+      "defaultValue": false
+    },
+    {
+      "name": "raf.sentry.sample-rate",
+      "type": "java.lang.Double",
+      "description": "Error event sample rate (0.0-1.0).",
+      "defaultValue": 1.0
+    },
+    {
+      "name": "raf.sentry.traces-sample-rate",
+      "type": "java.lang.Double",
+      "description": "Performance tracing sample rate (0.0-1.0).",
+      "defaultValue": 0.1
+    },
+    {
+      "name": "raf.sentry.environment",
+      "type": "java.lang.String",
+      "description": "Sentry environment name."
+    },
+    {
+      "name": "raf.sentry.release",
+      "type": "java.lang.String",
+      "description": "Sentry release identifier."
+    },
+    {
+      "name": "raf.sentry.server-name",
+      "type": "java.lang.String",
+      "description": "Server name sent to Sentry."
+    },
+    {
+      "name": "raf.sentry.debug",
+      "type": "java.lang.Boolean",
+      "description": "Enable Sentry debug logging.",
+      "defaultValue": false
+    },
+    {
+      "name": "raf.sentry.send-default-pii",
+      "type": "java.lang.Boolean",
+      "description": "Whether to send default PII to Sentry.",
+      "defaultValue": false
+    },
+    {
+      "name": "raf.sentry.tags",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Extra tags attached to Sentry events."
+    },
+    {
+      "name": "raf.sentry.exception-filter.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable exception filter rules.",
+      "defaultValue": true
+    },
+    {
+      "name": "raf.sentry.exception-filter.include-exceptions",
+      "type": "java.util.Set<java.lang.String>",
+      "description": "Exception class names to include."
+    },
+    {
+      "name": "raf.sentry.exception-filter.exclude-exceptions",
+      "type": "java.util.Set<java.lang.String>",
+      "description": "Exception class names to exclude with higher priority."
+    },
+    {
+      "name": "raf.sentry.exception-filter.report-business-exception",
+      "type": "java.lang.Boolean",
+      "description": "Whether BusinessException should be reported.",
+      "defaultValue": false
+    }
+  ],
+  "hints": [
+    {
+      "name": "raf.sentry.trace-id-source",
+      "values": [
+        {
+          "value": "FRAMEWORK"
+        },
+        {
+          "value": "APM"
+        }
+      ]
+    }
+  ]
+}

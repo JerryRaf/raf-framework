@@ -1,0 +1,54 @@
+# jar project
+target/
+
+# git worktrees
+.worktrees/
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+*.flattened-pom.xml
+
+# Windows nul file issue
+nul
+
+.claude
+.vscode
+
+# Internal development docs (not for public repo)
+CLAUDE.local.md
+
+*.sh
+docs/*
+docs-site/node_modules
+docs-site/.vitepress/dist/
+docs-site/.vitepress/cache/

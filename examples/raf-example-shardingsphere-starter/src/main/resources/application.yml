@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: raf-example-shardingsphere-starter
+
+server:
+  port: 8080
+  shutdown: graceful
+
+raf:
+  shardingsphere:
+    enabled: true
+    sql-show: ${SHARDING_SQL_SHOW:false}  # 生产环境默认关闭，开发时设置 SHARDING_SQL_SHOW=true
+    data-sources:
+      ds0:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://${DB_HOST:localhost}:3306/shard_db0?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+        username: ${DB_USERNAME}   # 使用专用低权限账号，禁止使用 root
+        password: ${DB_PASSWORD:}
+        initial-size: 5
+        min-idle: 5
+        max-active: 20
+      ds1:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://${DB_HOST:localhost}:3306/shard_db1?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+        username: ${DB_USERNAME}   # 使用专用低权限账号，禁止使用 root
+        password: ${DB_PASSWORD:}
+        initial-size: 5
+        min-idle: 5
+        max-active: 20
+    rules: |
+      - !SHARDING
+        tables:
+          t_order:
+            actualDataNodes: ds${0..1}.t_order_${0..1}
+            databaseStrategy:
+              standard:
+                shardingColumn: user_id
+                shardingAlgorithmName: db_inline
+            tableStrategy:
+              standard:
+                shardingColumn: order_id
+                shardingAlgorithmName: tbl_inline
+            keyGenerateStrategy:
+              column: order_id
+              keyGeneratorName: snowflake
+        shardingAlgorithms:
+          db_inline:
+            type: INLINE
+            props:
+              algorithm-expression: ds${user_id % 2}
+          tbl_inline:
+            type: INLINE
+            props:
+              algorithm-expression: t_order_${order_id % 2}
+        keyGenerators:
+          snowflake:
+            type: SNOWFLAKE

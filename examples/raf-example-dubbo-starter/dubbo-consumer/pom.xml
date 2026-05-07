@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.jerryraf.examples</groupId>
+        <artifactId>raf-example-dubbo-starter</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>dubbo-consumer</artifactId>
+    <packaging>jar</packaging>
+    <name>RAF Example - Dubbo Consumer</name>
+
+    <dependencies>
+        <!-- ===== API module ===== -->
+        <dependency>
+            <groupId>io.github.jerryraf.examples</groupId>
+            <artifactId>dubbo-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- ===== RAF Starters ===== -->
+        <dependency>
+            <groupId>io.github.jerryraf</groupId>
+            <artifactId>raf-framework-dubbo-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.jerryraf</groupId>
+            <artifactId>raf-framework-web-starter</artifactId>
+        </dependency>
+
+        <!-- ===== Test ===== -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

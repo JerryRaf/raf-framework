@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: raf-example-mongodb-starter
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017/raf_example}
+server:
+  port: 8080
+raf:
+  log:
+    enabled: true
+    level: REQ_BODY

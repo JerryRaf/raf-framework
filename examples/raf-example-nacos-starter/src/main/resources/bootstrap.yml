@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: raf-example-nacos-starter
+  cloud:
+    nacos:
+      config:
+        server-addr: ${NACOS_ADDR:localhost:8848}
+        namespace: ${NACOS_NAMESPACE:}
+        group: DEFAULT_GROUP
+        file-extension: yaml
+        refresh-enabled: true
+      discovery:
+        server-addr: ${NACOS_ADDR:localhost:8848}
+        namespace: ${NACOS_NAMESPACE:}
+
+server:
+  port: 8080
+
+# Local fallback config (overridden by Nacos when connected)
+app:
+  title: "RAF Example (local fallback)"
+  version: "1.0.0"
+
+raf:
+  log:
+    enabled: true
+    level: REQ_BODY

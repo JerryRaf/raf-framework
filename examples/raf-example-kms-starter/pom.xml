@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.jerryraf.examples</groupId>
+        <artifactId>raf-examples</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>io.github.jerryraf.examples</groupId>
+    <artifactId>raf-example-kms-starter</artifactId>
+    <version>${revision}</version>
+    <packaging>jar</packaging>
+
+    <name>RAF Example - KMS Starter</name>
+    <description>Demonstrates multi-cloud KMS integration with LOCAL mode and Jasypt config encryption</description>
+
+    <dependencies>
+        <!-- RAF Web Starter -->
+        <dependency>
+            <groupId>io.github.jerryraf</groupId>
+            <artifactId>raf-framework-web-starter</artifactId>
+        </dependency>
+
+        <!-- RAF KMS Starter -->
+        <dependency>
+            <groupId>io.github.jerryraf</groupId>
+            <artifactId>raf-framework-kms-starter</artifactId>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

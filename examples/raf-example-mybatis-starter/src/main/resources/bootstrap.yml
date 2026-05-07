@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: raf-example-mybatis-starter
+  datasource:
+    primary-master:
+      url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL
+      username: sa
+      password:
+      driver-class-name: org.h2.Driver
+    primary-slave:
+      url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL
+      username: sa
+      password:
+      driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true   # 仅开发环境使用，生产环境必须设为 false 或通过 spring.profiles 隔离
+      path: /h2-console
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+
+server:
+  port: 8080
+
+mybatis:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: io.github.jerryraf.examples.mybatis.entity
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  global-config:
+    db-config:
+      logic-delete-field: isDeleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+raf:
+  log:
+    enabled: true
+    level: REQ_BODY

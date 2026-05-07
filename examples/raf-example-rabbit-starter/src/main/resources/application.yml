@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: raf-example-rabbit-starter
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+server:
+  port: 8080
+
+raf:
+  rabbit:
+    addresses: ${RABBIT_ADDR:localhost:5672}
+    username: ${RABBIT_USER:guest}
+    password: ${RABBIT_PASS:guest}
+    virtual-host: /
+    provider:
+      ack: true
+    consumer:
+      concurrent-consumers: 3
+      max-concurrent-consumers: 10
+    delay:
+      dead-exchange: order.delay.dead.exchange
+      receive-exchange: order.delay.receive.exchange
+      queue-prefix:
+        - order.timeout
+    security:
+      strict-type-validation: false
+      max-retry-count: 3
+  redis:
+    enabled: true
+  log:
+    enabled: true
+    level: REQ_BODY

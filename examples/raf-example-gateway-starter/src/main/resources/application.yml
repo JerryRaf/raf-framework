@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: raf-example-gateway-starter
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+
+raf:
+  redis:
+    enabled: true
+  gateway:
+    enabled: true
+    security:
+      anti-replay:
+        enabled: true
+        window-seconds: 300
+        nonce-ttl-minutes: 10
