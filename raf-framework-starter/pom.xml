@@ -35,5 +35,6 @@
         <module>raf-framework-openapi-starter</module>
         <module>raf-framework-monitor-starter</module>
         <module>raf-framework-kms-starter</module>
+        <module>raf-framework-ai-starter</module>
     </modules>
 </project>

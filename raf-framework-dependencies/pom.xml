@@ -110,10 +110,21 @@
         <!--monitor-->
         <micrometer.prometheus.version>1.14.5</micrometer.prometheus.version>
         <dynamic.tp.version>1.2.1-x</dynamic.tp.version>
+        <!--ai-->
+        <spring-ai.version>1.0.0</spring-ai.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- ========== Spring AI BOM ========== -->
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- ========== RAF Framework Starters ========== -->
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
@@ -213,6 +224,11 @@
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-kms-starter</artifactId>
+                <version>${raf.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.jerryraf</groupId>
+                <artifactId>raf-framework-ai-starter</artifactId>
                 <version>${raf.framework.version}</version>
             </dependency>
 
