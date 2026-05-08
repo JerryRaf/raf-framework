@@ -46,6 +46,9 @@ public class ClaudeProvider implements AiProvider {
     public String chat(AiRequest request, List<Message> history) {
         try {
             ChatResponse response = chatModel.call(buildPrompt(request, history));
+            if (response == null || response.getResult() == null || response.getResult().getOutput() == null) {
+                throw new InfrastructureException("Claude returned empty response");
+            }
             return response.getResult().getOutput().getText();
         } catch (Exception e) {
             throw new InfrastructureException("Claude call failed: " + e.getMessage(), e);

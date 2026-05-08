@@ -55,19 +55,10 @@ public class AiServiceImpl implements AiService {
         AiProvider provider = providerFactory.get(providerName);
         List<Message> history = loadHistory(request);
 
-        // 流式场景：先追加用户消息，响应完成后追加 AI 消息
-        if (request.getSessionId() != null && !request.getSessionId().isBlank()) {
-            sessionManager.appendUserMessage(request.getSessionId(), request.getPrompt());
-        }
-
         StringBuilder fullResponse = new StringBuilder();
         return provider.streamChat(request, history)
             .doOnNext(fullResponse::append)
-            .doOnComplete(() -> {
-                if (request.getSessionId() != null && !request.getSessionId().isBlank()) {
-                    sessionManager.appendAssistantMessage(request.getSessionId(), fullResponse.toString());
-                }
-            });
+            .doOnComplete(() -> saveHistory(request, fullResponse.toString()));
     }
 
     private void validatePrompt(String prompt) {

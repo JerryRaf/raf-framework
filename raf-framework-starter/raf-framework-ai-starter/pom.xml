@@ -38,6 +38,12 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Caffeine（内存会话 TTL 支持） -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
