@@ -14,26 +14,36 @@
     <description>Spring AI integration starter for raf-framework</description>
 
     <dependencies>
-        <!-- Core -->
         <dependency>
             <groupId>io.github.jerryraf</groupId>
             <artifactId>raf-framework-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
-        <!-- Spring AI (optional, pulled in by specific model starters) -->
+        <!-- Spring AI OpenAI（同时支持 DeepSeek，通过 base-url 切换） -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-core</artifactId>
-            <version>${spring-ai.version}</version>
+            <artifactId>spring-ai-starter-model-openai</artifactId>
+        </dependency>
+
+        <!-- Spring AI Anthropic Claude -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-model-anthropic</artifactId>
+        </dependency>
+
+        <!-- Redisson（可选，有则用 Redis 存会话） -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <!-- Test -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
