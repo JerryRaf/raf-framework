@@ -10,10 +10,9 @@
 
 | 属性名 | 组件 | 版本 |
 |--------|------|------|
-| `spring.boot.version` | Spring Boot | 3.4.7 |
-| `spring.cloud.version` | Spring Cloud (2024) | 2024.0.1 |
+| `spring.boot.version` | Spring Boot | 3.5.14 |
+| `spring.cloud.version` | Spring Cloud (2025) | 2025.0.2 |
 | `aliababa.dependencies.version` | Spring Cloud Alibaba | 2022.0.0.2 |
-| `spring.security.version` | Spring Security | 6.4.4 |
 | `nacos.client.version` | Nacos Client | 2.5.1 |
 | `dubbo.starter.version` | Dubbo Spring Boot Starter | 3.3.4 |
 | `dubbo.version` | Dubbo | 3.3.4 |
@@ -109,7 +108,7 @@
 |--------|------|------|
 | `google-cloud-kms.version` | Google Cloud KMS | 2.50.0 |
 | `google-auth-library.version` | Google Auth Library | 1.42.1 |
-| `grpc.version` | gRPC | 1.60.0 |
+| `grpc.version` | gRPC | 1.79.0 |
 | `protobuf.version` | Protobuf Java | 3.25.1 |
 | `aliyun-java-core.version` | Aliyun Java SDK Core | 4.6.3 |
 | `aliyun-java-kms.version` | Aliyun Java SDK KMS | 2.16.6 |
@@ -196,4 +195,5 @@
 
 | 日期 | 变更内容 |
 |------|----------|
+| 2026-05-08 | Spring Boot 3.4.7 → 3.5.14，Spring Cloud 2024.0.1 → 2025.0.2，gRPC 1.60.0 → 1.79.0，移除 spring.security.version 显式声明（由 Spring Boot BOM 统一管理） |
 | 2026-05-07 | javassist 3.30.2-GA → 3.31.0-GA，aliyun-java-kms 2.16.0 → 2.16.6，sentinel 1.8.8 → 1.8.9 |
