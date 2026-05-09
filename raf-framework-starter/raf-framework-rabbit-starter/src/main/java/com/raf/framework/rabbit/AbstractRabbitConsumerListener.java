@@ -5,223 +5,104 @@ import com.raf.framework.core.spring.bean.SpringContext;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.Set;
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 
 /**
+ * RabbitMQ 消费者基类，封装手动 ACK、重试、失败回调。
+ *
+ * <p>使用方式：
+ * <ol>
+ *   <li>继承此类，实现 {@link #onMessage} 处理业务逻辑</li>
+ *   <li>实现 {@link #onFailure} 处理最终失败（持久化到 DB）</li>
+ *   <li>按需重写 {@link #retry} 控制是否重试（默认不重试）</li>
+ *   <li>在类上加 {@link RabbitMqConsumer} 注解指定监听队列</li>
+ * </ol>
+ *
+ * <p>消费流程：
+ * <pre>
+ * onMessage(RabbitMqMessage)
+ *   ├── 成功 → basicAck
+ *   └── 异常
+ *         ├── retry() == true → basicNack(requeue=true)  重新入队
+ *         └── retry() == false → onFailure() → basicReject(requeue=false)  进死信队列
+ * </pre>
+ *
  * @author Jerry
- * @date 2019/01/01
  */
 @Slf4j
 public abstract class AbstractRabbitConsumerListener implements ChannelAwareMessageListener {
 
-    private static final String RETRY_COUNT_HEADER = "x-retry-count";
-    private static final String TYPE_FIELD = "@type";
-
-    /**
-     * 消费消息
-     */
     @Override
     public void onMessage(Message message, Channel channel) throws Exception {
         String body = new String(message.getBody(), StandardCharsets.UTF_8);
+        long deliveryTag = message.getMessageProperties().getDeliveryTag();
         RabbitMqMessage rabbitMqMessage = null;
 
         try {
-            // Security validation: check message type whitelist
-            if (isStrictTypeValidationEnabled() && !validateMessageType(body)) {
-                log.error("Message type validation failed, rejecting message without retry");
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-                return;
-            }
-
-            // Check retry count
-            Integer retryCount = getRetryCount(message);
-            if (retryCount != null && retryCount >= getMaxRetryCount()) {
-                log.error("Message exceeded max retry count: {}, moving to DLQ", retryCount);
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-                sendToDLQ(message);
-                return;
-            }
-
             JsonService json = SpringContext.getBean(JsonService.class);
             rabbitMqMessage = json.parse(body, RabbitMqMessage.class);
             this.onMessage(rabbitMqMessage);
-
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+            channel.basicAck(deliveryTag, false);
         } catch (Exception ex) {
-            log.error("Message consumption failed: {}", ex.getMessage(), ex);
+            log.error("Message consumption failed, msgId={}, error={}",
+                    rabbitMqMessage != null ? rabbitMqMessage.getMsgId() : "unknown",
+                    ex.getMessage(), ex);
 
-            if (null != rabbitMqMessage && retry(rabbitMqMessage)) {
-                Integer currentRetryCount = getRetryCount(message);
-                int newRetryCount = (currentRetryCount == null ? 0 : currentRetryCount) + 1;
-                log.warn("Retrying message, retry count: {}", newRetryCount);
-                channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, true);
+            if (rabbitMqMessage != null && retry(rabbitMqMessage)) {
+                log.warn("Retrying message, msgId={}", rabbitMqMessage.getMsgId());
+                channel.basicNack(deliveryTag, false, true);
             } else {
-                giveUp(message, channel, message.getMessageProperties().getDeliveryTag(), ex.getMessage());
+                doGiveUp(message, channel, deliveryTag, ex.getMessage());
             }
         }
     }
 
-    /**
-     * Validate message type against whitelist
-     *
-     * @param messageBody message body
-     * @return true if valid, false otherwise
-     */
-    private boolean validateMessageType(String messageBody) {
-        try {
-            Set<String> allowedClasses = getAllowedMessageClasses();
-            if (allowedClasses == null || allowedClasses.isEmpty()) {
-                // If no whitelist configured, allow all (backward compatible)
-                return true;
-            }
-
-            JSONObject json = JSON.parseObject(messageBody);
-            String className = json.getString(TYPE_FIELD);
-
-            if (className != null && !allowedClasses.contains(className)) {
-                log.error("Illegal message type: {}, allowed types: {}", className, allowedClasses);
-                return false;
-            }
-
-            return true;
-        } catch (Exception e) {
-            log.error("Failed to validate message type", e);
-            return false;
-        }
-    }
-
-    /**
-     * Get retry count from message headers
-     *
-     * @param message message
-     * @return retry count
-     */
-    private Integer getRetryCount(Message message) {
-        Map<String, Object> headers = message.getMessageProperties().getHeaders();
-        if (headers != null) {
-            Object retryCount = headers.get(RETRY_COUNT_HEADER);
-            if (retryCount instanceof Integer) {
-                return (Integer) retryCount;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @param message message
-     * @param channel channel
-     * @param deliveryTag delivery tag
-     * @param error error message
-     */
-    private void giveUp(Message message, Channel channel, long deliveryTag, String error) {
+    private void doGiveUp(Message message, Channel channel, long deliveryTag, String error) {
         try {
             onFailure(message, error);
         } catch (Exception ex) {
-            log.error("Message consumption rollback exception, body: {}", new String(message.getBody(), StandardCharsets.UTF_8));
+            log.error("onFailure callback threw exception, body={}",
+                    new String(message.getBody(), StandardCharsets.UTF_8), ex);
         } finally {
             try {
                 channel.basicReject(deliveryTag, false);
             } catch (IOException ex) {
-                log.error("Failed to reject message: {}", ex.getMessage());
+                log.error("basicReject failed: {}", ex.getMessage());
             }
         }
     }
 
     /**
-     * Consume a message.
+     * 处理业务消息。
      *
-     * @param message message to consume
-     * @throws Exception on consumption failure
+     * @param message 反序列化后的消息
+     * @throws Exception 抛出异常时触发重试或失败回调
      */
     public abstract void onMessage(RabbitMqMessage message) throws Exception;
 
     /**
-     * Handle a failed message.
+     * 消息最终消费失败的兜底处理（不再重试时调用）。
+     * 业务侧应将失败消息持久化到 DB，以便人工补偿。
      *
-     * @param message original AMQP message
-     * @param error   error description
-     * @throws Exception on failure handling error
+     * @param message 原始 AMQP 消息
+     * @param error   错误描述
+     * @throws Exception 允许抛出，框架会捕获并继续 reject
      */
     public abstract void onFailure(Message message, String error) throws Exception;
 
     /**
-     * Whether to retry on exception. Override to enable retry logic.
+     * 是否重试。默认不重试，子类按需重写。
      *
-     * @param message failed message
-     * @return true to retry, false to reject
+     * <p>注意：返回 true 会将消息重新入队（basicNack requeue=true），
+     * 如果消费逻辑存在 bug 会导致无限循环，建议配合 {@link RabbitMqMessage#isOverTimes()} 限制次数。
+     *
+     * @param message 失败的消息
+     * @return true 重新入队，false 进死信队列
      */
     public boolean retry(RabbitMqMessage message) {
         return false;
-    }
-
-    /**
-     * Send message to Dead Letter Queue (DLQ)
-     * Subclasses can override this method to implement custom DLQ logic
-     *
-     * @param message message
-     */
-    protected void sendToDLQ(Message message) {
-        log.warn("Sending message to DLQ: {}", new String(message.getBody(), StandardCharsets.UTF_8));
-        // Default implementation: just log
-        // Subclasses should implement actual DLQ sending logic
-    }
-
-    /**
-     * Get allowed message classes for deserialization
-     * Subclasses should override this method to provide whitelist
-     *
-     * @return set of allowed class names
-     */
-    protected Set<String> getAllowedMessageClasses() {
-        try {
-            RabbitMqProperties properties = SpringContext.getBean(RabbitMqProperties.class);
-            if (properties != null && properties.getSecurity() != null) {
-                return properties.getSecurity().getAllowedMessageClasses();
-            }
-        } catch (Exception e) {
-            log.warn("Failed to get RabbitMqProperties, using default empty whitelist");
-        }
-        return null;
-    }
-
-    /**
-     * Get max retry count
-     *
-     * @return max retry count
-     */
-    protected int getMaxRetryCount() {
-        try {
-            RabbitMqProperties properties = SpringContext.getBean(RabbitMqProperties.class);
-            if (properties != null && properties.getSecurity() != null) {
-                return properties.getSecurity().getMaxRetryCount();
-            }
-        } catch (Exception e) {
-            log.warn("Failed to get RabbitMqProperties, using default max retry count: 3");
-        }
-        return 3;
-    }
-
-    /**
-     * Check if strict type validation is enabled
-     *
-     * @return true if enabled, false otherwise
-     */
-    protected boolean isStrictTypeValidationEnabled() {
-        try {
-            RabbitMqProperties properties = SpringContext.getBean(RabbitMqProperties.class);
-            if (properties != null && properties.getSecurity() != null) {
-                return properties.getSecurity().isStrictTypeValidation();
-            }
-        } catch (Exception e) {
-            log.warn("Failed to get RabbitMqProperties, using default strict validation: true");
-        }
-        return true;
     }
 }

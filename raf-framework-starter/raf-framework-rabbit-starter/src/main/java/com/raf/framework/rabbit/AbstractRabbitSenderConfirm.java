@@ -1,82 +1,116 @@
 package com.raf.framework.rabbit;
 
-import com.raf.framework.core.jackson.JsonService;
-
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.ReturnedMessage;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
+ * 生产者发送确认基类。
+ *
+ * <p>当 {@code raf.rabbit.provider.ack=true} 时，框架自动将此 Bean 注册为
+ * RabbitTemplate 的 ConfirmCallback 和 ReturnsCallback。
+ *
+ * <p>业务侧继承此类并实现 {@link #giveUp}，在消息彻底无法投递时持久化到 DB 做补偿。
+ *
+ * <p>使用示例：
+ * <pre>{@code
+ * @Component
+ * public class OrderSenderConfirm extends AbstractRabbitSenderConfirm {
+ *     @Override
+ *     public void giveUp(RabbitMqMessage message, Integer replyCode,
+ *                        String replyText, String exchange, String routingKey) {
+ *         // 持久化失败消息到 DB，人工补偿
+ *         failedMessageRepo.save(FailedMessage.of(message, exchange, routingKey, replyText));
+ *     }
+ * }
+ * }</pre>
+ *
  * @author Jerry
- * @date 2019/01/01
- * rabbitMQ 生产端确认 消息的确认及return
  */
 @Slf4j
-public abstract class AbstractRabbitSenderConfirm implements ConfirmCallback, RabbitTemplate.ReturnsCallback {
+public abstract class AbstractRabbitSenderConfirm
+        implements ConfirmCallback, RabbitTemplate.ReturnsCallback {
 
-    @Autowired
-    private JsonService json;
-
-    @Autowired
-    private RabbitMessageCacheMgr rabbitMessageCacheMgr;
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     /**
-     * confirm只会判断是否成功达到exchange
-     *
-     * @param correlationData
-     * @param ack             返回的一个交换机确认状态 true为确认(正常），false为未确认
-     * @param cause           未确认的一个原因，如果ack为true的话，此值为null
+     * confirm 回调：消息是否成功到达 Exchange。
+     * ack=false 时调用 {@link #onConfirmFail} 通知业务侧。
      */
     @Override
     public void confirm(CorrelationData correlationData, boolean ack, String cause) {
-        String msgId = correlationData.getId();
-        if (!ack) {
-            RabbitMessageCacheMgr.CachedMessage message = rabbitMessageCacheMgr.getNow(msgId);
-            if (Optional.ofNullable(message).isPresent()) {
-                RabbitMqMessage mqMessage = message.getMessage();
-                if (mqMessage.isOverTimes()) {
-                    log.error("Message routing to exchange failed, giving up. msgId={}", msgId);
-                    giveUp(mqMessage, null, null, message.getExchange(), message.getRouteKey());
-                    return;
-                }
-                rabbitMessageCacheMgr.addRetry(mqMessage.getMsgId());
-            }
+        if (correlationData == null) {
             return;
         }
-        rabbitMessageCacheMgr.remove(msgId);
+        if (!ack) {
+            String msgId = correlationData.getId();
+            log.error("Message failed to reach exchange, msgId={}, cause={}", msgId, cause);
+            onConfirmFail(msgId, cause);
+        }
     }
 
+    /**
+     * return 回调：消息到达 Exchange 但无法路由到任何 Queue。
+     * 调用 {@link #giveUp} 通知业务侧处理。
+     */
     @Override
     public void returnedMessage(ReturnedMessage returnedMessage) {
-        RabbitMqMessage rabbitMqMessage = json.parse(
-                new String(returnedMessage.getMessage().getBody(), StandardCharsets.UTF_8), RabbitMqMessage.class);
-        log.error("Message returned from exchange. content={}, replyText={}", json.toJson(rabbitMqMessage), returnedMessage.getReplyText());
-        if (rabbitMqMessage.isOverTimes()) {
-            giveUp(
-                    rabbitMqMessage,
+        String body = new String(returnedMessage.getMessage().getBody(), StandardCharsets.UTF_8);
+        log.error("Message returned from exchange, exchange={}, routingKey={}, replyCode={}, replyText={}",
+                returnedMessage.getExchange(),
+                returnedMessage.getRoutingKey(),
+                returnedMessage.getReplyCode(),
+                returnedMessage.getReplyText());
+        RabbitMqMessage message = tryParseMessage(body);
+        try {
+            giveUp(message,
                     returnedMessage.getReplyCode(),
                     returnedMessage.getReplyText(),
                     returnedMessage.getExchange(),
                     returnedMessage.getRoutingKey());
-            return;
+        } catch (Exception ex) {
+            log.error("giveUp callback threw exception, body={}", body, ex);
         }
-        rabbitMessageCacheMgr.addRetry(rabbitMqMessage.getMsgId());
     }
 
     /**
-     * 失败放弃
+     * confirm 失败回调（消息未到达 Exchange，如网络问题）。
+     * 默认只打日志，子类可重写做告警或重发。
      *
-     * @param message
-     * @param replyCode
-     * @param replyText
-     * @param exchange
-     * @param routingKey
+     * @param msgId 消息 ID
+     * @param cause 失败原因
+     */
+    protected void onConfirmFail(String msgId, String cause) {
+        // 默认空实现，子类按需重写
+    }
+
+    /**
+     * 消息彻底无法投递时的兜底处理（到达 Exchange 但无法路由到 Queue）。
+     * 业务侧必须实现此方法，将失败消息持久化到 DB 以便人工补偿。
+     *
+     * @param message    消息体（解析失败时为 null）
+     * @param replyCode  AMQP reply code
+     * @param replyText  AMQP reply text
+     * @param exchange   目标 Exchange
+     * @param routingKey 路由 Key
      */
     public abstract void giveUp(
-            RabbitMqMessage message, Integer replyCode, String replyText, String exchange, String routingKey);
+            RabbitMqMessage message,
+            Integer replyCode,
+            String replyText,
+            String exchange,
+            String routingKey);
+
+    private RabbitMqMessage tryParseMessage(String body) {
+        try {
+            return MAPPER.readValue(body, RabbitMqMessage.class);
+        } catch (Exception e) {
+            log.warn("Failed to parse message body as RabbitMqMessage: {}", body);
+            return null;
+        }
+    }
 }
