@@ -1,0 +1,76 @@
+{
+  "groups": [
+    {
+      "name": "raf.okhttp",
+      "type": "com.raf.framework.okhttp.OkHttpProperties",
+      "sourceType": "com.raf.framework.okhttp.OkHttpProperties",
+      "description": "OkHttp client configuration for third-party API calls."
+    }
+  ],
+  "properties": [
+    {
+      "name": "raf.okhttp.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.okhttp.OkHttpProperties",
+      "description": "Whether to enable the OkHttp client integration."
+    },
+    {
+      "name": "raf.okhttp.connect-timeout",
+      "type": "java.lang.Integer",
+      "defaultValue": 10,
+      "sourceType": "com.raf.framework.okhttp.OkHttpProperties",
+      "description": "Connection timeout in seconds."
+    },
+    {
+      "name": "raf.okhttp.read-timeout",
+      "type": "java.lang.Integer",
+      "defaultValue": 30,
+      "sourceType": "com.raf.framework.okhttp.OkHttpProperties",
+      "description": "Read timeout in seconds."
+    },
+    {
+      "name": "raf.okhttp.write-timeout",
+      "type": "java.lang.Integer",
+      "defaultValue": 30,
+      "sourceType": "com.raf.framework.okhttp.OkHttpProperties",
+      "description": "Write timeout in seconds."
+    },
+    {
+      "name": "raf.okhttp.max-idle-connections",
+      "type": "java.lang.Integer",
+      "defaultValue": 200,
+      "sourceType": "com.raf.framework.okhttp.OkHttpProperties",
+      "description": "Maximum number of idle connections in the connection pool."
+    },
+    {
+      "name": "raf.okhttp.keep-alive-duration",
+      "type": "java.lang.Long",
+      "defaultValue": 300,
+      "sourceType": "com.raf.framework.okhttp.OkHttpProperties",
+      "description": "Keep-alive duration in seconds for idle connections."
+    },
+    {
+      "name": "raf.okhttp.retry-on-connection-failure",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "sourceType": "com.raf.framework.okhttp.OkHttpProperties",
+      "description": "Whether to retry requests on connection failure."
+    },
+    {
+      "name": "raf.okhttp.max-requests",
+      "type": "java.lang.Integer",
+      "defaultValue": 200,
+      "sourceType": "com.raf.framework.okhttp.OkHttpProperties",
+      "description": "Maximum number of concurrent requests across all hosts."
+    },
+    {
+      "name": "raf.okhttp.max-requests-per-host",
+      "type": "java.lang.Integer",
+      "defaultValue": 100,
+      "sourceType": "com.raf.framework.okhttp.OkHttpProperties",
+      "description": "Maximum number of concurrent requests per host."
+    }
+  ],
+  "hints": []
+}

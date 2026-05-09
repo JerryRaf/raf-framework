@@ -28,9 +28,6 @@
         <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
         <maven.flatten.plugin.version>1.7.1</maven.flatten.plugin.version>
 
-        <!--raf framework: keep revision here so resolveCiFriendliesOnly resolves it in <version> elements-->
-        <raf.framework.version>${revision}</raf.framework.version>
-
         <!--base-->
         <spring.boot.version>3.5.14</spring.boot.version>
         <spring.cloud.version>2025.0.2</spring.cloud.version>
@@ -129,107 +126,107 @@
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-core</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-web-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-gateway-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-nacos-config-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-nacos-discovery-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-dubbo-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-datasource-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-mybatis-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-redis-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-mongodb-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-rabbit-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-rocketmq-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-kafka-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-elasticsearch-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-shardingsphere-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-openapi-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-okhttp-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-monitor-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-sentry-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-kms-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jerryraf</groupId>
                 <artifactId>raf-framework-ai-starter</artifactId>
-                <version>${raf.framework.version}</version>
+                <version>${revision}</version>
             </dependency>
 
             <!-- ========== Spring Boot & Cloud Dependencies ========== -->
@@ -765,21 +762,15 @@
 
     <build>
         <plugins>
-            <!-- Override root flatten config: add properties interpolation so ${revision}
-                 in <properties> is resolved to the actual version in the published BOM -->
+            <!-- Override root flatten config: use 'bom' mode so ${revision}
+                 in <dependencyManagement> versions is resolved in the published BOM -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
                 <version>${maven.flatten.plugin.version}</version>
                 <configuration>
                     <updatePomFile>true</updatePomFile>
-                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
-                    <pomElements>
-                        <url>resolve</url>
-                        <developers>resolve</developers>
-                        <scm>resolve</scm>
-                        <properties>interpolate</properties>
-                    </pomElements>
+                    <flattenMode>bom</flattenMode>
                 </configuration>
                 <executions>
                     <execution>

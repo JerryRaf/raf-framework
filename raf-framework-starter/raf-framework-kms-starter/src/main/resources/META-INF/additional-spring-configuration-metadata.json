@@ -1,0 +1,202 @@
+{
+  "groups": [
+    {
+      "name": "raf.kms",
+      "type": "com.raf.framework.kms.properties.KmsProperties",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties",
+      "description": "Multi-cloud KMS (Key Management Service) and field encryption configuration."
+    },
+    {
+      "name": "raf.kms.aliyun",
+      "type": "com.raf.framework.kms.properties.KmsProperties$AliyunConfig",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties",
+      "sourceMethod": "getAliyun()",
+      "description": "Alibaba Cloud KMS configuration."
+    },
+    {
+      "name": "raf.kms.huawei",
+      "type": "com.raf.framework.kms.properties.KmsProperties$HuaweiConfig",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties",
+      "sourceMethod": "getHuawei()",
+      "description": "Huawei Cloud KMS configuration."
+    },
+    {
+      "name": "raf.kms.google",
+      "type": "com.raf.framework.kms.properties.KmsProperties$GoogleConfig",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties",
+      "sourceMethod": "getGoogle()",
+      "description": "Google Cloud KMS configuration."
+    },
+    {
+      "name": "raf.kms.google.proxy",
+      "type": "com.raf.framework.kms.properties.KmsProperties$ProxyConfig",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$GoogleConfig",
+      "sourceMethod": "getProxy()",
+      "description": "Proxy configuration for Google Cloud KMS access."
+    },
+    {
+      "name": "raf.kms.data-key",
+      "type": "com.raf.framework.kms.properties.KmsProperties$DataKeyConfig",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties",
+      "sourceMethod": "getDataKey()",
+      "description": "Data encryption key (DEK) configuration."
+    }
+  ],
+  "properties": [
+    {
+      "name": "raf.kms.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties",
+      "description": "Whether to enable the KMS field encryption integration."
+    },
+    {
+      "name": "raf.kms.provider",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties",
+      "description": "KMS provider to use. Determines which cloud SDK is used for key operations."
+    },
+    {
+      "name": "raf.kms.key-id",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties",
+      "description": "KMS master key ID (CMK). Used to encrypt/decrypt the data encryption key."
+    },
+    {
+      "name": "raf.kms.data-key.mode",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$DataKeyConfig",
+      "description": "Data key mode. Use 'KMS' to decrypt the cipher text via KMS, or 'LOCAL' to use a plaintext key directly."
+    },
+    {
+      "name": "raf.kms.data-key.cipher-text",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$DataKeyConfig",
+      "description": "KMS-encrypted data key ciphertext. Used when mode is 'KMS'."
+    },
+    {
+      "name": "raf.kms.data-key.plain-text",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$DataKeyConfig",
+      "description": "Plaintext data encryption key. Used when mode is 'LOCAL'. Not recommended for production."
+    },
+    {
+      "name": "raf.kms.data-key.description",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$DataKeyConfig",
+      "description": "Human-readable description of this data key."
+    },
+    {
+      "name": "raf.kms.aliyun.region-id",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$AliyunConfig",
+      "description": "Alibaba Cloud region ID, e.g. cn-hangzhou."
+    },
+    {
+      "name": "raf.kms.aliyun.access-key-id",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$AliyunConfig",
+      "description": "Alibaba Cloud AccessKeyId."
+    },
+    {
+      "name": "raf.kms.aliyun.access-key-secret",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$AliyunConfig",
+      "description": "Alibaba Cloud AccessKeySecret."
+    },
+    {
+      "name": "raf.kms.huawei.region",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$HuaweiConfig",
+      "description": "Huawei Cloud region, e.g. cn-north-4."
+    },
+    {
+      "name": "raf.kms.huawei.access-key",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$HuaweiConfig",
+      "description": "Huawei Cloud AccessKey."
+    },
+    {
+      "name": "raf.kms.huawei.secret-key",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$HuaweiConfig",
+      "description": "Huawei Cloud SecretKey."
+    },
+    {
+      "name": "raf.kms.huawei.project-id",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$HuaweiConfig",
+      "description": "Huawei Cloud project ID."
+    },
+    {
+      "name": "raf.kms.google.auth-mode",
+      "type": "java.lang.String",
+      "defaultValue": "ADC",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$GoogleConfig",
+      "description": "Google Cloud authentication mode. 'ADC' uses Application Default Credentials; 'SERVICE_ACCOUNT' uses a service account JSON file."
+    },
+    {
+      "name": "raf.kms.google.service-account-json-path",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$GoogleConfig",
+      "description": "Path to the Google service account JSON key file. Required when auth-mode is 'SERVICE_ACCOUNT'."
+    },
+    {
+      "name": "raf.kms.google.proxy.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$ProxyConfig",
+      "description": "Whether to route Google KMS requests through a proxy."
+    },
+    {
+      "name": "raf.kms.google.proxy.host",
+      "type": "java.lang.String",
+      "defaultValue": "127.0.0.1",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$ProxyConfig",
+      "description": "Proxy host address."
+    },
+    {
+      "name": "raf.kms.google.proxy.port",
+      "type": "java.lang.Integer",
+      "defaultValue": 10809,
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$ProxyConfig",
+      "description": "Proxy port."
+    },
+    {
+      "name": "raf.kms.google.proxy.username",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$ProxyConfig",
+      "description": "Proxy authentication username."
+    },
+    {
+      "name": "raf.kms.google.proxy.password",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kms.properties.KmsProperties$ProxyConfig",
+      "description": "Proxy authentication password."
+    }
+  ],
+  "hints": [
+    {
+      "name": "raf.kms.provider",
+      "values": [
+        { "value": "aliyun", "description": "Alibaba Cloud KMS." },
+        { "value": "huawei", "description": "Huawei Cloud KMS." },
+        { "value": "google", "description": "Google Cloud KMS." }
+      ]
+    },
+    {
+      "name": "raf.kms.data-key.mode",
+      "values": [
+        { "value": "KMS", "description": "Decrypt the data key ciphertext via the KMS service on startup." },
+        { "value": "LOCAL", "description": "Use a plaintext data key directly. Suitable for development only." }
+      ]
+    },
+    {
+      "name": "raf.kms.google.auth-mode",
+      "values": [
+        { "value": "ADC", "description": "Application Default Credentials (recommended for GKE/Cloud Run)." },
+        { "value": "SERVICE_ACCOUNT", "description": "Explicit service account JSON key file." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "groups": [
+    {
+      "name": "raf.rabbit",
+      "type": "com.raf.framework.rabbit.RabbitMqProperties",
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties",
+      "description": "RabbitMQ integration configuration."
+    },
+    {
+      "name": "raf.rabbit.ssl",
+      "type": "com.raf.framework.rabbit.RabbitMqProperties$Ssl",
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties",
+      "sourceMethod": "getSsl()",
+      "description": "RabbitMQ SSL/TLS configuration."
+    },
+    {
+      "name": "raf.rabbit.provider",
+      "type": "com.raf.framework.rabbit.RabbitMqProperties$Provider",
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties",
+      "sourceMethod": "getProvider()",
+      "description": "RabbitMQ producer (publisher) configuration."
+    },
+    {
+      "name": "raf.rabbit.consumer",
+      "type": "com.raf.framework.rabbit.RabbitMqProperties$Consumer",
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties",
+      "sourceMethod": "getConsumer()",
+      "description": "RabbitMQ consumer (listener) global configuration."
+    }
+  ],
+  "properties": [
+    {
+      "name": "raf.rabbit.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties",
+      "description": "Whether to enable the RabbitMQ integration. Must be set to true to activate all RabbitMQ beans."
+    },
+    {
+      "name": "raf.rabbit.username",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties",
+      "description": "RabbitMQ broker username."
+    },
+    {
+      "name": "raf.rabbit.password",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties",
+      "description": "RabbitMQ broker password."
+    },
+    {
+      "name": "raf.rabbit.addresses",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties",
+      "description": "Comma-separated list of broker addresses, e.g. host1:5672,host2:5672."
+    },
+    {
+      "name": "raf.rabbit.virtual-host",
+      "type": "java.lang.String",
+      "defaultValue": "/",
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties",
+      "description": "RabbitMQ virtual host. Defaults to '/'."
+    },
+    {
+      "name": "raf.rabbit.ssl.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties$Ssl",
+      "description": "Whether to enable SSL/TLS for the RabbitMQ connection."
+    },
+    {
+      "name": "raf.rabbit.ssl.key-store",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties$Ssl",
+      "description": "Path to the key store that holds the SSL certificate, e.g. classpath:keystore.p12."
+    },
+    {
+      "name": "raf.rabbit.ssl.key-store-password",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties$Ssl",
+      "description": "Password used to access the key store."
+    },
+    {
+      "name": "raf.rabbit.ssl.trust-store",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties$Ssl",
+      "description": "Path to the trust store that holds trusted SSL certificates."
+    },
+    {
+      "name": "raf.rabbit.ssl.trust-store-password",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties$Ssl",
+      "description": "Password used to access the trust store."
+    },
+    {
+      "name": "raf.rabbit.ssl.algorithm",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties$Ssl",
+      "description": "SSL algorithm to use, e.g. TLSv1.2."
+    },
+    {
+      "name": "raf.rabbit.provider.ack",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties$Provider",
+      "description": "Whether to enable publisher confirms and mandatory returns. Enabling this ensures messages are confirmed by the broker but adds latency overhead."
+    },
+    {
+      "name": "raf.rabbit.consumer.group",
+      "type": "java.lang.String",
+      "defaultValue": "DEFAULT_RABBIT_GROUP",
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties$Consumer",
+      "description": "Consumer group name, used as a logical identifier for the listener container group."
+    },
+    {
+      "name": "raf.rabbit.consumer.concurrent-consumers",
+      "type": "java.lang.Integer",
+      "defaultValue": 3,
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties$Consumer",
+      "description": "Initial number of concurrent consumers per listener container. Can be overridden per consumer via @RabbitMqConsumer."
+    },
+    {
+      "name": "raf.rabbit.consumer.max-concurrent-consumers",
+      "type": "java.lang.Integer",
+      "defaultValue": 10,
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties$Consumer",
+      "description": "Maximum number of concurrent consumers per listener container. Can be overridden per consumer via @RabbitMqConsumer."
+    },
+    {
+      "name": "raf.rabbit.bindings",
+      "type": "java.util.List<com.raf.framework.rabbit.RabbitMqProperties.BindingDefinition>",
+      "sourceType": "com.raf.framework.rabbit.RabbitMqProperties",
+      "description": "List of topology declarations (exchange, queue, binding). Topology is declared by the producer side on startup."
+    }
+  ],
+  "hints": [
+    {
+      "name": "raf.rabbit.bindings[*].exchange-type",
+      "values": [
+        { "value": "direct", "description": "Routes messages to queues based on an exact routing key match." },
+        { "value": "topic", "description": "Routes messages to queues based on wildcard routing key patterns." },
+        { "value": "fanout", "description": "Broadcasts messages to all bound queues, ignoring routing keys." },
+        { "value": "headers", "description": "Routes messages based on message header attributes." }
+      ]
+    },
+    {
+      "name": "raf.rabbit.bindings[*].delay.dead-exchange-type",
+      "values": [
+        { "value": "direct", "description": "Routes dead-lettered messages based on an exact routing key match." },
+        { "value": "topic", "description": "Routes dead-lettered messages based on wildcard routing key patterns." },
+        { "value": "fanout", "description": "Broadcasts dead-lettered messages to all bound queues." }
+      ]
+    }
+  ]
+}

@@ -4,14 +4,13 @@ import com.raf.framework.core.jackson.JsonService;
 import com.raf.framework.core.snowflake.SnowFlakeBuilder;
 import com.raf.framework.rabbit.RabbitMqMessage;
 import com.raf.framework.rabbit.RabbitMqMessageSender;
-import io.github.jerryraf.examples.rabbit.config.RabbitNormalConfig;
 import io.github.jerryraf.examples.rabbit.dto.OrderMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
- * Sends order notification messages to the normal queue.
+ * 订单通知消息生产者。
  *
  * @author Jerry
  */
@@ -19,6 +18,9 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class OrderNotifyProducer {
+
+    private static final String EXCHANGE    = "order.notify.exchange";
+    private static final String ROUTING_KEY = "order.notify";
 
     private final RabbitMqMessageSender sender;
     private final JsonService jsonService;
@@ -29,6 +31,6 @@ public class OrderNotifyProducer {
         msg.setMessage(jsonService.toJson(order));
 
         log.info("Sending order notify: msgId={}, orderId={}", msg.getMsgId(), order.getOrderId());
-        sender.send(msg, RabbitNormalConfig.ORDER_NOTIFY_EXCHANGE, RabbitNormalConfig.ORDER_NOTIFY_ROUTE);
+        sender.send(msg, EXCHANGE, ROUTING_KEY);
     }
 }

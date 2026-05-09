@@ -1,0 +1,93 @@
+{
+  "groups": [
+    {
+      "name": "raf.jackson",
+      "type": "com.raf.framework.core.jackson.JacksonProperties",
+      "sourceType": "com.raf.framework.core.jackson.JacksonProperties",
+      "description": "Jackson JSON serialization/deserialization configuration."
+    },
+    {
+      "name": "raf.snow-flake",
+      "type": "com.raf.framework.core.snowflake.SnowFlakeProperties",
+      "sourceType": "com.raf.framework.core.snowflake.SnowFlakeProperties",
+      "description": "Snowflake distributed ID generator configuration."
+    }
+  ],
+  "properties": [
+    {
+      "name": "raf.jackson.timezone",
+      "type": "java.lang.String",
+      "defaultValue": "Asia/Shanghai",
+      "sourceType": "com.raf.framework.core.jackson.JacksonProperties",
+      "description": "Default timezone for date/time serialization."
+    },
+    {
+      "name": "raf.jackson.date-format",
+      "type": "java.lang.String",
+      "defaultValue": "yyyy-MM-dd HH:mm:ss",
+      "sourceType": "com.raf.framework.core.jackson.JacksonProperties",
+      "description": "Default date format pattern for java.util.Date serialization."
+    },
+    {
+      "name": "raf.jackson.write-dates-as-timestamps",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.core.jackson.JacksonProperties",
+      "description": "Whether to serialize dates as Unix timestamps. When false, dates are serialized as formatted strings."
+    },
+    {
+      "name": "raf.jackson.serialization-inclusion",
+      "type": "java.lang.String",
+      "defaultValue": "ALWAYS",
+      "sourceType": "com.raf.framework.core.jackson.JacksonProperties",
+      "description": "Controls which properties are included during serialization."
+    },
+    {
+      "name": "raf.jackson.fail-on-unknown-properties",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.core.jackson.JacksonProperties",
+      "description": "Whether to fail when encountering unknown properties during deserialization. Set to false for forward compatibility."
+    },
+    {
+      "name": "raf.jackson.fail-on-empty-beans",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.core.jackson.JacksonProperties",
+      "description": "Whether to fail when serializing a bean with no properties."
+    },
+    {
+      "name": "raf.snow-flake.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.core.snowflake.SnowFlakeProperties",
+      "description": "Whether to enable the Snowflake distributed ID generator."
+    },
+    {
+      "name": "raf.snow-flake.worker-id",
+      "type": "java.lang.Long",
+      "defaultValue": 1,
+      "sourceType": "com.raf.framework.core.snowflake.SnowFlakeProperties",
+      "description": "Worker node ID (0-31). Must be unique across all instances in the same datacenter."
+    },
+    {
+      "name": "raf.snow-flake.data-center-id",
+      "type": "java.lang.Long",
+      "defaultValue": 1,
+      "sourceType": "com.raf.framework.core.snowflake.SnowFlakeProperties",
+      "description": "Datacenter ID (0-31). Must be unique across datacenters."
+    }
+  ],
+  "hints": [
+    {
+      "name": "raf.jackson.serialization-inclusion",
+      "values": [
+        { "value": "ALWAYS", "description": "All properties are included regardless of value." },
+        { "value": "NON_NULL", "description": "Only non-null properties are included." },
+        { "value": "NON_ABSENT", "description": "Only non-null and non-absent (Optional) properties are included." },
+        { "value": "NON_EMPTY", "description": "Only non-null, non-absent, and non-empty properties are included." },
+        { "value": "NON_DEFAULT", "description": "Only properties with non-default values are included." }
+      ]
+    }
+  ]
+}

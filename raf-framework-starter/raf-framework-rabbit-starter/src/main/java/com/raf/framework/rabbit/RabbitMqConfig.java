@@ -2,14 +2,17 @@ package com.raf.framework.rabbit;
 
 import com.raf.framework.core.jackson.JsonService;
 
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.FileInputStream;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -29,13 +32,15 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * RabbitMQ 自动配置。
  *
  * <p>拓扑声明（Exchange/Queue/Binding）由生产者服务通过 {@code raf.rabbit.bindings} 配置驱动，
  * 消费者服务只需通过 {@code @RabbitMqConsumer(queue = "...")} 指定监听队列。
+ *
+ * <p>消费者并发参数优先级：{@code @RabbitMqConsumer} 注解值 > {@code raf.rabbit.consumer} 全局配置。
  *
  * @author Jerry
  */
@@ -73,7 +78,6 @@ public class RabbitMqConfig implements BeanFactoryPostProcessor, ApplicationCont
         String appName = applicationContext.getEnvironment()
                 .getProperty("spring.application.name", "unknown");
         factory.setConnectionNameStrategy(c -> appName + "-" + c.getHost());
-        // 修复 bug：publisher confirm 仅在 raf.rabbit.provider.ack=true 时开启
         if (props.getProvider() != null && props.getProvider().isAck()) {
             factory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED);
             factory.setPublisherReturns(true);
@@ -84,15 +88,28 @@ public class RabbitMqConfig implements BeanFactoryPostProcessor, ApplicationCont
         return factory;
     }
 
+    /**
+     * SSL 配置使用 JDK 原生 API，不依赖 Apache HttpClient。
+     */
     private void applySsl(CachingConnectionFactory factory, RabbitMqProperties.Ssl ssl) {
         try {
-            SSLContext ctx = SSLContextBuilder.create()
-                    .loadKeyMaterial(ResourceUtils.getFile(ssl.getKeyStore()),
-                            ssl.getKeyStorePassword().toCharArray(),
-                            ssl.getKeyStorePassword().toCharArray())
-                    .loadTrustMaterial(ResourceUtils.getFile(ssl.getTrustStore()),
-                            ssl.getTrustStorePassword().toCharArray())
-                    .build();
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            try (FileInputStream keyStoreStream = new FileInputStream(ssl.getKeyStore())) {
+                keyStore.load(keyStoreStream, ssl.getKeyStorePassword().toCharArray());
+            }
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            kmf.init(keyStore, ssl.getKeyStorePassword().toCharArray());
+
+            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            try (FileInputStream trustStoreStream = new FileInputStream(ssl.getTrustStore())) {
+                trustStore.load(trustStoreStream, ssl.getTrustStorePassword().toCharArray());
+            }
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(trustStore);
+
+            String algorithm = StringUtils.hasText(ssl.getAlgorithm()) ? ssl.getAlgorithm() : "TLSv1.2";
+            SSLContext ctx = SSLContext.getInstance(algorithm);
+            ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
             factory.getRabbitConnectionFactory().useSslProtocol(ctx);
         } catch (Exception e) {
             throw new BeanInitializationException("RabbitMQ SSL configuration failed", e);
@@ -167,6 +184,12 @@ public class RabbitMqConfig implements BeanFactoryPostProcessor, ApplicationCont
         // 2. 声明 Queue（带自定义参数）
         Map<String, Object> args = new HashMap<>(def.getArguments());
         if (def.getDelay() != null && def.getDelay().getTtl() > 0) {
+            // 修复6：检测 arguments 与 delay.ttl 的冲突，避免静默覆盖
+            if (args.containsKey("x-message-ttl")) {
+                log.warn("Binding '{}': 'arguments.x-message-ttl={}' will be overridden by 'delay.ttl={}'. "
+                        + "Remove 'arguments.x-message-ttl' to suppress this warning.",
+                        def.getName(), args.get("x-message-ttl"), def.getDelay().getTtl());
+            }
             args.put("x-message-ttl", def.getDelay().getTtl());
         }
         Queue queue = QueueBuilder.durable(def.getQueue()).withArguments(args).build();
@@ -267,7 +290,7 @@ public class RabbitMqConfig implements BeanFactoryPostProcessor, ApplicationCont
         String queueName = applicationContext.getEnvironment()
                 .resolvePlaceholders(annotation.queue());
 
-        if (!org.springframework.util.StringUtils.hasText(queueName)) {
+        if (!StringUtils.hasText(queueName)) {
             throw new BeanInitializationException(
                     "RabbitMqConsumer on " + clazz.getSimpleName() + " resolved to blank queue name. " +
                     "Check @RabbitMqConsumer(queue=...) and your configuration.");
@@ -280,17 +303,26 @@ public class RabbitMqConfig implements BeanFactoryPostProcessor, ApplicationCont
         }
         beanFactory.registerSingleton(queueName + "_queue", queue);
 
-        RabbitMqProperties.Consumer consumer = props.getConsumer();
+        // 修复5：注解级并发参数优先，-1 时回退到全局配置
+        RabbitMqProperties.Consumer globalConsumer = props.getConsumer();
+        int concurrent = annotation.concurrentConsumers() > 0
+                ? annotation.concurrentConsumers()
+                : (globalConsumer != null ? globalConsumer.getConcurrentConsumers() : 3);
+        int maxConcurrent = annotation.maxConcurrentConsumers() > 0
+                ? annotation.maxConcurrentConsumers()
+                : (globalConsumer != null ? globalConsumer.getMaxConcurrentConsumers() : 10);
+
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(factory);
         container.setQueues(queue);
         container.setExposeListenerChannel(true);
-        container.setConcurrentConsumers(consumer != null ? consumer.getConcurrentConsumers() : 3);
-        container.setMaxConcurrentConsumers(consumer != null ? consumer.getMaxConcurrentConsumers() : 10);
+        container.setConcurrentConsumers(concurrent);
+        container.setMaxConcurrentConsumers(maxConcurrent);
         container.setAcknowledgeMode(annotation.ackModel());
         container.setMessageListener(listener);
 
         beanFactory.registerSingleton(queueName + "_container", container);
-        log.info("Registered listener container: queue={}, consumer={}", queueName, clazz.getSimpleName());
+        log.info("Registered listener container: queue={}, consumer={}, concurrent={}/{}",
+                queueName, clazz.getSimpleName(), concurrent, maxConcurrent);
         return container;
     }
 
@@ -305,7 +337,7 @@ public class RabbitMqConfig implements BeanFactoryPostProcessor, ApplicationCont
         String queueName = applicationContext.getEnvironment()
                 .resolvePlaceholders(annotation.businessName());
 
-        if (!org.springframework.util.StringUtils.hasText(queueName)) {
+        if (!StringUtils.hasText(queueName)) {
             throw new BeanInitializationException(
                     "RabbitMqDelayConsumer on " + clazz.getSimpleName() + " resolved to blank queue name. " +
                     "Check @RabbitMqDelayConsumer(businessName=...) and your configuration.");

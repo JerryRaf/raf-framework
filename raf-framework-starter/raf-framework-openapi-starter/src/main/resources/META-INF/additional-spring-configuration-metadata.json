@@ -1,0 +1,79 @@
+{
+  "groups": [
+    {
+      "name": "raf.openapi",
+      "type": "com.raf.framework.openapi.OpenApiProperties",
+      "sourceType": "com.raf.framework.openapi.OpenApiProperties",
+      "description": "OpenAPI documentation configuration (Springdoc + Knife4j)."
+    },
+    {
+      "name": "raf.openapi.info",
+      "description": "OpenAPI info object configuration."
+    },
+    {
+      "name": "raf.openapi.security",
+      "description": "OpenAPI security scheme configuration."
+    }
+  ],
+  "properties": [
+    {
+      "name": "raf.openapi.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.openapi.OpenApiProperties",
+      "description": "Whether to enable the OpenAPI documentation endpoint."
+    },
+    {
+      "name": "raf.openapi.info.title",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.openapi.OpenApiProperties",
+      "description": "API documentation title displayed in the Knife4j UI."
+    },
+    {
+      "name": "raf.openapi.info.description",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.openapi.OpenApiProperties",
+      "description": "API documentation description."
+    },
+    {
+      "name": "raf.openapi.info.version",
+      "type": "java.lang.String",
+      "defaultValue": "1.0.0",
+      "sourceType": "com.raf.framework.openapi.OpenApiProperties",
+      "description": "API version string."
+    },
+    {
+      "name": "raf.openapi.info.contact-name",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.openapi.OpenApiProperties",
+      "description": "API contact person name."
+    },
+    {
+      "name": "raf.openapi.info.contact-email",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.openapi.OpenApiProperties",
+      "description": "API contact email address."
+    },
+    {
+      "name": "raf.openapi.security.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.openapi.OpenApiProperties",
+      "description": "Whether to add a security scheme (e.g. Bearer token) to the OpenAPI spec."
+    },
+    {
+      "name": "raf.openapi.security.scheme-name",
+      "type": "java.lang.String",
+      "defaultValue": "Authorization",
+      "sourceType": "com.raf.framework.openapi.OpenApiProperties",
+      "description": "Security scheme name shown in the Knife4j UI."
+    },
+    {
+      "name": "raf.openapi.packages-to-scan",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "com.raf.framework.openapi.OpenApiProperties",
+      "description": "List of packages to scan for @RestController classes to include in the API documentation."
+    }
+  ],
+  "hints": []
+}

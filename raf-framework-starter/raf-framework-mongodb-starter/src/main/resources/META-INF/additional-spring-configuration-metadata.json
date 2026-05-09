@@ -1,0 +1,77 @@
+{
+  "groups": [
+    {
+      "name": "raf.mongodb",
+      "type": "com.raf.framework.mongodb.MongodbProperties",
+      "sourceType": "com.raf.framework.mongodb.MongodbProperties",
+      "description": "MongoDB multi-datasource configuration."
+    },
+    {
+      "name": "raf.mongodb.data-sources",
+      "description": "Named MongoDB datasource configurations."
+    }
+  ],
+  "properties": [
+    {
+      "name": "raf.mongodb.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.mongodb.MongodbProperties",
+      "description": "Whether to enable the MongoDB multi-datasource integration."
+    },
+    {
+      "name": "raf.mongodb.primary",
+      "type": "java.lang.String",
+      "defaultValue": "primary",
+      "sourceType": "com.raf.framework.mongodb.MongodbProperties",
+      "description": "Name of the primary MongoDB datasource."
+    },
+    {
+      "name": "raf.mongodb.data-sources",
+      "type": "java.util.Map<java.lang.String,com.raf.framework.mongodb.MongodbProperties.MongoDataSourceConfig>",
+      "sourceType": "com.raf.framework.mongodb.MongodbProperties",
+      "description": "Named MongoDB datasource configurations."
+    },
+    {
+      "name": "raf.mongodb.data-sources[*].uri",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.mongodb.MongodbProperties$MongoDataSourceConfig",
+      "description": "MongoDB connection URI, e.g. mongodb://user:pass@host:27017/dbname."
+    },
+    {
+      "name": "raf.mongodb.data-sources[*].database",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.mongodb.MongodbProperties$MongoDataSourceConfig",
+      "description": "MongoDB database name."
+    },
+    {
+      "name": "raf.mongodb.data-sources[*].min-connections-per-host",
+      "type": "java.lang.Integer",
+      "defaultValue": 5,
+      "sourceType": "com.raf.framework.mongodb.MongodbProperties$MongoDataSourceConfig",
+      "description": "Minimum number of connections per host in the connection pool."
+    },
+    {
+      "name": "raf.mongodb.data-sources[*].max-connections-per-host",
+      "type": "java.lang.Integer",
+      "defaultValue": 100,
+      "sourceType": "com.raf.framework.mongodb.MongodbProperties$MongoDataSourceConfig",
+      "description": "Maximum number of connections per host in the connection pool."
+    },
+    {
+      "name": "raf.mongodb.data-sources[*].connect-timeout",
+      "type": "java.lang.Integer",
+      "defaultValue": 10000,
+      "sourceType": "com.raf.framework.mongodb.MongodbProperties$MongoDataSourceConfig",
+      "description": "Connection timeout in milliseconds."
+    },
+    {
+      "name": "raf.mongodb.data-sources[*].socket-timeout",
+      "type": "java.lang.Integer",
+      "defaultValue": 0,
+      "sourceType": "com.raf.framework.mongodb.MongodbProperties$MongoDataSourceConfig",
+      "description": "Socket timeout in milliseconds. 0 means no timeout."
+    }
+  ],
+  "hints": []
+}

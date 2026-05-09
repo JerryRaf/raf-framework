@@ -1,0 +1,137 @@
+{
+  "groups": [
+    {
+      "name": "raf.redis",
+      "type": "com.raf.framework.redis.RedisEnhanceProperties",
+      "sourceType": "com.raf.framework.redis.RedisEnhanceProperties",
+      "description": "Redis enhanced configuration."
+    },
+    {
+      "name": "raf.redis.custom-cache",
+      "description": "Named cache configurations with individual TTL and key-prefix settings."
+    },
+    {
+      "name": "raf.redisson",
+      "type": "com.raf.framework.redis.redisson.RedissonProperties",
+      "sourceType": "com.raf.framework.redis.redisson.RedissonProperties",
+      "description": "Redisson distributed lock and client configuration."
+    }
+  ],
+  "properties": [
+    {
+      "name": "raf.redis.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.redis.RedisEnhanceProperties",
+      "description": "Whether to enable the Redis enhanced integration. Must be set to true to activate RedisTemplate and cache beans."
+    },
+    {
+      "name": "raf.redis.trusted-packages",
+      "type": "java.util.List<java.lang.String>",
+      "defaultValue": ["com.raf.", "java.util.", "java.lang.", "java.time."],
+      "sourceType": "com.raf.framework.redis.RedisEnhanceProperties",
+      "description": "Trusted package prefixes for Redis JSON polymorphic deserialization. Add your domain model packages here to allow type-safe deserialization."
+    },
+    {
+      "name": "raf.redis.custom-cache",
+      "type": "java.util.Map<java.lang.String,com.raf.framework.redis.RedisEnhanceProperties.CustomCacheConfig>",
+      "sourceType": "com.raf.framework.redis.RedisEnhanceProperties",
+      "description": "Named cache configurations. Each key is a cache name used with @Cacheable(cacheNames = \"...\")."
+    },
+    {
+      "name": "raf.redis.custom-cache[*].time-to-live",
+      "type": "java.time.Duration",
+      "sourceType": "com.raf.framework.redis.RedisEnhanceProperties$CustomCacheConfig",
+      "description": "Cache entry TTL. Supports duration strings such as '10m', '1h', '30s'."
+    },
+    {
+      "name": "raf.redis.custom-cache[*].cache-null-values",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "sourceType": "com.raf.framework.redis.RedisEnhanceProperties$CustomCacheConfig",
+      "description": "Whether to cache null values. Caching nulls prevents cache penetration attacks."
+    },
+    {
+      "name": "raf.redis.custom-cache[*].key-prefix",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.redis.RedisEnhanceProperties$CustomCacheConfig",
+      "description": "Key prefix for this cache. Useful for namespace isolation in shared Redis instances."
+    },
+    {
+      "name": "raf.redis.custom-cache[*].use-key-prefix",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "sourceType": "com.raf.framework.redis.RedisEnhanceProperties$CustomCacheConfig",
+      "description": "Whether to prepend the key prefix when storing cache entries."
+    },
+    {
+      "name": "raf.redisson.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.redis.redisson.RedissonProperties",
+      "description": "Whether to enable Redisson client for distributed locks and other distributed data structures."
+    },
+    {
+      "name": "raf.redisson.address",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.redis.redisson.RedissonProperties",
+      "description": "Redisson server address in redis:// or rediss:// format, e.g. redis://127.0.0.1:6379."
+    },
+    {
+      "name": "raf.redisson.password",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.redis.redisson.RedissonProperties",
+      "description": "Redisson server password."
+    },
+    {
+      "name": "raf.redisson.database",
+      "type": "java.lang.Integer",
+      "defaultValue": 0,
+      "sourceType": "com.raf.framework.redis.redisson.RedissonProperties",
+      "description": "Redis database index used by Redisson."
+    },
+    {
+      "name": "raf.redisson.connection-pool-size",
+      "type": "java.lang.Integer",
+      "defaultValue": 64,
+      "sourceType": "com.raf.framework.redis.redisson.RedissonProperties",
+      "description": "Redisson connection pool size."
+    },
+    {
+      "name": "raf.redisson.connection-minimum-idle-size",
+      "type": "java.lang.Integer",
+      "defaultValue": 10,
+      "sourceType": "com.raf.framework.redis.redisson.RedissonProperties",
+      "description": "Minimum idle connections maintained in the Redisson connection pool."
+    },
+    {
+      "name": "raf.redisson.connect-timeout",
+      "type": "java.lang.Integer",
+      "defaultValue": 10000,
+      "sourceType": "com.raf.framework.redis.redisson.RedissonProperties",
+      "description": "Redisson connection timeout in milliseconds."
+    },
+    {
+      "name": "raf.redisson.timeout",
+      "type": "java.lang.Integer",
+      "defaultValue": 3000,
+      "sourceType": "com.raf.framework.redis.redisson.RedissonProperties",
+      "description": "Redisson command response timeout in milliseconds."
+    },
+    {
+      "name": "raf.redisson.retry-attempts",
+      "type": "java.lang.Integer",
+      "defaultValue": 3,
+      "sourceType": "com.raf.framework.redis.redisson.RedissonProperties",
+      "description": "Number of retry attempts for failed Redisson commands."
+    },
+    {
+      "name": "raf.redisson.retry-interval",
+      "type": "java.lang.Integer",
+      "defaultValue": 1500,
+      "sourceType": "com.raf.framework.redis.redisson.RedissonProperties",
+      "description": "Interval between Redisson command retry attempts in milliseconds."
+    }
+  ],
+  "hints": []
+}

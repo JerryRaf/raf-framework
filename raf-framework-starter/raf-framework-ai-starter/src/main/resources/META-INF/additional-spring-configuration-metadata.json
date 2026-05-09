@@ -1,0 +1,119 @@
+{
+  "groups": [
+    {
+      "name": "raf.ai",
+      "type": "com.raf.framework.ai.AiProperties",
+      "sourceType": "com.raf.framework.ai.AiProperties",
+      "description": "AI multi-provider integration configuration."
+    },
+    {
+      "name": "raf.ai.session",
+      "type": "com.raf.framework.ai.AiProperties$SessionConfig",
+      "sourceType": "com.raf.framework.ai.AiProperties",
+      "sourceMethod": "getSession()",
+      "description": "AI conversation session management configuration."
+    },
+    {
+      "name": "raf.ai.providers",
+      "description": "Named AI provider configurations. Each key is a provider identifier (e.g. openai, claude, deepseek)."
+    }
+  ],
+  "properties": [
+    {
+      "name": "raf.ai.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.ai.AiProperties",
+      "description": "Whether to enable the AI multi-provider integration."
+    },
+    {
+      "name": "raf.ai.default-provider",
+      "type": "java.lang.String",
+      "defaultValue": "openai",
+      "sourceType": "com.raf.framework.ai.AiProperties",
+      "description": "Default AI provider used when no provider is specified in the request. Must match a key in raf.ai.providers."
+    },
+    {
+      "name": "raf.ai.routes",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "sourceType": "com.raf.framework.ai.AiProperties",
+      "description": "Scene-to-provider routing map. Key is a scene name (e.g. 'code', 'summary'), value is a provider key. Takes precedence over default-provider."
+    },
+    {
+      "name": "raf.ai.session.max-history",
+      "type": "java.lang.Integer",
+      "defaultValue": 20,
+      "sourceType": "com.raf.framework.ai.AiProperties$SessionConfig",
+      "description": "Maximum number of historical messages retained per session. Older messages are evicted using a sliding window."
+    },
+    {
+      "name": "raf.ai.session.ttl",
+      "type": "java.lang.Long",
+      "defaultValue": 3600,
+      "sourceType": "com.raf.framework.ai.AiProperties$SessionConfig",
+      "description": "Session TTL in seconds. Sessions expire automatically after this duration of inactivity."
+    },
+    {
+      "name": "raf.ai.providers",
+      "type": "java.util.Map<java.lang.String,com.raf.framework.ai.AiProperties.ProviderConfig>",
+      "sourceType": "com.raf.framework.ai.AiProperties",
+      "description": "AI provider configurations keyed by provider name (e.g. openai, claude, deepseek)."
+    },
+    {
+      "name": "raf.ai.providers[*].enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "sourceType": "com.raf.framework.ai.AiProperties$ProviderConfig",
+      "description": "Whether this provider is enabled."
+    },
+    {
+      "name": "raf.ai.providers[*].api-key",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.ai.AiProperties$ProviderConfig",
+      "description": "API key for this provider. Use Jasypt encryption or environment variable injection for production."
+    },
+    {
+      "name": "raf.ai.providers[*].base-url",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.ai.AiProperties$ProviderConfig",
+      "description": "Base URL for the provider's API endpoint. Useful for proxies or self-hosted models."
+    },
+    {
+      "name": "raf.ai.providers[*].model",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.ai.AiProperties$ProviderConfig",
+      "description": "Model identifier to use, e.g. gpt-4o, claude-opus-4-5, deepseek-chat."
+    },
+    {
+      "name": "raf.ai.providers[*].temperature",
+      "type": "java.lang.Double",
+      "defaultValue": 0.7,
+      "sourceType": "com.raf.framework.ai.AiProperties$ProviderConfig",
+      "description": "Sampling temperature (0.0-2.0). Lower values produce more deterministic output; higher values increase creativity."
+    },
+    {
+      "name": "raf.ai.providers[*].max-tokens",
+      "type": "java.lang.Integer",
+      "defaultValue": 4096,
+      "sourceType": "com.raf.framework.ai.AiProperties$ProviderConfig",
+      "description": "Maximum number of tokens to generate in the response."
+    },
+    {
+      "name": "raf.ai.providers[*].timeout",
+      "type": "java.lang.Integer",
+      "defaultValue": 60,
+      "sourceType": "com.raf.framework.ai.AiProperties$ProviderConfig",
+      "description": "Request timeout in seconds for this provider."
+    }
+  ],
+  "hints": [
+    {
+      "name": "raf.ai.default-provider",
+      "values": [
+        { "value": "openai", "description": "OpenAI (GPT series models)." },
+        { "value": "claude", "description": "Anthropic Claude models." },
+        { "value": "deepseek", "description": "DeepSeek models." }
+      ]
+    }
+  ]
+}

@@ -1,12 +1,14 @@
 package com.raf.framework.rabbit;
 
+import com.raf.framework.core.jackson.JsonService;
+
 import java.nio.charset.StandardCharsets;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.ReturnedMessage;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 生产者发送确认基类。
@@ -35,7 +37,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 public abstract class AbstractRabbitSenderConfirm
         implements ConfirmCallback, RabbitTemplate.ReturnsCallback {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    @Autowired
+    private JsonService jsonService;
 
     /**
      * confirm 回调：消息是否成功到达 Exchange。
@@ -107,7 +110,7 @@ public abstract class AbstractRabbitSenderConfirm
 
     private RabbitMqMessage tryParseMessage(String body) {
         try {
-            return MAPPER.readValue(body, RabbitMqMessage.class);
+            return jsonService.parse(body, RabbitMqMessage.class);
         } catch (Exception e) {
             log.warn("Failed to parse message body as RabbitMqMessage: {}", body);
             return null;

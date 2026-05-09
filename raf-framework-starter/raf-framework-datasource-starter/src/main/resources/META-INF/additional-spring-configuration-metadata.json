@@ -1,0 +1,96 @@
+{
+  "groups": [
+    {
+      "name": "raf.datasource",
+      "type": "com.raf.framework.datasource.config.DynamicDataSourceProperties",
+      "sourceType": "com.raf.framework.datasource.config.DynamicDataSourceProperties",
+      "description": "Dynamic multi-datasource routing configuration."
+    },
+    {
+      "name": "raf.datasource.datasources",
+      "description": "Named datasource configurations. Each key is a logical datasource name used with @DsSelector."
+    }
+  ],
+  "properties": [
+    {
+      "name": "raf.datasource.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.datasource.config.DynamicDataSourceProperties",
+      "description": "Whether to enable dynamic multi-datasource routing."
+    },
+    {
+      "name": "raf.datasource.primary",
+      "type": "java.lang.String",
+      "defaultValue": "master",
+      "sourceType": "com.raf.framework.datasource.config.DynamicDataSourceProperties",
+      "description": "Name of the primary (default) datasource. Used when no @DsSelector annotation is present."
+    },
+    {
+      "name": "raf.datasource.datasources",
+      "type": "java.util.Map<java.lang.String,com.raf.framework.datasource.config.DynamicDataSourceProperties.DataSourceConfig>",
+      "sourceType": "com.raf.framework.datasource.config.DynamicDataSourceProperties",
+      "description": "Named datasource configurations. Key is the logical datasource name referenced by @DsSelector."
+    },
+    {
+      "name": "raf.datasource.datasources[*].url",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.datasource.config.DynamicDataSourceProperties$DataSourceConfig",
+      "description": "JDBC URL for this datasource, e.g. jdbc:mysql://localhost:3306/db?useSSL=false."
+    },
+    {
+      "name": "raf.datasource.datasources[*].username",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.datasource.config.DynamicDataSourceProperties$DataSourceConfig",
+      "description": "Database username."
+    },
+    {
+      "name": "raf.datasource.datasources[*].password",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.datasource.config.DynamicDataSourceProperties$DataSourceConfig",
+      "description": "Database password. Use Jasypt encryption for production."
+    },
+    {
+      "name": "raf.datasource.datasources[*].driver-class-name",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.datasource.config.DynamicDataSourceProperties$DataSourceConfig",
+      "description": "Fully qualified JDBC driver class name, e.g. com.mysql.cj.jdbc.Driver."
+    },
+    {
+      "name": "raf.datasource.datasources[*].initial-size",
+      "type": "java.lang.Integer",
+      "defaultValue": 5,
+      "sourceType": "com.raf.framework.datasource.config.DynamicDataSourceProperties$DataSourceConfig",
+      "description": "Druid initial connection pool size."
+    },
+    {
+      "name": "raf.datasource.datasources[*].min-idle",
+      "type": "java.lang.Integer",
+      "defaultValue": 5,
+      "sourceType": "com.raf.framework.datasource.config.DynamicDataSourceProperties$DataSourceConfig",
+      "description": "Druid minimum idle connections."
+    },
+    {
+      "name": "raf.datasource.datasources[*].max-active",
+      "type": "java.lang.Integer",
+      "defaultValue": 20,
+      "sourceType": "com.raf.framework.datasource.config.DynamicDataSourceProperties$DataSourceConfig",
+      "description": "Druid maximum active connections."
+    },
+    {
+      "name": "raf.datasource.datasources[*].max-wait",
+      "type": "java.lang.Long",
+      "defaultValue": 60000,
+      "sourceType": "com.raf.framework.datasource.config.DynamicDataSourceProperties$DataSourceConfig",
+      "description": "Maximum wait time in milliseconds when acquiring a connection from the pool."
+    },
+    {
+      "name": "raf.datasource.datasources[*].slow-sql-millis",
+      "type": "java.lang.Long",
+      "defaultValue": 500,
+      "sourceType": "com.raf.framework.datasource.config.DynamicDataSourceProperties$DataSourceConfig",
+      "description": "Slow SQL threshold in milliseconds. Queries exceeding this value will be logged as warnings."
+    }
+  ],
+  "hints": []
+}

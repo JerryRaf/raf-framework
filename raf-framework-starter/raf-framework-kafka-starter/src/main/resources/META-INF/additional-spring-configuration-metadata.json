@@ -1,0 +1,134 @@
+{
+  "groups": [
+    {
+      "name": "raf.kafka",
+      "type": "com.raf.framework.kafka.KafkaProperties",
+      "sourceType": "com.raf.framework.kafka.KafkaProperties",
+      "description": "Kafka integration configuration."
+    },
+    {
+      "name": "raf.kafka.producer",
+      "description": "Kafka producer configuration."
+    },
+    {
+      "name": "raf.kafka.consumer",
+      "description": "Kafka consumer configuration."
+    }
+  ],
+  "properties": [
+    {
+      "name": "raf.kafka.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.kafka.KafkaProperties",
+      "description": "Whether to enable the Kafka integration."
+    },
+    {
+      "name": "raf.kafka.bootstrap-servers",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kafka.KafkaProperties",
+      "description": "Comma-separated list of Kafka broker addresses, e.g. host1:9092,host2:9092."
+    },
+    {
+      "name": "raf.kafka.producer.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.kafka.KafkaProperties",
+      "description": "Whether to enable the Kafka producer."
+    },
+    {
+      "name": "raf.kafka.producer.retries",
+      "type": "java.lang.Integer",
+      "defaultValue": 3,
+      "sourceType": "com.raf.framework.kafka.KafkaProperties",
+      "description": "Number of retries for failed producer sends."
+    },
+    {
+      "name": "raf.kafka.producer.batch-size",
+      "type": "java.lang.Integer",
+      "defaultValue": 16384,
+      "sourceType": "com.raf.framework.kafka.KafkaProperties",
+      "description": "Producer batch size in bytes. Larger values improve throughput at the cost of latency."
+    },
+    {
+      "name": "raf.kafka.producer.linger-ms",
+      "type": "java.lang.Integer",
+      "defaultValue": 0,
+      "sourceType": "com.raf.framework.kafka.KafkaProperties",
+      "description": "Time in milliseconds the producer will wait before sending a batch. Increasing this value improves batching efficiency."
+    },
+    {
+      "name": "raf.kafka.producer.buffer-memory",
+      "type": "java.lang.Long",
+      "defaultValue": 33554432,
+      "sourceType": "com.raf.framework.kafka.KafkaProperties",
+      "description": "Total memory in bytes the producer can use to buffer records waiting to be sent."
+    },
+    {
+      "name": "raf.kafka.producer.acks",
+      "type": "java.lang.String",
+      "defaultValue": "1",
+      "sourceType": "com.raf.framework.kafka.KafkaProperties",
+      "description": "Number of acknowledgments the producer requires the leader to have received before considering a request complete."
+    },
+    {
+      "name": "raf.kafka.consumer.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.kafka.KafkaProperties",
+      "description": "Whether to enable the Kafka consumer."
+    },
+    {
+      "name": "raf.kafka.consumer.group-id",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.kafka.KafkaProperties",
+      "description": "Default consumer group ID."
+    },
+    {
+      "name": "raf.kafka.consumer.auto-offset-reset",
+      "type": "java.lang.String",
+      "defaultValue": "latest",
+      "sourceType": "com.raf.framework.kafka.KafkaProperties",
+      "description": "What to do when there is no initial offset in Kafka or the current offset no longer exists."
+    },
+    {
+      "name": "raf.kafka.consumer.enable-auto-commit",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.kafka.KafkaProperties",
+      "description": "Whether the consumer's offset is periodically committed in the background. Set to false for manual commit control."
+    },
+    {
+      "name": "raf.kafka.consumer.max-poll-records",
+      "type": "java.lang.Integer",
+      "defaultValue": 500,
+      "sourceType": "com.raf.framework.kafka.KafkaProperties",
+      "description": "Maximum number of records returned in a single poll call."
+    },
+    {
+      "name": "raf.kafka.consumer.concurrency",
+      "type": "java.lang.Integer",
+      "defaultValue": 3,
+      "sourceType": "com.raf.framework.kafka.KafkaProperties",
+      "description": "Number of concurrent consumer threads per listener container."
+    }
+  ],
+  "hints": [
+    {
+      "name": "raf.kafka.producer.acks",
+      "values": [
+        { "value": "0", "description": "No acknowledgment. Highest throughput, no durability guarantee." },
+        { "value": "1", "description": "Leader acknowledgment only. Balanced throughput and durability." },
+        { "value": "all", "description": "All in-sync replicas must acknowledge. Strongest durability guarantee." }
+      ]
+    },
+    {
+      "name": "raf.kafka.consumer.auto-offset-reset",
+      "values": [
+        { "value": "latest", "description": "Start consuming from the latest offset (skip historical messages)." },
+        { "value": "earliest", "description": "Start consuming from the earliest available offset." },
+        { "value": "none", "description": "Throw an exception if no previous offset is found." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "groups": [
+    {
+      "name": "raf.elasticsearch",
+      "type": "com.raf.framework.elasticsearch.ElasticsearchProperties",
+      "sourceType": "com.raf.framework.elasticsearch.ElasticsearchProperties",
+      "description": "Elasticsearch client configuration."
+    }
+  ],
+  "properties": [
+    {
+      "name": "raf.elasticsearch.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.elasticsearch.ElasticsearchProperties",
+      "description": "Whether to enable the Elasticsearch integration."
+    },
+    {
+      "name": "raf.elasticsearch.uris",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "com.raf.framework.elasticsearch.ElasticsearchProperties",
+      "description": "Elasticsearch node URIs, e.g. http://localhost:9200. Supports multiple nodes for cluster connectivity."
+    },
+    {
+      "name": "raf.elasticsearch.username",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.elasticsearch.ElasticsearchProperties",
+      "description": "Elasticsearch username for basic authentication."
+    },
+    {
+      "name": "raf.elasticsearch.password",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.elasticsearch.ElasticsearchProperties",
+      "description": "Elasticsearch password for basic authentication."
+    },
+    {
+      "name": "raf.elasticsearch.connect-timeout",
+      "type": "java.lang.Integer",
+      "defaultValue": 5000,
+      "sourceType": "com.raf.framework.elasticsearch.ElasticsearchProperties",
+      "description": "Connection timeout in milliseconds."
+    },
+    {
+      "name": "raf.elasticsearch.socket-timeout",
+      "type": "java.lang.Integer",
+      "defaultValue": 30000,
+      "sourceType": "com.raf.framework.elasticsearch.ElasticsearchProperties",
+      "description": "Socket timeout in milliseconds."
+    },
+    {
+      "name": "raf.elasticsearch.max-retry-timeout",
+      "type": "java.lang.Integer",
+      "defaultValue": 30000,
+      "sourceType": "com.raf.framework.elasticsearch.ElasticsearchProperties",
+      "description": "Maximum retry timeout in milliseconds."
+    }
+  ],
+  "hints": []
+}

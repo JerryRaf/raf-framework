@@ -1,35 +1,54 @@
 spring:
   application:
     name: raf-example-rabbit-starter
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
 
 server:
   port: 8080
 
 raf:
   rabbit:
+    enabled: true
     addresses: ${RABBIT_ADDR:localhost:5672}
     username: ${RABBIT_USER:guest}
     password: ${RABBIT_PASS:guest}
     virtual-host: /
+
     provider:
-      ack: true
+      ack: false   # 设为 true 时需实现 AbstractRabbitSenderConfirm.giveUp
+
     consumer:
       concurrent-consumers: 3
       max-concurrent-consumers: 10
-    delay:
-      dead-exchange: order.delay.dead.exchange
-      receive-exchange: order.delay.receive.exchange
-      queue-prefix:
-        - order.timeout
-    security:
-      strict-type-validation: false
-      max-retry-count: 3
+
+    # 拓扑声明（生产者服务配置，消费者服务不需要此项）
+    bindings:
+      # 普通队列：订单通知
+      - name: order-notify
+        exchange: order.notify.exchange
+        exchange-type: direct
+        queue: order.notify.queue
+        routing-key: order.notify
+        durable: true
+
+      # 延迟队列：订单超时（消息级 TTL，每条消息可指定不同延迟时间）
+      - name: order-timeout
+        exchange: order.timeout.exchange
+        exchange-type: direct
+        queue: order.timeout.queue
+        routing-key: order.timeout
+        durable: true
+        delay:
+          dead-exchange: order.timeout.dead.exchange
+          dead-exchange-type: direct
+          dead-queue: order.timeout.dead.queue
+          dead-routing-key: order.timeout.dead
+          ttl: 0   # 0 = 消息级 TTL（sendDelay 传 second 参数）；> 0 = 队列级 TTL（毫秒）
+
   redis:
     enabled: true
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+
   log:
     enabled: true
     level: REQ_BODY

@@ -3,89 +3,178 @@
     {
       "name": "raf.async",
       "type": "com.raf.framework.web.async.RafAsyncProperties",
-      "sourceType": "com.raf.framework.web.async.RafAsyncProperties"
+      "sourceType": "com.raf.framework.web.async.RafAsyncProperties",
+      "description": "Dynamic async thread pool configuration."
+    },
+    {
+      "name": "raf.async.pools",
+      "description": "Named async thread pool configurations. Each key is a pool name used with @Async(\"poolName\")."
     },
     {
       "name": "raf.cors",
       "type": "com.raf.framework.web.servlet.cors.CorsProperties",
-      "sourceType": "com.raf.framework.web.servlet.cors.CorsProperties"
+      "sourceType": "com.raf.framework.web.servlet.cors.CorsProperties",
+      "description": "Cross-Origin Resource Sharing (CORS) filter configuration."
     },
     {
       "name": "raf.log",
       "type": "com.raf.framework.web.servlet.log.AuditProperties$Log",
-      "sourceType": "com.raf.framework.web.servlet.log.AuditProperties"
+      "sourceType": "com.raf.framework.web.servlet.log.AuditProperties",
+      "description": "HTTP request/response audit log configuration."
     }
   ],
   "properties": [
     {
       "name": "raf.async.enabled",
       "type": "java.lang.Boolean",
-      "description": "Enable dynamic async thread pools."
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.web.async.RafAsyncProperties",
+      "description": "Whether to enable dynamic async thread pools. When enabled, named pools defined under raf.async.pools are registered as Spring task executors."
     },
     {
       "name": "raf.async.pools",
       "type": "java.util.Map<java.lang.String,com.raf.framework.web.async.RafAsyncProperties$PoolConfig>",
-      "description": "Named async thread pool configurations."
+      "sourceType": "com.raf.framework.web.async.RafAsyncProperties",
+      "description": "Named async thread pool configurations. Each key is a pool name used with @Async(\"poolName\")."
+    },
+    {
+      "name": "raf.async.pools[*].core-pool-size",
+      "type": "java.lang.Integer",
+      "defaultValue": 5,
+      "sourceType": "com.raf.framework.web.async.ThreadPoolProperties",
+      "description": "Core number of threads in this pool."
+    },
+    {
+      "name": "raf.async.pools[*].max-pool-size",
+      "type": "java.lang.Integer",
+      "defaultValue": 20,
+      "sourceType": "com.raf.framework.web.async.ThreadPoolProperties",
+      "description": "Maximum number of threads allowed in this pool."
+    },
+    {
+      "name": "raf.async.pools[*].queue-capacity",
+      "type": "java.lang.Integer",
+      "defaultValue": 200,
+      "sourceType": "com.raf.framework.web.async.ThreadPoolProperties",
+      "description": "Capacity of the task queue. When the queue is full, new tasks are rejected according to the rejection policy."
+    },
+    {
+      "name": "raf.async.pools[*].keep-alive-seconds",
+      "type": "java.lang.Integer",
+      "defaultValue": 60,
+      "sourceType": "com.raf.framework.web.async.ThreadPoolProperties",
+      "description": "Keep-alive time in seconds for idle threads above the core pool size."
+    },
+    {
+      "name": "raf.async.pools[*].thread-name-prefix",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.web.async.ThreadPoolProperties",
+      "description": "Prefix for thread names in this pool. Useful for identifying threads in logs and thread dumps."
+    },
+    {
+      "name": "raf.async.pools[*].wait-for-tasks-to-complete-on-shutdown",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "sourceType": "com.raf.framework.web.async.ThreadPoolProperties",
+      "description": "Whether to wait for scheduled tasks to complete on shutdown. Enables graceful shutdown of async tasks."
+    },
+    {
+      "name": "raf.async.pools[*].await-termination-seconds",
+      "type": "java.lang.Integer",
+      "defaultValue": 60,
+      "sourceType": "com.raf.framework.web.async.ThreadPoolProperties",
+      "description": "Maximum seconds to wait for remaining tasks to complete on shutdown."
     },
     {
       "name": "raf.cors.enabled",
       "type": "java.lang.Boolean",
-      "description": "Enable CORS filter registration."
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.web.servlet.cors.CorsProperties",
+      "description": "Whether to enable the global CORS filter."
     },
     {
       "name": "raf.cors.path",
       "type": "java.lang.String",
-      "description": "CORS path pattern, default is /**."
+      "defaultValue": "/**",
+      "sourceType": "com.raf.framework.web.servlet.cors.CorsProperties",
+      "description": "URL path pattern to which the CORS filter applies."
     },
     {
       "name": "raf.cors.allow-origins",
       "type": "java.util.List<java.lang.String>",
-      "description": "Allowed origins."
+      "sourceType": "com.raf.framework.web.servlet.cors.CorsProperties",
+      "description": "Allowed origins. Use '*' to allow all origins (not recommended for production)."
     },
     {
       "name": "raf.cors.allow-headers",
       "type": "java.util.List<java.lang.String>",
-      "description": "Allowed request headers."
+      "sourceType": "com.raf.framework.web.servlet.cors.CorsProperties",
+      "description": "Allowed request headers. Use '*' to allow all headers."
     },
     {
       "name": "raf.cors.allow-methods",
       "type": "java.util.List<java.lang.String>",
-      "description": "Allowed HTTP methods."
+      "sourceType": "com.raf.framework.web.servlet.cors.CorsProperties",
+      "description": "Allowed HTTP methods, e.g. GET, POST, PUT, DELETE, OPTIONS."
     },
     {
       "name": "raf.cors.allow-expose-headers",
       "type": "java.util.List<java.lang.String>",
-      "description": "Exposed response headers."
+      "sourceType": "com.raf.framework.web.servlet.cors.CorsProperties",
+      "description": "Response headers that browsers are allowed to access."
+    },
+    {
+      "name": "raf.cors.allow-credentials",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.web.servlet.cors.CorsProperties",
+      "description": "Whether to allow credentials (cookies, authorization headers). Cannot be used with allow-origins: ['*']."
+    },
+    {
+      "name": "raf.cors.max-age",
+      "type": "java.lang.Long",
+      "defaultValue": 1800,
+      "sourceType": "com.raf.framework.web.servlet.cors.CorsProperties",
+      "description": "How long in seconds the browser should cache the preflight response."
+    },
+    {
+      "name": "raf.log.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.web.servlet.log.AuditProperties",
+      "description": "Whether to enable HTTP request/response audit logging."
     },
     {
       "name": "raf.log.level",
       "type": "com.raf.framework.web.servlet.log.AuditProperties$LogLevel",
-      "description": "Access log level.",
-      "defaultValue": "RSP_HEADERS"
+      "defaultValue": "RSP_HEADERS",
+      "sourceType": "com.raf.framework.web.servlet.log.AuditProperties",
+      "description": "Audit log verbosity level. Controls how much of the request/response is captured."
+    },
+    {
+      "name": "raf.log.exclude-paths",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "com.raf.framework.web.servlet.log.AuditProperties",
+      "description": "URL path patterns to exclude from audit logging, e.g. /actuator/**, /health."
+    },
+    {
+      "name": "raf.log.max-payload-length",
+      "type": "java.lang.Integer",
+      "defaultValue": 2048,
+      "sourceType": "com.raf.framework.web.servlet.log.AuditProperties",
+      "description": "Maximum request/response body length in characters to include in the log. Longer payloads are truncated."
     }
   ],
   "hints": [
     {
       "name": "raf.log.level",
       "values": [
-        {
-          "value": "OFF"
-        },
-        {
-          "value": "BASIC"
-        },
-        {
-          "value": "REQ_HEADERS"
-        },
-        {
-          "value": "REQ_BODY"
-        },
-        {
-          "value": "RSP_HEADERS"
-        },
-        {
-          "value": "RSP_BODY"
-        }
+        { "value": "OFF", "description": "Disable audit logging entirely." },
+        { "value": "BASIC", "description": "Log HTTP method, URL, status code, and duration only." },
+        { "value": "REQ_HEADERS", "description": "Log basic info plus request headers." },
+        { "value": "REQ_BODY", "description": "Log basic info, request headers, and request body." },
+        { "value": "RSP_HEADERS", "description": "Log basic info, request headers, and response headers." },
+        { "value": "RSP_BODY", "description": "Log full request and response including bodies. Use with caution in production." }
       ]
     }
   ]

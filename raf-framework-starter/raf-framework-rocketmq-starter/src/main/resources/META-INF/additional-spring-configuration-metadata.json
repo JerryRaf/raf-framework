@@ -1,0 +1,116 @@
+{
+  "groups": [
+    {
+      "name": "raf.rocketmq",
+      "type": "com.raf.framework.rocketmq.RocketMqProperties",
+      "sourceType": "com.raf.framework.rocketmq.RocketMqProperties",
+      "description": "RocketMQ integration configuration."
+    },
+    {
+      "name": "raf.rocketmq.producer",
+      "description": "RocketMQ producer configuration."
+    },
+    {
+      "name": "raf.rocketmq.consumer",
+      "description": "RocketMQ consumer configuration."
+    }
+  ],
+  "properties": [
+    {
+      "name": "raf.rocketmq.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.rocketmq.RocketMqProperties",
+      "description": "Whether to enable the RocketMQ integration."
+    },
+    {
+      "name": "raf.rocketmq.name-server",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.rocketmq.RocketMqProperties",
+      "description": "RocketMQ name server address, e.g. 127.0.0.1:9876. Supports multiple addresses separated by semicolons."
+    },
+    {
+      "name": "raf.rocketmq.producer.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.rocketmq.RocketMqProperties",
+      "description": "Whether to enable the RocketMQ producer."
+    },
+    {
+      "name": "raf.rocketmq.producer.group",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.rocketmq.RocketMqProperties",
+      "description": "Producer group name. Used for transaction message recovery."
+    },
+    {
+      "name": "raf.rocketmq.producer.send-msg-timeout",
+      "type": "java.lang.Integer",
+      "defaultValue": 3000,
+      "sourceType": "com.raf.framework.rocketmq.RocketMqProperties",
+      "description": "Message send timeout in milliseconds."
+    },
+    {
+      "name": "raf.rocketmq.producer.retry-times-when-send-failed",
+      "type": "java.lang.Integer",
+      "defaultValue": 2,
+      "sourceType": "com.raf.framework.rocketmq.RocketMqProperties",
+      "description": "Number of retry attempts when a synchronous send fails."
+    },
+    {
+      "name": "raf.rocketmq.producer.retry-times-when-send-async-failed",
+      "type": "java.lang.Integer",
+      "defaultValue": 2,
+      "sourceType": "com.raf.framework.rocketmq.RocketMqProperties",
+      "description": "Number of retry attempts when an asynchronous send fails."
+    },
+    {
+      "name": "raf.rocketmq.producer.max-message-size",
+      "type": "java.lang.Integer",
+      "defaultValue": 4194304,
+      "sourceType": "com.raf.framework.rocketmq.RocketMqProperties",
+      "description": "Maximum allowed message size in bytes. Default is 4 MB."
+    },
+    {
+      "name": "raf.rocketmq.consumer.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "sourceType": "com.raf.framework.rocketmq.RocketMqProperties",
+      "description": "Whether to enable the RocketMQ consumer."
+    },
+    {
+      "name": "raf.rocketmq.consumer.group",
+      "type": "java.lang.String",
+      "sourceType": "com.raf.framework.rocketmq.RocketMqProperties",
+      "description": "Consumer group name."
+    },
+    {
+      "name": "raf.rocketmq.consumer.consume-thread-min",
+      "type": "java.lang.Integer",
+      "defaultValue": 20,
+      "sourceType": "com.raf.framework.rocketmq.RocketMqProperties",
+      "description": "Minimum number of consumer threads."
+    },
+    {
+      "name": "raf.rocketmq.consumer.consume-thread-max",
+      "type": "java.lang.Integer",
+      "defaultValue": 64,
+      "sourceType": "com.raf.framework.rocketmq.RocketMqProperties",
+      "description": "Maximum number of consumer threads."
+    },
+    {
+      "name": "raf.rocketmq.consumer.consume-message-batch-max-size",
+      "type": "java.lang.Integer",
+      "defaultValue": 1,
+      "sourceType": "com.raf.framework.rocketmq.RocketMqProperties",
+      "description": "Maximum number of messages consumed in a single batch."
+    },
+    {
+      "name": "raf.rocketmq.consumer.pull-batch-size",
+      "type": "java.lang.Integer",
+      "defaultValue": 32,
+      "sourceType": "com.raf.framework.rocketmq.RocketMqProperties",
+      "description": "Number of messages pulled from the broker in a single request."
+    }
+  ],
+  "hints": []
+}
