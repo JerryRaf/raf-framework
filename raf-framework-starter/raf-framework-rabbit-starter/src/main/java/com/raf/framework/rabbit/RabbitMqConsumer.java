@@ -7,32 +7,38 @@ import java.lang.annotation.Target;
 import org.springframework.amqp.core.AcknowledgeMode;
 
 /**
+ * 标记 RabbitMQ 消费者监听器，框架自动注册 SimpleMessageListenerContainer。
+ *
+ * <p>队列/交换机/绑定关系由生产者服务通过 {@code raf.rabbit.bindings} 配置声明，
+ * 消费者只需指定监听的队列名，支持 {@code ${...}} 占位符从配置中心读取。
+ *
+ * <p>使用示例：
+ * <pre>{@code
+ * @RabbitMqConsumer(queue = "${mq.order.notify.queue:order.notify.queue}")
+ * public class OrderNotifyConsumer extends AbstractRabbitConsumerListener {
+ *     @Override
+ *     public void onMessage(RabbitMqMessage message) throws Exception { ... }
+ *
+ *     @Override
+ *     public void onFailure(Message message, String error) throws Exception { ... }
+ * }
+ * }</pre>
+ *
  * @author Jerry
- * @date 2019/01/01
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RabbitMqConsumer {
 
     /**
-     * 交换机名称
-     * <p>
-     * //
-     */
-    String exchange();
-
-    /**
-     * 路由规则. queue 根据该规则绑定到exchange上面来
-     */
-    String routingKey();
-
-    /**
-     * 绑定队列
+     * 监听的队列名，支持 {@code ${...}} 占位符。
+     * 示例：{@code ${mq.order.queue:order.notify.queue}}
      */
     String queue();
 
     /**
-     * 是否手动消费确认 默认手动,目前只支持手动
+     * ACK 模式，默认手动 ACK（MANUAL）。
+     * 手动 ACK 由 AbstractRabbitConsumerListener 框架层统一处理。
      */
     AcknowledgeMode ackModel() default AcknowledgeMode.MANUAL;
 }
