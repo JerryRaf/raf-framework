@@ -87,11 +87,13 @@ raf:
 | `raf.cors.allowMethods` | list | `["GET","POST","PUT","DELETE","OPTIONS"]` | 允许的 HTTP 方法 |
 | `raf.cors.allowExposeHeaders` | list | — | 暴露给前端的响应头 |
 
-### 异步线程池（raf.executor）
+### 单线程池（raf.executor）
+
+框架内置单线程池，Bean 名称固定为 `rafAsyncExecutor`，支持 `@Async` 注解。
 
 | 配置键 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `raf.executor.enabled` | boolean | `false` | 是否启用异步线程池 |
+| `raf.executor.enabled` | boolean | `false` | 是否启用 |
 | `raf.executor.corePoolSize` | int | `10` | 核心线程数 |
 | `raf.executor.maxPoolSize` | int | `120` | 最大线程数 |
 | `raf.executor.queueCapacity` | int | `100` | 队列容量 |
@@ -99,6 +101,19 @@ raf:
 | `raf.executor.threadNamePrefix` | string | `raf-async-` | 线程名前缀 |
 | `raf.executor.metricEnabled` | boolean | `false` | 是否启用 Prometheus 指标采集 |
 | `raf.executor.awaitTerminationSeconds` | int | `60` | 优雅停机等待时间（秒） |
+
+### 多线程池（raf.async）
+
+支持按业务域配置多个独立线程池，动态注册为 Spring Bean，Bean 名称即配置 key。
+
+| 配置键 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `raf.async.enabled` | boolean | `false` | 是否启用多线程池 |
+| `raf.async.pools.{name}.coreSize` | int | `10` | 核心线程数 |
+| `raf.async.pools.{name}.maxSize` | int | `50` | 最大线程数 |
+| `raf.async.pools.{name}.queueCapacity` | int | `100` | 队列容量 |
+| `raf.async.pools.{name}.keepAliveSeconds` | int | `60` | 空闲线程存活时间（秒） |
+| `raf.async.pools.{name}.threadNamePrefix` | string | `raf-async-` | 线程名前缀 |
 
 ## 核心用法
 
@@ -142,8 +157,12 @@ public class UserController {
 | `10403` | 权限不足 |
 | `10404` | 资源未找到 |
 | `10405` | HTTP 方法错误 |
+| `10415` | 不支持的媒体类型 |
+| `10426` | 请升级协议 |
 | `10429` | 访问频率超限 |
 | `10500` | 服务器内部错误 |
+| `10601` | 请更新 App 版本 |
+| `10602` | 服务升级中 |
 | `10700` | 参数校验错误 |
 | `10800` | 第三方接口错误 |
 | `10000+` | 业务异常（应用自定义） |
@@ -202,7 +221,7 @@ public class UserV2Controller {
 
 ### 异步线程池
 
-配置框架异步线程池（单线程池，Bean 名称 `rafAsyncExecutor`）：
+**单线程池（`raf.executor`）**，Bean 名称 `rafAsyncExecutor`：
 
 ```yaml
 raf:
@@ -236,12 +255,37 @@ public void asyncProcessOrder(Long orderId) {
 }
 ```
 
+**多线程池（`raf.async`）**，按业务域隔离，Bean 名称即配置 key：
+
+```yaml
+raf:
+  async:
+    enabled: true
+    pools:
+      order-pool:
+        core-size: 10
+        max-size: 50
+        queue-capacity: 200
+        thread-name-prefix: order-
+      report-pool:
+        core-size: 5
+        max-size: 20
+        queue-capacity: 100
+        thread-name-prefix: report-
+```
+
+```java
+@Autowired
+@Qualifier("order-pool")
+private ThreadPoolTaskExecutor orderExecutor;
+```
+
 ## 示例项目结构
 
 ```
 raf-example-web-starter/
 ├── src/main/java/io/github/jerryraf/examples/web/
-│   ├── WebExampleApplication.java
+│   ├── BasicExampleApplication.java
 │   ├── common/
 │   │   └── UserErrorCode.java          # 自定义业务错误码
 │   ├── controller/

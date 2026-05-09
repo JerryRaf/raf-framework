@@ -18,21 +18,21 @@ raf-framework 是企业级微服务开发框架，封装中间件接入、异常
 |------------|------------------------------|-----------------|
 | 基础框架       | Spring Boot                  | 3.5.14          |
 | 微服务        | Spring Cloud                 | 2025.0.2        |
-| 微服务        | Spring Cloud Alibaba         | 2025.0.0.0      |
+| 微服务        | Spring Cloud Alibaba         | 2022.0.0.2      |
 | RPC        | Dubbo                        | 3.3.4           |
 | 注册/配置中心    | Nacos Client                 | 2.5.1           |
-| 数据库 ORM    | MyBatis / MyBatis-Plus       | 3.5.19 / 3.5.11 |
+| 数据库 ORM    | MyBatis / MyBatis-Plus       | 3.5.19 / 3.5.16 |
 | 连接池        | Druid                        | 1.2.24          |
 | 缓存         | Redis (Lettuce) + Redisson   | 3.34.1          |
 | 消息队列       | RocketMQ                     | 5.3.2           |
 | 消息队列       | Kafka                        | 3.9.0           |
 | 消息队列       | RabbitMQ                     | Spring AMQP     |
-| 文档搜索       | Elasticsearch                | 7.17.9          |
+| 文档搜索       | Elasticsearch                | 8.19.14         |
 | 文档数据库      | MongoDB                      | 5.2.1           |
 | 分库分表       | ShardingSphere               | 5.5.1           |
 | HTTP 客户端   | OkHttp                       | 4.12.0          |
 | 加密         | Jasypt Boot                  | 3.0.5           |
-| 错误追踪       | Sentry                       | 7.20.0 (需升级) |
+| 错误追踪       | Sentry                       | 8.7.0           |
 | 线程池管理      | Dynamic TP                   | 1.2.1-x         |
 | 监控         | Micrometer Prometheus        | 1.14.5          |
 | API 文档     | Springdoc + Knife4j          | 2.5.0 / 4.5.0   |
