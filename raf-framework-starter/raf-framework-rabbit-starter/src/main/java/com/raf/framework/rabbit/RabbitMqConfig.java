@@ -150,6 +150,7 @@ public class RabbitMqConfig implements BeanFactoryPostProcessor, ApplicationCont
     public List<Declarable> rabbitTopologyDeclarations(RabbitMqProperties props) {
         List<RabbitMqProperties.BindingDefinition> bindings = props.getBindings();
         if (CollectionUtils.isEmpty(bindings)) {
+            log.debug("raf.rabbit.bindings is empty, no topology will be declared by this service.");
             return List.of();
         }
         return bindings.stream()
@@ -255,7 +256,17 @@ public class RabbitMqConfig implements BeanFactoryPostProcessor, ApplicationCont
         String queueName = applicationContext.getEnvironment()
                 .resolvePlaceholders(annotation.queue());
 
+        if (!org.springframework.util.StringUtils.hasText(queueName)) {
+            throw new BeanInitializationException(
+                    "RabbitMqConsumer on " + clazz.getSimpleName() + " resolved to blank queue name. " +
+                    "Check @RabbitMqConsumer(queue=...) and your configuration.");
+        }
+
         Queue queue = new Queue(queueName, true);
+        if (beanFactory.containsSingleton(queueName + "_queue")) {
+            log.warn("Duplicate @RabbitMqConsumer for queue '{}' detected. " +
+                    "Multiple consumers on the same queue in one service is unusual.", queueName);
+        }
         beanFactory.registerSingleton(queueName + "_queue", queue);
 
         RabbitMqProperties.Consumer consumer = props.getConsumer();
