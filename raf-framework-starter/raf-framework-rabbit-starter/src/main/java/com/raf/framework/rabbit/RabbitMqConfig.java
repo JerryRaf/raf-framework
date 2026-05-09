@@ -1,61 +1,54 @@
 package com.raf.framework.rabbit;
 
-import com.raf.framework.core.common.RafConstant;
 import com.raf.framework.core.jackson.JsonService;
-import com.raf.framework.core.spring.condition.ConditionalOnMapProperty;
 
 import javax.net.ssl.SSLContext;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ResourceUtils;
 
 /**
+ * RabbitMQ 自动配置。
+ *
+ * <p>拓扑声明（Exchange/Queue/Binding）由生产者服务通过 {@code raf.rabbit.bindings} 配置驱动，
+ * 消费者服务只需通过 {@code @RabbitMqConsumer(queue = "...")} 指定监听队列。
+ *
  * @author Jerry
- * @date 2019/01/01
  */
 @Slf4j
 @Configuration
 @ConditionalOnProperty(prefix = "raf.rabbit", name = "enabled", havingValue = "true")
 @ConditionalOnClass(CachingConnectionFactory.class)
 @EnableConfigurationProperties(RabbitMqProperties.class)
-public class RabbitMqConfig implements BeanFactoryPostProcessor, EnvironmentAware, ApplicationContextAware {
+public class RabbitMqConfig implements BeanFactoryPostProcessor, ApplicationContextAware {
+
     private ConfigurableListableBeanFactory beanFactory;
     private ApplicationContext applicationContext;
-    private ConfigurableEnvironment environment;
-    private JsonService json;
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
@@ -65,227 +58,217 @@ public class RabbitMqConfig implements BeanFactoryPostProcessor, EnvironmentAwar
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
-        this.json = applicationContext.getBean(JsonService.class);
     }
 
-    @Override
-    public void setEnvironment(Environment environment) {
-        this.environment = (ConfigurableEnvironment) environment;
-    }
+    // -------------------------------------------------------------------------
+    // 连接工厂
+    // -------------------------------------------------------------------------
 
     @Bean
-    public CachingConnectionFactory connectionFactory(RabbitMqProperties rabbitMqProperties) {
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-        connectionFactory.setAddresses(rabbitMqProperties.getAddresses());
-        connectionFactory.setUsername(rabbitMqProperties.getUsername());
-        connectionFactory.setPassword(rabbitMqProperties.getPassword());
-        connectionFactory.setVirtualHost(rabbitMqProperties.getVirtualHost());
-        String serviceName = System.getProperty("spring.application.name", "unknown");
-        connectionFactory.setConnectionNameStrategy(c -> serviceName.concat("-").concat(c.getHost()));
-
-        Optional.ofNullable(rabbitMqProperties.getProvider()).ifPresent(c -> {
-            // 生成者confirm开关
-            connectionFactory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED);
-            connectionFactory.setPublisherReturns(c.isAck());
-        });
-
-        RabbitMqProperties.Ssl ssl = rabbitMqProperties.getSsl();
-        if (!ssl.isEnabled()) {
-            return connectionFactory;
+    public CachingConnectionFactory connectionFactory(RabbitMqProperties props) {
+        CachingConnectionFactory factory = new CachingConnectionFactory();
+        factory.setAddresses(props.getAddresses());
+        factory.setUsername(props.getUsername());
+        factory.setPassword(props.getPassword());
+        factory.setVirtualHost(props.getVirtualHost());
+        String appName = applicationContext.getEnvironment()
+                .getProperty("spring.application.name", "unknown");
+        factory.setConnectionNameStrategy(c -> appName + "-" + c.getHost());
+        // 修复 bug：publisher confirm 仅在 raf.rabbit.provider.ack=true 时开启
+        if (props.getProvider() != null && props.getProvider().isAck()) {
+            factory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED);
+            factory.setPublisherReturns(true);
         }
-
-        try {
-            SSLContext sslContext = SSLContextBuilder.create()
-                    .loadKeyMaterial(
-                            ResourceUtils.getFile(ssl.getKeyStore()),
-                            ssl.getKeyStorePassword().toCharArray(),
-                            ssl.getKeyStorePassword().toCharArray())
-                    .loadTrustMaterial(
-                            ResourceUtils.getFile(ssl.getTrustStore()),
-                            ssl.getTrustStorePassword().toCharArray())
-                    .build();
-            connectionFactory.getRabbitConnectionFactory().useSslProtocol(sslContext);
-
-        } catch (Exception exception) {
-            throw new BeanInitializationException("RabbitMQ SSL configuration failed", exception);
+        if (props.getSsl() != null && props.getSsl().isEnabled()) {
+            applySsl(factory, props.getSsl());
         }
-        return connectionFactory;
-    }
-
-    @Bean
-    public RabbitTemplate rabbitTemplate(CachingConnectionFactory cachingConnectionFactory) {
-        return new RabbitTemplate(cachingConnectionFactory);
-    }
-
-    @Bean
-    @ConditionalOnBean(JsonService.class)
-    public RabbitMessageCacheMgr messageCacheMgr(RabbitTemplate rabbitTemplate) {
-        return new RabbitMessageCacheMgr(rabbitTemplate, json);
-    }
-
-    @Bean
-    public RabbitListenerContainerFactory<?> rabbitListenerContainerFactory(
-            ConnectionFactory connectionFactory,
-            RabbitMqProperties rabbitMqProperties) {
-        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-        factory.setConnectionFactory(connectionFactory);
-        RabbitMqProperties.RabbitMqConsumer consumer = rabbitMqProperties.getConsumer();
-        factory.setConcurrentConsumers(consumer != null ? consumer.getConcurrentConsumers() : 3);
-        factory.setMaxConcurrentConsumers(consumer != null ? consumer.getMaxConcurrentConsumers() : 10);
         return factory;
     }
 
-    @Bean("rabbitMqMessageSender")
-    @ConditionalOnMapProperty(prefix = "raf.rabbit.provider")
-    public RabbitMqMessageSender rabbitMqMessageSender(RabbitTemplate rabbitTemplate, RabbitMessageCacheMgr rabbitMessageCacheMgr,
-                                                       RabbitMqProperties rabbitMqProperties) {
-        Map<String, AbstractRabbitSenderConfirm> confirmReturnCallbacks =
-                applicationContext.getBeansOfType(AbstractRabbitSenderConfirm.class);
-        if (!confirmReturnCallbacks.isEmpty()) {
-            AbstractRabbitSenderConfirm confirmReturnCallback =
-                    confirmReturnCallbacks.values().toArray(new AbstractRabbitSenderConfirm[]{})[0];
-            rabbitTemplate.setConfirmCallback(confirmReturnCallback);
-            rabbitTemplate.setReturnsCallback(confirmReturnCallback);
+    private void applySsl(CachingConnectionFactory factory, RabbitMqProperties.Ssl ssl) {
+        try {
+            SSLContext ctx = SSLContextBuilder.create()
+                    .loadKeyMaterial(ResourceUtils.getFile(ssl.getKeyStore()),
+                            ssl.getKeyStorePassword().toCharArray(),
+                            ssl.getKeyStorePassword().toCharArray())
+                    .loadTrustMaterial(ResourceUtils.getFile(ssl.getTrustStore()),
+                            ssl.getTrustStorePassword().toCharArray())
+                    .build();
+            factory.getRabbitConnectionFactory().useSslProtocol(ctx);
+        } catch (Exception e) {
+            throw new BeanInitializationException("RabbitMQ SSL configuration failed", e);
         }
-        // 为true时,消息通过交换器无法匹配到队列会返回给生产者，为false时匹配不到会直接被丢弃
-        rabbitTemplate.setMandatory(true);
-        return new RabbitMqMessageSender(
-                rabbitTemplate,
-                rabbitMqProperties.getDelay(),
-                json,
-                rabbitMessageCacheMgr);
     }
 
-    @Bean("listenerContainers")
-    @ConditionalOnMapProperty(prefix = "raf.rabbit.consumer")
-    public List<SimpleMessageListenerContainer> listenerContainers(
-            CachingConnectionFactory factory, RabbitMqProperties rabbitMqProperties) {
-        String[] consumers = applicationContext.getBeanNamesForAnnotation(RabbitMqConsumer.class);
-        return Arrays.stream(consumers)
-                .map(c -> bindConsumerListener(c, factory, rabbitMqProperties))
+    // -------------------------------------------------------------------------
+    // RabbitTemplate / RabbitAdmin / RabbitMqMessageSender
+    // -------------------------------------------------------------------------
+
+    @Bean
+    public RabbitTemplate rabbitTemplate(CachingConnectionFactory factory, RabbitMqProperties props) {
+        RabbitTemplate template = new RabbitTemplate(factory);
+        if (props.getProvider() != null && props.getProvider().isAck()) {
+            template.setMandatory(true);
+            Map<String, AbstractRabbitSenderConfirm> confirms =
+                    applicationContext.getBeansOfType(AbstractRabbitSenderConfirm.class);
+            if (!confirms.isEmpty()) {
+                AbstractRabbitSenderConfirm confirm = confirms.values().iterator().next();
+                template.setConfirmCallback(confirm);
+                template.setReturnsCallback(confirm);
+                log.info("RabbitMQ confirm callback registered: {}", confirm.getClass().getSimpleName());
+            } else {
+                log.warn("raf.rabbit.provider.ack=true but no AbstractRabbitSenderConfirm bean found. "
+                        + "Implement AbstractRabbitSenderConfirm to handle send failures.");
+            }
+        }
+        return template;
+    }
+
+    @Bean
+    public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
+        RabbitAdmin admin = new RabbitAdmin(connectionFactory);
+        admin.setAutoStartup(true);
+        return admin;
+    }
+
+    @Bean
+    public RabbitMqMessageSender rabbitMqMessageSender(RabbitTemplate rabbitTemplate, JsonService json) {
+        return new RabbitMqMessageSender(rabbitTemplate, json);
+    }
+
+    // -------------------------------------------------------------------------
+    // 拓扑声明：由 raf.rabbit.bindings 配置驱动
+    // -------------------------------------------------------------------------
+
+    /**
+     * 根据 {@code raf.rabbit.bindings} 配置自动声明 Exchange/Queue/Binding。
+     *
+     * <p>生产者服务配置此项，消费者服务不需要配置 bindings。
+     * {@link RabbitAdmin} 会在连接建立后自动执行声明。
+     */
+    @Bean
+    public List<Declarable> rabbitTopologyDeclarations(RabbitMqProperties props) {
+        List<RabbitMqProperties.BindingDefinition> bindings = props.getBindings();
+        if (CollectionUtils.isEmpty(bindings)) {
+            return List.of();
+        }
+        return bindings.stream()
+                .flatMap(def -> buildDeclarables(def).stream())
                 .collect(Collectors.toList());
     }
 
-    private void register(ConfigurableListableBeanFactory beanFactory, Object bean, String name) {
-        beanFactory.registerSingleton(name, bean);
-    }
+    private List<Declarable> buildDeclarables(RabbitMqProperties.BindingDefinition def) {
+        List<Declarable> result = new ArrayList<>();
 
-    /**
-     * 绑定消费者监听器
-     */
-    private SimpleMessageListenerContainer bindConsumerListener(
-            String beanName, CachingConnectionFactory factory, RabbitMqProperties rabbitMqProperties) {
-        AbstractRabbitConsumerListener listener =
-                applicationContext.getBean(beanName, AbstractRabbitConsumerListener.class);
-        Class<?> clazz = listener.getClass();
-        if (AopUtils.isAopProxy(listener)) {
-            clazz = AopUtils.getTargetClass(listener);
+        // 1. 声明 Exchange
+        Exchange exchange = buildExchange(def.getExchange(), def.getExchangeType(), def.isDurable());
+        result.add(exchange);
+
+        // 2. 声明 Queue（带自定义参数）
+        Map<String, Object> args = new HashMap<>(def.getArguments());
+        if (def.getDelay() != null && def.getDelay().getTtl() > 0) {
+            args.put("x-message-ttl", def.getDelay().getTtl());
         }
-        RabbitMqConsumer consumerAnnotation = clazz.getAnnotation(RabbitMqConsumer.class);
-        String qName = parseVars(consumerAnnotation.queue());
-        String exchange = parseVars(consumerAnnotation.exchange());
-        String routingKey = parseVars(consumerAnnotation.routingKey());
+        Queue queue = QueueBuilder.durable(def.getQueue()).withArguments(args).build();
+        result.add(queue);
 
-        TopicExchange topicExchange = new TopicExchange(exchange);
-        register(beanFactory, topicExchange, exchange + "_exchange");
+        // 3. 声明 Binding（queue -> exchange）
+        result.add(buildBinding(queue, exchange, def.getRoutingKey()));
 
-        // 创建队列
-        Queue queue = new Queue(qName);
+        // 4. 延迟队列：额外声明 dead exchange + dead queue + dead binding
+        if (def.getDelay() != null) {
+            RabbitMqProperties.DelayConfig delay = def.getDelay();
 
-        // 注册queue对象
-        register(
-                beanFactory,
-                queue,
-                rabbitMqProperties.getConsumer().getGroup() + "_"
-                        + listener.getClass().getSimpleName() + "_queue");
-        // 注册绑定关系
-        Binding binding = BindingBuilder.bind(queue).to(topicExchange).with(routingKey);
-        register(beanFactory, binding, listener.getClass().getSimpleName() + "_binding");
+            Exchange deadExchange = buildExchange(
+                    delay.getDeadExchange(), delay.getDeadExchangeType(), def.isDurable());
+            result.add(deadExchange);
 
-        // 创建消息监听容器
-        return createMessageListenerContainer(queue, listener, consumerAnnotation.ackModel(), factory, rabbitMqProperties);
+            // dead queue 设置 DLX 参数，消息过期后路由到 receive exchange
+            Map<String, Object> deadArgs = new HashMap<>();
+            deadArgs.put("x-dead-letter-exchange", def.getExchange());
+            deadArgs.put("x-dead-letter-routing-key", def.getRoutingKey());
+            Queue deadQueue = QueueBuilder.durable(delay.getDeadQueue())
+                    .withArguments(deadArgs).build();
+            result.add(deadQueue);
+
+            result.add(buildBinding(deadQueue, deadExchange, delay.getDeadRoutingKey()));
+
+            log.info("Declared delay topology: deadExchange={}, deadQueue={} -> exchange={}, queue={}",
+                    delay.getDeadExchange(), delay.getDeadQueue(), def.getExchange(), def.getQueue());
+        } else {
+            log.info("Declared topology: exchange={}, queue={}, routingKey={}",
+                    def.getExchange(), def.getQueue(), def.getRoutingKey());
+        }
+        return result;
     }
 
+    private Exchange buildExchange(String name, String type, boolean durable) {
+        switch (type.toLowerCase()) {
+            case "topic":   return ExchangeBuilder.topicExchange(name).durable(durable).build();
+            case "fanout":  return ExchangeBuilder.fanoutExchange(name).durable(durable).build();
+            case "headers": return ExchangeBuilder.headersExchange(name).durable(durable).build();
+            default:        return ExchangeBuilder.directExchange(name).durable(durable).build();
+        }
+    }
+
+    private Binding buildBinding(Queue queue, Exchange exchange, String routingKey) {
+        if (exchange instanceof FanoutExchange) {
+            return BindingBuilder.bind(queue).to((FanoutExchange) exchange);
+        }
+        if (exchange instanceof TopicExchange) {
+            return BindingBuilder.bind(queue).to((TopicExchange) exchange).with(routingKey);
+        }
+        if (exchange instanceof HeadersExchange) {
+            return BindingBuilder.bind(queue).to((HeadersExchange) exchange).whereAny(new HashMap<>()).match();
+        }
+        // default: DirectExchange
+        return BindingBuilder.bind(queue).to((DirectExchange) exchange).with(routingKey);
+    }
+
+    // -------------------------------------------------------------------------
+    // 消费者监听容器注册
+    // -------------------------------------------------------------------------
+
     /**
-     * 会去rabbmitmq创建对应的队列，交换机，路由
+     * 扫描所有带 {@link RabbitMqConsumer} 注解的 Bean，注册 {@link SimpleMessageListenerContainer}。
      *
-     * @param connectionFactory
-     * @return
+     * <p>消费者只需指定 queue 名，不再负责声明拓扑。
+     * queue 名支持 {@code ${...}} 占位符，从 Spring Environment 解析。
      */
     @Bean
-    public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
-        RabbitAdmin rabbitAdmin = new RabbitAdmin(connectionFactory);
-        rabbitAdmin.setAutoStartup(true);
-        return rabbitAdmin;
+    public List<SimpleMessageListenerContainer> listenerContainers(
+            CachingConnectionFactory factory, RabbitMqProperties props) {
+        String[] beanNames = applicationContext.getBeanNamesForAnnotation(RabbitMqConsumer.class);
+        return Arrays.stream(beanNames)
+                .map(name -> buildListenerContainer(name, factory, props))
+                .collect(Collectors.toList());
     }
 
-    /**
-     * 创建消息监听容器
-     */
-    private SimpleMessageListenerContainer createMessageListenerContainer(
-            Queue queue,
-            AbstractRabbitConsumerListener listener,
-            AcknowledgeMode model,
-            CachingConnectionFactory factory,
-            RabbitMqProperties rabbitMqProperties) {
+    private SimpleMessageListenerContainer buildListenerContainer(
+            String beanName, CachingConnectionFactory factory, RabbitMqProperties props) {
+        AbstractRabbitConsumerListener listener =
+                applicationContext.getBean(beanName, AbstractRabbitConsumerListener.class);
+        Class<?> clazz = AopUtils.isAopProxy(listener) ? AopUtils.getTargetClass(listener) : listener.getClass();
+        RabbitMqConsumer annotation = clazz.getAnnotation(RabbitMqConsumer.class);
+
+        // 支持 ${...} 占位符解析，实现多环境队列名配置
+        String queueName = applicationContext.getEnvironment()
+                .resolvePlaceholders(annotation.queue());
+
+        Queue queue = new Queue(queueName, true);
+        beanFactory.registerSingleton(queueName + "_queue", queue);
+
+        RabbitMqProperties.Consumer consumer = props.getConsumer();
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(factory);
-        RabbitMqProperties.RabbitMqConsumer consumer = rabbitMqProperties.getConsumer();
         container.setQueues(queue);
         container.setExposeListenerChannel(true);
-        container.setConcurrentConsumers(consumer != null ? consumer.getConcurrentConsumers() : 1);
-        container.setMaxConcurrentConsumers(consumer != null ? consumer.getMaxConcurrentConsumers() : 3);
-        container.setAcknowledgeMode(model);
+        container.setConcurrentConsumers(consumer != null ? consumer.getConcurrentConsumers() : 3);
+        container.setMaxConcurrentConsumers(consumer != null ? consumer.getMaxConcurrentConsumers() : 10);
+        container.setAcknowledgeMode(annotation.ackModel());
         container.setMessageListener(listener);
-        register(beanFactory, container, queue.getName() + "_listenerContainer");
+
+        beanFactory.registerSingleton(queueName + "_container", container);
+        log.info("Registered listener container: queue={}, consumer={}", queueName, clazz.getSimpleName());
         return container;
-    }
-
-    @Bean("listenerDelayContainers")
-    @ConditionalOnMapProperty(prefix = "raf.rabbit.delay")
-    public String listenerDelayContainers(RabbitMqProperties rabbitMqProperties) {
-        RabbitMqProperties.RabbitMqDelayProvider rabbitMqDelayProvider = rabbitMqProperties.getDelay();
-        String groupName = rabbitMqProperties.getConsumer().getGroup() + "-";
-
-        TopicExchange deadExchange = new TopicExchange(rabbitMqDelayProvider.getDeadExchange());
-        register(beanFactory, deadExchange, groupName.concat("deadExchange"));
-
-        TopicExchange receiveExchange = new TopicExchange(rabbitMqDelayProvider.getReceiveExchange());
-        register(beanFactory, receiveExchange, groupName.concat("receiveExchange"));
-
-        if (CollectionUtils.isEmpty(rabbitMqDelayProvider.getQueuePrefix())) {
-            return Strings.EMPTY;
-        }
-
-        rabbitMqDelayProvider.getQueuePrefix().forEach(c -> {
-            String receiveQueueStr = c.concat(".receive.queue");
-            String receiveRouteStr = c.concat(".receive.route");
-            String deadQueueStr = c.concat(".dead.queue");
-            String deadRouteStr = c.concat(".dead.route");
-
-            Queue queue = new Queue(receiveQueueStr);
-            register(beanFactory, queue, groupName.concat(receiveQueueStr));
-
-            Binding binding = BindingBuilder.bind(queue).to(receiveExchange).with(receiveRouteStr);
-            register(beanFactory, binding, groupName.concat(receiveQueueStr).concat("_binding"));
-
-            Map<String, Object> arguments = Maps.newHashMapWithExpectedSize(4);
-            arguments.put("x-dead-letter-exchange", rabbitMqDelayProvider.getReceiveExchange());
-            arguments.put("x-dead-letter-routing-key", receiveRouteStr);
-            Queue deadQueue = new Queue(deadQueueStr, true, false, false, arguments);
-            register(beanFactory, deadQueue, groupName.concat(deadQueueStr));
-
-            Binding delayBinding =
-                    BindingBuilder.bind(deadQueue).to(deadExchange).with(deadRouteStr);
-            register(beanFactory, delayBinding, groupName.concat(deadQueueStr).concat("_binding"));
-        });
-        return Strings.EMPTY;
-    }
-
-    private String parseVars(String el) {
-        if (el.startsWith(RafConstant.DOLLAR_LEFT_BRACE) && el.endsWith(RafConstant.RIGHT_BRACE)) {
-            return this.environment.getProperty(StringUtils.removeEnd(
-                    StringUtils.removeStart(el, RafConstant.DOLLAR_LEFT_BRACE), RafConstant.RIGHT_BRACE));
-        }
-        return el;
     }
 }
