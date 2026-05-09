@@ -19,12 +19,16 @@ public class RabbitMqMessage implements Serializable {
     private int times = 0;
 
     @JsonIgnore
-    void preSend() {
+    public void incrementRetryCount() {
         times++;
     }
 
+    /**
+     * 是否超过最大重试次数（默认 3 次）。
+     * 在 {@link AbstractRabbitConsumerListener#retry} 中使用，防止无限重试。
+     */
     @JsonIgnore
-    boolean isOverTimes() {
+    public boolean isOverTimes() {
         return times > 3;
     }
 }

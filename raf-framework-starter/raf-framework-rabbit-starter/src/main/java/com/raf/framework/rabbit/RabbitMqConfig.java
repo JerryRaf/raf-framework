@@ -4,7 +4,6 @@ import com.raf.framework.core.jackson.JsonService;
 
 import javax.net.ssl.SSLContext;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -232,6 +231,7 @@ public class RabbitMqConfig implements BeanFactoryPostProcessor, ApplicationCont
 
     /**
      * 扫描所有带 {@link RabbitMqConsumer} 注解的 Bean，注册 {@link SimpleMessageListenerContainer}。
+     * 同时兼容扫描已废弃的 {@link RabbitMqDelayConsumer} 注解。
      *
      * <p>消费者只需指定 queue 名，不再负责声明拓扑。
      * queue 名支持 {@code ${...}} 占位符，从 Spring Environment 解析。
@@ -239,10 +239,21 @@ public class RabbitMqConfig implements BeanFactoryPostProcessor, ApplicationCont
     @Bean
     public List<SimpleMessageListenerContainer> listenerContainers(
             CachingConnectionFactory factory, RabbitMqProperties props) {
-        String[] beanNames = applicationContext.getBeanNamesForAnnotation(RabbitMqConsumer.class);
-        return Arrays.stream(beanNames)
-                .map(name -> buildListenerContainer(name, factory, props))
-                .collect(Collectors.toList());
+        List<SimpleMessageListenerContainer> containers = new ArrayList<>();
+
+        // 扫描 @RabbitMqConsumer
+        String[] consumerBeans = applicationContext.getBeanNamesForAnnotation(RabbitMqConsumer.class);
+        for (String name : consumerBeans) {
+            containers.add(buildListenerContainer(name, factory, props));
+        }
+
+        // 兼容扫描 @RabbitMqDelayConsumer（已废弃，建议迁移到 @RabbitMqConsumer）
+        String[] delayBeans = applicationContext.getBeanNamesForAnnotation(RabbitMqDelayConsumer.class);
+        for (String name : delayBeans) {
+            containers.add(buildDelayListenerContainer(name, factory, props));
+        }
+
+        return containers;
     }
 
     private SimpleMessageListenerContainer buildListenerContainer(
@@ -280,6 +291,47 @@ public class RabbitMqConfig implements BeanFactoryPostProcessor, ApplicationCont
 
         beanFactory.registerSingleton(queueName + "_container", container);
         log.info("Registered listener container: queue={}, consumer={}", queueName, clazz.getSimpleName());
+        return container;
+    }
+
+    @SuppressWarnings("deprecation")
+    private SimpleMessageListenerContainer buildDelayListenerContainer(
+            String beanName, CachingConnectionFactory factory, RabbitMqProperties props) {
+        AbstractRabbitConsumerListener listener =
+                applicationContext.getBean(beanName, AbstractRabbitConsumerListener.class);
+        Class<?> clazz = AopUtils.isAopProxy(listener) ? AopUtils.getTargetClass(listener) : listener.getClass();
+        RabbitMqDelayConsumer annotation = clazz.getAnnotation(RabbitMqDelayConsumer.class);
+
+        String queueName = applicationContext.getEnvironment()
+                .resolvePlaceholders(annotation.businessName());
+
+        if (!org.springframework.util.StringUtils.hasText(queueName)) {
+            throw new BeanInitializationException(
+                    "RabbitMqDelayConsumer on " + clazz.getSimpleName() + " resolved to blank queue name. " +
+                    "Check @RabbitMqDelayConsumer(businessName=...) and your configuration.");
+        }
+
+        log.warn("@RabbitMqDelayConsumer on {} is deprecated. Migrate to @RabbitMqConsumer(queue=\"{}\").",
+                clazz.getSimpleName(), queueName);
+
+        Queue queue = new Queue(queueName, true);
+        if (beanFactory.containsSingleton(queueName + "_queue")) {
+            log.warn("Duplicate consumer for queue '{}' detected.", queueName);
+        }
+        beanFactory.registerSingleton(queueName + "_queue", queue);
+
+        RabbitMqProperties.Consumer consumer = props.getConsumer();
+        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(factory);
+        container.setQueues(queue);
+        container.setExposeListenerChannel(true);
+        container.setConcurrentConsumers(consumer != null ? consumer.getConcurrentConsumers() : 3);
+        container.setMaxConcurrentConsumers(consumer != null ? consumer.getMaxConcurrentConsumers() : 10);
+        container.setAcknowledgeMode(annotation.ackModel());
+        container.setMessageListener(listener);
+
+        beanFactory.registerSingleton(queueName + "_container", container);
+        log.info("Registered delay listener container (deprecated): queue={}, consumer={}",
+                queueName, clazz.getSimpleName());
         return container;
     }
 }

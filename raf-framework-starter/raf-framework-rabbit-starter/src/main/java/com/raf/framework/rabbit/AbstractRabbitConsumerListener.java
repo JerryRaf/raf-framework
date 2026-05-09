@@ -51,8 +51,11 @@ public abstract class AbstractRabbitConsumerListener implements ChannelAwareMess
                     rabbitMqMessage != null ? rabbitMqMessage.getMsgId() : "unknown",
                     ex.getMessage(), ex);
 
+            if (rabbitMqMessage != null) {
+                rabbitMqMessage.incrementRetryCount();
+            }
             if (rabbitMqMessage != null && retry(rabbitMqMessage)) {
-                log.warn("Retrying message, msgId={}", rabbitMqMessage.getMsgId());
+                log.warn("Retrying message, msgId={}, retryCount={}", rabbitMqMessage.getMsgId(), rabbitMqMessage.getTimes());
                 channel.basicNack(deliveryTag, false, true);
             } else {
                 doGiveUp(message, channel, deliveryTag, ex.getMessage());

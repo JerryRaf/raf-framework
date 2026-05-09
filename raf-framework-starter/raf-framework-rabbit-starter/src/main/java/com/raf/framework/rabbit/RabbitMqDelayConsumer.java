@@ -7,9 +7,15 @@ import java.lang.annotation.Target;
 import org.springframework.amqp.core.AcknowledgeMode;
 
 /**
+ * 延迟消费者注解（已废弃）。
+ *
+ * <p>请迁移到 {@link RabbitMqConsumer}，通过 {@code queue} 属性直接指定监听队列名。
+ * 延迟队列的实际消费队列名在 {@code raf.rabbit.bindings[].delay.deadQueue} 中配置。
+ *
  * @author Jerry
- * @date 2019/01/01
+ * @deprecated 使用 {@link RabbitMqConsumer} 替代
  */
+@Deprecated
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RabbitMqDelayConsumer {
