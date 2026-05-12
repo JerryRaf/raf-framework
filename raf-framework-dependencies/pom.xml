@@ -45,7 +45,7 @@
 
         <!--middleware-->
         <mariadb.version>3.5.3</mariadb.version>
-        <mysql.version>9.3.0</mysql.version>
+        <mysql.version>9.7.0</mysql.version>
         <mybatis.version>3.5.19</mybatis.version>
         <mybatis.spring.version>3.0.5</mybatis.spring.version>
         <mybatis.plus.version>3.5.16</mybatis.plus.version>
