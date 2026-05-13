@@ -43,7 +43,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Bean
     @ConditionalOnClass(CorsFilter.class)
-    @ConditionalOnProperty(value = "raf.cors.enabled")
+    @ConditionalOnProperty(value = "raf.cors.enabled", havingValue = "true")
     public Filter corsFilter(CorsProperties corsProperties) {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration(
@@ -53,7 +53,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Bean
     @ConditionalOnClass(OncePerRequestFilter.class)
-    @ConditionalOnProperty(value = "raf.log.enabled")
+    @ConditionalOnProperty(value = "raf.log.enabled", havingValue = "true")
     public Filter accessLogFilter() {
         return new AccessLogFilter();
     }

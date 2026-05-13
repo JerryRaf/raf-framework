@@ -113,7 +113,7 @@ public class RafSentryEventProcessor implements EventProcessor {
         try {
             // 添加框架标识
             event.setTag("framework", "raf-framework");
-            event.setTag("framework.version", "3.0.0");
+            event.setTag("framework.version", properties.getFrameworkVersion());
 
             // 可以在这里添加更多上下文信息
             // 例如：租户ID、用户ID、请求路径等

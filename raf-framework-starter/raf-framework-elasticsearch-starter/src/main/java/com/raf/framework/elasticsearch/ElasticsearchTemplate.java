@@ -265,13 +265,25 @@ public class ElasticsearchTemplate {
      * 搜索文档
      */
     public <T> List<T> search(String indexName, Query query, Class<T> clazz) {
+        return search(indexName, query, properties.getDefaultSearchSize(), clazz);
+    }
+
+    /**
+     * 搜索文档（指定大小）
+     */
+    public <T> List<T> search(String indexName, Query query, int size, Class<T> clazz) {
         try {
+            if (size > properties.getMaxSearchSize()) {
+                log.warn("Search size [{}] exceeds max limit [{}], using max limit", size, properties.getMaxSearchSize());
+                size = properties.getMaxSearchSize();
+            }
+
+            int finalSize = size;
             SearchResponse<T> response = client.search(s -> s
                     .index(indexName)
                     .query(query)
-                    .size(10000),
-                    clazz
-            );
+                    .size(finalSize)
+            , clazz);
 
             return response.hits().hits().stream()
                     .map(Hit::source)

@@ -10,8 +10,8 @@ import lombok.Getter;
  */
 @Getter
 public abstract class BaseException extends RuntimeException {
-    protected int code = -1;
-    protected String msg;
+    private final int code;
+    private final String msg;
 
     /**
      * 保留原始枚举引用，方便在if (ex.getResponseEnum() == GatewayErrorEnum.TOKEN_INVALID)

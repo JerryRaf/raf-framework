@@ -15,7 +15,7 @@ public class RabbitMqMessage implements Serializable {
 
     private String msgId;
     private String message;
-    private int times = 0;
+    private volatile int times = 0;
 
     @JsonIgnore
     public void incrementRetryCount() {

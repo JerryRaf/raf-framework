@@ -31,6 +31,7 @@ public class KafkaProducer implements DisposableBean {
     private final Producer<String, String> transactionalProducer;
     private final JsonService jsonService;
     private final boolean enableTransaction;
+    private final Object transactionLock = new Object();
 
     public KafkaProducer(Producer<String, String> producer,
                          Producer<String, String> transactionalProducer,
@@ -119,7 +120,8 @@ public class KafkaProducer implements DisposableBean {
     }
 
     /**
-     * Execute in transaction
+     * Execute in transaction.
+     * Kafka transactional producer is NOT thread-safe, so we synchronize on a lock.
      */
     public void executeInTransaction(TransactionCallback callback) {
         if (!enableTransaction) {
@@ -130,15 +132,17 @@ public class KafkaProducer implements DisposableBean {
             throw new IllegalStateException("Transactional producer is not initialized");
         }
 
-        transactionalProducer.beginTransaction();
-        try {
-            callback.doInTransaction(new TransactionalKafkaProducer(transactionalProducer, jsonService));
-            transactionalProducer.commitTransaction();
-            log.debug("Kafka transaction committed successfully");
-        } catch (Exception e) {
-            log.error("Kafka transaction failed, rolling back", e);
-            transactionalProducer.abortTransaction();
-            throw new InfrastructureException(RafResponseEnum.SERVER_ERROR, e);
+        synchronized (transactionLock) {
+            transactionalProducer.beginTransaction();
+            try {
+                callback.doInTransaction(new TransactionalKafkaProducer(transactionalProducer, jsonService));
+                transactionalProducer.commitTransaction();
+                log.debug("Kafka transaction committed successfully");
+            } catch (Exception e) {
+                log.error("Kafka transaction failed, rolling back", e);
+                transactionalProducer.abortTransaction();
+                throw new InfrastructureException(RafResponseEnum.SERVER_ERROR, e);
+            }
         }
     }
 
@@ -146,6 +150,13 @@ public class KafkaProducer implements DisposableBean {
      * Build Kafka ProducerRecord
      */
     private ProducerRecord<String, String> buildRecord(KafkaMessage<?> kafkaMessage) {
+        return buildRecord(kafkaMessage, jsonService);
+    }
+
+    /**
+     * Build Kafka ProducerRecord (shared static method)
+     */
+    private static ProducerRecord<String, String> buildRecord(KafkaMessage<?> kafkaMessage, JsonService jsonService) {
         String jsonBody = jsonService.toJson(kafkaMessage.getBody());
 
         ProducerRecord<String, String> record = new ProducerRecord<>(
@@ -200,26 +211,7 @@ public class KafkaProducer implements DisposableBean {
 
         public void send(KafkaMessage<?> kafkaMessage) {
             try {
-                String jsonBody = jsonService.toJson(kafkaMessage.getBody());
-                ProducerRecord<String, String> record = new ProducerRecord<>(
-                        kafkaMessage.getTopic(),
-                        kafkaMessage.getPartition(),
-                        kafkaMessage.getTimestamp(),
-                        kafkaMessage.getKey(),
-                        jsonBody
-                );
-
-                if (kafkaMessage.getHeaders() != null && !kafkaMessage.getHeaders().isEmpty()) {
-                    kafkaMessage.getHeaders().forEach((key, value) ->
-                            record.headers().add(new RecordHeader(key, value.getBytes(StandardCharsets.UTF_8)))
-                    );
-                }
-
-                String traceId = ContextHolder.getTraceId();
-                if (StringUtils.isNotBlank(traceId)) {
-                    record.headers().add(new RecordHeader("traceId", traceId.getBytes(StandardCharsets.UTF_8)));
-                }
-
+                ProducerRecord<String, String> record = buildRecord(kafkaMessage, jsonService);
                 producer.send(record);
             } catch (Exception e) {
                 log.error("Transactional send failed. topic:{}, key:{}", kafkaMessage.getTopic(), kafkaMessage.getKey(), e);

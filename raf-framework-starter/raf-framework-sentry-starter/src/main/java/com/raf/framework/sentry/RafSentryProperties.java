@@ -85,6 +85,12 @@ public class RafSentryProperties {
     private java.util.Map<String, String> tags;
 
     /**
+     * 框架版本号（用于 Sentry 标签）
+     * 默认从 raf-framework.version 系统属性读取，可通过配置覆盖
+     */
+    private String frameworkVersion = System.getProperty("raf-framework.version", "unknown");
+
+    /**
      * TraceId 来源枚举
      */
     public enum TraceIdSource {

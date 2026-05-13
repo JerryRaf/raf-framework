@@ -43,7 +43,7 @@ public class ElasticsearchAutoConfiguration {
     /**
      * 配置 RestClient
      */
-    @Bean
+    @Bean(destroyMethod = "close")
     @ConditionalOnMissingBean
     public RestClient restClient() {
         if (properties.getHosts() == null || properties.getHosts().isEmpty()) {
@@ -59,7 +59,8 @@ public class ElasticsearchAutoConfiguration {
             }
             String hostname = parts[0];
             int port = Integer.parseInt(parts[1]);
-            httpHosts.add(new HttpHost(hostname, port, "http"));
+            String scheme = properties.isHttps() ? "https" : "http";
+            httpHosts.add(new HttpHost(hostname, port, scheme));
         }
 
         RestClientBuilder builder = RestClient.builder(httpHosts.toArray(new HttpHost[0]));

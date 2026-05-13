@@ -78,7 +78,7 @@ public class RedisConfig implements CachingConfigurer {
         RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer))
-                .entryTtl(Duration.ofHours(1))
+                .entryTtl(properties.getDefaultTtl())
                 .disableCachingNullValues();
 
         Map<String, RedisCacheConfiguration> customCacheMap = new HashMap<>();

@@ -27,7 +27,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  */
 @Slf4j
 @Configuration
-@ConditionalOnProperty(value = "raf.executor.enabled")
+@ConditionalOnProperty(value = "raf.executor.enabled", havingValue = "true")
 @EnableAsync
 public class ThreadPoolConfig implements AsyncConfigurer, EnvironmentAware {
     public static final String ASYNC_EXECUTOR_NAME = "rafAsyncExecutor";
@@ -46,7 +46,6 @@ public class ThreadPoolConfig implements AsyncConfigurer, EnvironmentAware {
                 ConfigUtil.resolveSetting("raf.executor", ThreadPoolProperties.class, this.environment);
 
         ThreadPoolTaskExecutor taskExecutor = new CustomThreadPoolTaskExecutor();
-        taskExecutor.initialize();
 
         // for passing in request scope context
         taskExecutor.setTaskDecorator(new ContextCopyingDecorator());
@@ -60,6 +59,7 @@ public class ThreadPoolConfig implements AsyncConfigurer, EnvironmentAware {
         taskExecutor.setAwaitTerminationSeconds(threadPoolProperties.getAwaitTerminationSeconds());
         // rejection policy: CallerRunsPolicy when pool is at max capacity
         taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        taskExecutor.initialize();
 
         ThreadPoolHolder.register(ASYNC_EXECUTOR_NAME, taskExecutor);
         return taskExecutor;

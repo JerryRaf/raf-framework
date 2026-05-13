@@ -82,13 +82,13 @@ public abstract class AbstractRabbitSenderConfirm
 
     /**
      * confirm 失败回调（消息未到达 Exchange，如网络问题）。
-     * 默认只打日志，子类可重写做告警或重发。
+     * 默认记录错误日志，子类可重写做告警或重发。
      *
      * @param msgId 消息 ID
      * @param cause 失败原因
      */
     protected void onConfirmFail(String msgId, String cause) {
-        // 默认空实现，子类按需重写
+        log.error("Message confirm failed - msgId: {}, cause: {}. Consider implementing onConfirmFail() for retry or alerting.", msgId, cause);
     }
 
     /**

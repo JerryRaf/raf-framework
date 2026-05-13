@@ -84,6 +84,11 @@ public class RocketMqProperties {
          * 事务消息回查线程池大小
          */
         private int checkThreadPoolSize = 1;
+
+        /**
+         * 事务消息回查线程池队列容量
+         */
+        private int checkThreadPoolQueueCapacity = 2000;
     }
 
     @Data

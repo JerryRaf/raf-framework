@@ -1,6 +1,8 @@
 package com.raf.framework.rocketmq;
 
 import com.raf.framework.core.common.RafConstant;
+import com.raf.framework.core.common.exception.InfrastructureException;
+import com.raf.framework.core.common.result.RafResponseEnum;
 import com.raf.framework.core.jackson.JsonService;
 
 import java.util.Arrays;
@@ -122,7 +124,7 @@ public class RocketMqConfig implements BeanFactoryPostProcessor, EnvironmentAwar
                 producerConfig.getCheckThreadPoolSize(),
                 100,
                 TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(2000),
+                new ArrayBlockingQueue<>(producerConfig.getCheckThreadPoolQueueCapacity()),
                 r -> new Thread(r, "RocketMQ-Transaction-Check-Thread")
         );
         producer.setExecutorService(executorService);
@@ -265,7 +267,7 @@ public class RocketMqConfig implements BeanFactoryPostProcessor, EnvironmentAwar
 
         } catch (Exception e) {
             log.error("RocketMQ consumer registration failed: {}", beanName, e);
-            throw new RuntimeException("RocketMQ consumer registration failed", e);
+            throw new InfrastructureException(RafResponseEnum.SERVER_ERROR, "RocketMQ consumer registration failed", e);
         }
     }
 

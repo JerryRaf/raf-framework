@@ -99,6 +99,7 @@ public class OkHttpAutoConfig {
         OkHttpClient.Builder builder = new OkHttpClient.Builder().connectionPool(pool)
                 .connectTimeout(config.getConnectTimeout(), TimeUnit.MILLISECONDS)
                 .readTimeout(config.getReadTimeout(), TimeUnit.MILLISECONDS)
+                .writeTimeout(config.getWriteTimeout(), TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(config.isRetryOnConnectionFailure())
                 .addInterceptor(createLoggingInterceptor(config.getLevel()));
 

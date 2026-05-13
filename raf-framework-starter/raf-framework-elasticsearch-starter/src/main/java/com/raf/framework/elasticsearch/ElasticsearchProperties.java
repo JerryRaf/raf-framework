@@ -37,6 +37,11 @@ public class ElasticsearchProperties {
     private String password;
 
     /**
+     * 是否使用HTTPS协议
+     */
+    private boolean https = false;
+
+    /**
      * 连接超时时间
      */
     private Duration connectTimeout = Duration.ofSeconds(10);
@@ -65,6 +70,16 @@ public class ElasticsearchProperties {
      * 是否启用链路追踪
      */
     private boolean traceEnabled = true;
+
+    /**
+     * 默认搜索结果大小限制
+     */
+    private int defaultSearchSize = 1000;
+
+    /**
+     * 最大搜索结果大小限制（防止OOM）
+     */
+    private int maxSearchSize = 10000;
 
     /**
      * 索引配置

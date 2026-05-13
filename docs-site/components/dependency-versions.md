@@ -12,7 +12,7 @@
 |--------|------|------|
 | `spring.boot.version` | Spring Boot | 3.5.14 |
 | `spring.cloud.version` | Spring Cloud (2025) | 2025.0.2 |
-| `aliababa.dependencies.version` | Spring Cloud Alibaba | 2022.0.0.2 |
+| `alibaba.dependencies.version` | Spring Cloud Alibaba | 2022.0.0.2 |
 | `nacos.client.version` | Nacos Client | 2.5.1 |
 | `dubbo.starter.version` | Dubbo Spring Boot Starter | 3.3.4 |
 | `dubbo.version` | Dubbo | 3.3.4 |

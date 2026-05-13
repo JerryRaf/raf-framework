@@ -27,15 +27,19 @@ import lombok.Getter;
 public class RafResult<T> implements Serializable {
     private static final long serialVersionUID = -1;
 
-    private int code;
-    private String msg;
-    private T data;
+    private final int code;
+    private final String msg;
+    private final T data;
 
     /** 全链路追踪 ID，对接 SkyWalking / ELK 日志系统 */
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String traceId;
+    private final String traceId;
 
-    private RafResult() {
+    private RafResult(int code, String msg, T data) {
+        this.code = code;
+        this.msg = msg;
+        this.data = data;
+        this.traceId = ContextHolder.getTraceId();
     }
 
     @JsonIgnore
@@ -48,12 +52,7 @@ public class RafResult<T> implements Serializable {
     }
 
     public static <T> RafResult<T> success(T t) {
-        RafResult<T> r = new RafResult<>();
-        r.code = RafResponseEnum.SUCCESS.getCode();
-        r.msg = RafResponseEnum.SUCCESS.getMsg();
-        r.data = t;
-        r.traceId = ContextHolder.getTraceId();
-        return r;
+        return new RafResult<>(RafResponseEnum.SUCCESS.getCode(), RafResponseEnum.SUCCESS.getMsg(), t);
     }
 
     public static <T> RafResult<T> fail() {
@@ -65,12 +64,7 @@ public class RafResult<T> implements Serializable {
     }
 
     public static <T> RafResult<T> fail(IResponseEnum iResponseEnum, T t) {
-        RafResult<T> r = new RafResult<>();
-        r.code = iResponseEnum.getCode();
-        r.msg = iResponseEnum.getMsg();
-        r.data = t;
-        r.traceId = ContextHolder.getTraceId();
-        return r;
+        return new RafResult<>(iResponseEnum.getCode(), iResponseEnum.getMsg(), t);
     }
 
     /**
@@ -79,10 +73,6 @@ public class RafResult<T> implements Serializable {
      * @param ex 框架异常基类
      */
     public static <T> RafResult<T> fail(BaseException ex) {
-        RafResult<T> r = new RafResult<>();
-        r.code = ex.getCode();
-        r.msg = ex.getMsg();
-        r.traceId = ContextHolder.getTraceId();
-        return r;
+        return new RafResult<>(ex.getCode(), ex.getMsg(), null);
     }
 }

@@ -43,6 +43,7 @@ public class ECIESCryptoUtil {
     private static final String AES_CIPHER_TRANSFORM = "AES/GCM/NoPadding";
     private static final int GCM_TAG_LENGTH = 128;
     private static final int GCM_IV_LENGTH = 12;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     // ================= 1. 密钥管理 =================
 
@@ -114,7 +115,7 @@ public class ECIESCryptoUtil {
     public static String encryptAES(String plainText, byte[] aesKey) throws Exception {
         // 1. 生成随机 IV
         byte[] iv = new byte[GCM_IV_LENGTH];
-        new SecureRandom().nextBytes(iv);
+        SECURE_RANDOM.nextBytes(iv);
 
         // 2. 加密
         Cipher cipher = Cipher.getInstance(AES_CIPHER_TRANSFORM);

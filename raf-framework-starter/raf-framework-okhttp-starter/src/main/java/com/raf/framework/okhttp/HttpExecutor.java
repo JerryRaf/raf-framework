@@ -2,6 +2,8 @@ package com.raf.framework.okhttp;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.ApplicationContext;
@@ -16,6 +18,7 @@ import org.springframework.util.Assert;
  *
  * @author Jerry
  */
+@Slf4j
 @ConditionalOnClass({
         OkHttpClient.class,
         RequestBody.class,
@@ -30,52 +33,104 @@ public class HttpExecutor {
         this.applicationContext = applicationContext;
     }
 
-    public Response get(String channel, String url) throws IOException {
-        return execute(channel, buildRequest(url, null, null, "GET", null));
+    /**
+     * Execute GET request and return response body as string.
+     * Response body is automatically closed after reading.
+     */
+    public String get(String channel, String url) throws IOException {
+        return executeToString(channel, buildRequest(url, null, null, "GET", null));
     }
 
-    public Response get(String channel, String url, Map<String, String> headers, Map<String, String> queryParams) throws IOException {
-        return execute(channel, buildRequest(url, headers, null, "GET", queryParams));
+    /**
+     * Execute GET request with headers and query params, return response body as string.
+     */
+    public String get(String channel, String url, Map<String, String> headers, Map<String, String> queryParams) throws IOException {
+        return executeToString(channel, buildRequest(url, headers, null, "GET", queryParams));
     }
 
-    public Response postJson(String channel, String url, String json) throws IOException {
-        return execute(channel, buildJsonRequest(url, null, json, "POST"));
+    /**
+     * Execute POST JSON request and return response body as string.
+     */
+    public String postJson(String channel, String url, String json) throws IOException {
+        return executeToString(channel, buildJsonRequest(url, null, json, "POST"));
     }
 
-    public Response postJson(String channel, String url, String json, Map<String, String> headers) throws IOException {
-        return execute(channel, buildJsonRequest(url, headers, json, "POST"));
+    /**
+     * Execute POST JSON request with headers, return response body as string.
+     */
+    public String postJson(String channel, String url, String json, Map<String, String> headers) throws IOException {
+        return executeToString(channel, buildJsonRequest(url, headers, json, "POST"));
     }
 
-    public Response postForm(String channel, String url, Map<String, String> formData) throws IOException {
+    /**
+     * Execute POST form request and return response body as string.
+     */
+    public String postForm(String channel, String url, Map<String, String> formData) throws IOException {
         return postForm(channel, url, formData, null);
     }
 
-    public Response postForm(String channel, String url, Map<String, String> formData, Map<String, String> headers) throws IOException {
+    /**
+     * Execute POST form request with headers, return response body as string.
+     */
+    public String postForm(String channel, String url, Map<String, String> formData, Map<String, String> headers) throws IOException {
         FormBody body = buildFormBody(formData);
-        return execute(channel, buildRequest(url, headers, body, "POST", null));
+        return executeToString(channel, buildRequest(url, headers, body, "POST", null));
     }
 
-    public Response putJson(String channel, String url, String json) throws IOException {
-        return execute(channel, buildJsonRequest(url, null, json, "PUT"));
+    /**
+     * Execute PUT JSON request and return response body as string.
+     */
+    public String putJson(String channel, String url, String json) throws IOException {
+        return executeToString(channel, buildJsonRequest(url, null, json, "PUT"));
     }
 
-    public Response putJson(String channel, String url, String json, Map<String, String> headers) throws IOException {
-        return execute(channel, buildJsonRequest(url, headers, json, "PUT"));
+    /**
+     * Execute PUT JSON request with headers, return response body as string.
+     */
+    public String putJson(String channel, String url, String json, Map<String, String> headers) throws IOException {
+        return executeToString(channel, buildJsonRequest(url, headers, json, "PUT"));
     }
 
-    public Response putForm(String channel, String url, Map<String, String> formData) throws IOException {
+    /**
+     * Execute PUT form request and return response body as string.
+     */
+    public String putForm(String channel, String url, Map<String, String> formData) throws IOException {
         return putForm(channel, url, formData, null);
     }
 
-    public Response putForm(String channel, String url, Map<String, String> formData, Map<String, String> headers) throws IOException {
+    /**
+     * Execute PUT form request with headers, return response body as string.
+     */
+    public String putForm(String channel, String url, Map<String, String> formData, Map<String, String> headers) throws IOException {
         FormBody body = buildFormBody(formData);
-        return execute(channel, buildRequest(url, headers, body, "PUT", null));
+        return executeToString(channel, buildRequest(url, headers, body, "PUT", null));
     }
 
-    public Response delete(String channel, String url, Map<String, String> headers) throws IOException {
-        return execute(channel, buildRequest(url, headers, null, "DELETE", null));
+    /**
+     * Execute DELETE request and return response body as string.
+     */
+    public String delete(String channel, String url, Map<String, String> headers) throws IOException {
+        return executeToString(channel, buildRequest(url, headers, null, "DELETE", null));
     }
 
+    /**
+     * Execute request and return response body as string.
+     * Response body is automatically closed after reading to prevent connection leaks.
+     */
+    private String executeToString(String channel, Request request) throws IOException {
+        try (Response response = execute(channel, request)) {
+            ResponseBody body = response.body();
+            return body != null ? body.string() : "";
+        }
+    }
+
+    /**
+     * Execute request and return raw Response.
+     * <p>
+     * <b>Warning:</b> Caller MUST close the response body to avoid connection leaks.
+     * Prefer using the string-returning methods instead.
+     * </p>
+     */
     private Response execute(String channel, Request request) throws IOException {
         OkHttpClient client = getChannelClient(channel);
         return client.newCall(request).execute();

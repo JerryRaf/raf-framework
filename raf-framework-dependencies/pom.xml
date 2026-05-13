@@ -31,7 +31,7 @@
         <!--base-->
         <spring.boot.version>3.5.14</spring.boot.version>
         <spring.cloud.version>2025.0.2</spring.cloud.version>
-        <aliababa.dependencies.version>2022.0.0.2</aliababa.dependencies.version>
+        <alibaba.dependencies.version>2022.0.0.2</alibaba.dependencies.version>
         <nacos.client.version>2.5.1</nacos.client.version>
         <dubbo.starter.version>3.3.4</dubbo.starter.version>
         <dubbo.version>3.3.4</dubbo.version>
@@ -247,7 +247,7 @@
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-                <version>${aliababa.dependencies.version}</version>
+                <version>${alibaba.dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

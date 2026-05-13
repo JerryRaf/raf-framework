@@ -18,6 +18,12 @@ public class RedisEnhanceProperties {
     private boolean enabled = false;
 
     /**
+     * 默认缓存TTL（Time To Live）
+     * 默认1小时
+     */
+    private Duration defaultTtl = Duration.ofHours(1);
+
+    /**
      * 自定义缓存配置
      */
     private Map<String, CustomCacheConfig> customCache;
