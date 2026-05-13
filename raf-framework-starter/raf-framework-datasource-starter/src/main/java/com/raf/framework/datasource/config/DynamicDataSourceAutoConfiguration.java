@@ -2,6 +2,8 @@ package com.raf.framework.datasource.config;
 
 import com.raf.framework.datasource.DsAspect;
 import com.raf.framework.datasource.DynamicRoutingDataSource;
+import com.raf.framework.datasource.aspect.ForceMasterAspect;
+import com.raf.framework.datasource.interceptor.ReadWriteRoutingInterceptor;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -29,10 +31,6 @@ public class DynamicDataSourceAutoConfiguration {
 
     /**
      * Create dynamic routing datasource bean
-     *
-     * @param properties         datasource properties
-     * @param applicationContext Spring application context
-     * @return dynamic routing datasource
      */
     @Bean
     @Primary
@@ -58,13 +56,33 @@ public class DynamicDataSourceAutoConfiguration {
     }
 
     /**
-     * Register DsAspect bean for dynamic datasource switching
-     *
-     * @return DsAspect instance
+     * Register DsAspect bean for dynamic datasource switching via @DsSelector
      */
     @Bean
     @ConditionalOnMissingBean
     public DsAspect dsAspect() {
         return new DsAspect();
+    }
+
+    /**
+     * Register ForceMasterAspect bean for @ForceMaster annotation support
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public ForceMasterAspect forceMasterAspect() {
+        return new ForceMasterAspect();
+    }
+
+    /**
+     * Register ReadWriteRoutingInterceptor when read-write splitting is enabled.
+     * MyBatis-Plus auto-detects Interceptor beans in the Spring context.
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(prefix = "raf.datasource.read-write-splitting", name = "enabled", havingValue = "true")
+    public ReadWriteRoutingInterceptor readWriteRoutingInterceptor(DynamicDataSourceProperties properties) {
+        String slaveKey = properties.getReadWriteSplitting().getSlaveKey();
+        log.info("ReadWriteRouting enabled: SELECT → {}, DML → master", slaveKey);
+        return new ReadWriteRoutingInterceptor(slaveKey);
     }
 }

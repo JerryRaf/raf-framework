@@ -68,6 +68,25 @@ public class MultiLevelCacheService {
     }
 
     /**
+     * 幂等注册缓存配置，已注册则跳过（线程安全）。
+     * 供 {@link com.raf.framework.redis.aspect.MultiLevelCacheAspect} 在首次调用时动态注册。
+     *
+     * @param config 缓存配置
+     */
+    public void registerCacheIfAbsent(ICacheConfig config) {
+        cacheRegistry.computeIfAbsent(config.getCacheName(), name -> {
+            log.info("Registering cache pool (lazy): name={}, maxSize={}, ttl={} {}",
+                    name, config.getMaxSize(), config.getLocalTtl(), config.getLocalUnit());
+            return Caffeine.newBuilder()
+                    .initialCapacity(16)
+                    .maximumSize(config.getMaxSize())
+                    .expireAfterWrite(config.getLocalTtl(), config.getLocalUnit())
+                    .recordStats()
+                    .build();
+        });
+    }
+
+    /**
      * Get a value from cache, loading from DB if absent.
      *
      * @param cacheConfig  cache configuration
@@ -141,6 +160,28 @@ public class MultiLevelCacheService {
             }
             return dbResult;
         }
+    }
+
+    /**
+     * 基于 {@link Class} 类型的 getOrLoad 重载，供 AOP 切面使用。
+     *
+     * <p>与 {@link #getOrLoad(ICacheConfig, String, long, TimeUnit, TypeReference, Supplier)} 语义相同，
+     * 区别在于使用 {@code Class<T>} 而非 {@code TypeReference<T>}，适合泛型信息已擦除的场景。
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getOrLoad(ICacheConfig cacheConfig,
+                           String key,
+                           long redisExpire, TimeUnit redisUnit,
+                           Class<T> type,
+                           Supplier<T> dbLoader) {
+        return getOrLoad(cacheConfig, key, redisExpire, redisUnit,
+                new TypeReference<T>() {
+                    @Override
+                    public java.lang.reflect.Type getType() {
+                        return type;
+                    }
+                },
+                dbLoader);
     }
 
     /**

@@ -26,10 +26,15 @@ public class HttpResponseInterceptor implements HandlerInterceptor {
             final HandlerMethod handlerMethod = (HandlerMethod) handler;
             final Class<?> clazz = handlerMethod.getBeanType();
             final Method method = handlerMethod.getMethod();
-            if (clazz.isAnnotationPresent(ResponseResult.class)) {
-                request.setAttribute(ResponseResultConfig.RESPONSE_RESULT, clazz.getAnnotation(ResponseResult.class));
-            } else if (method.isAnnotationPresent(ResponseResult.class)) {
-                request.setAttribute(ResponseResultConfig.RESPONSE_RESULT, method.getAnnotation(ResponseResult.class));
+
+            // 检查是否显式跳过包装（优先级最高）
+            if (clazz.isAnnotationPresent(SkipResponseWrap.class)
+                    || method.isAnnotationPresent(SkipResponseWrap.class)) {
+                request.setAttribute(ResponseResultConfig.SKIP_RESPONSE_WRAP, Boolean.TRUE);
+            } else {
+                // 默认对所有 HandlerMethod 开启响应包装（无需 @ResponseResult 注解）
+                // 向后兼容：@ResponseResult 显式标注时行为不变
+                request.setAttribute(ResponseResultConfig.RESPONSE_RESULT, Boolean.TRUE);
             }
         }
 

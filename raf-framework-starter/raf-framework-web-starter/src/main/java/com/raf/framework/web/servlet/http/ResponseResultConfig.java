@@ -25,15 +25,24 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ControllerAdvice
 public class ResponseResultConfig implements ResponseBodyAdvice<Object> {
+
     public static final String RESPONSE_RESULT = "RESPONSE-RESULT";
+    public static final String SKIP_RESPONSE_WRAP = "SKIP-RESPONSE-WRAP";
 
     @Override
     public boolean supports(MethodParameter methodParameter, Class<? extends HttpMessageConverter<?>> aClass) {
         ServletRequestAttributes servletRequestAttributes =
                 (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (servletRequestAttributes == null) {
+            return false;
+        }
         HttpServletRequest request = servletRequestAttributes.getRequest();
-        ResponseResult responseResult = (ResponseResult) request.getAttribute(RESPONSE_RESULT);
-        return responseResult != null;
+        // 显式跳过包装（@SkipResponseWrap）
+        if (Boolean.TRUE.equals(request.getAttribute(SKIP_RESPONSE_WRAP))) {
+            return false;
+        }
+        // 默认全局生效：只要 preHandle 设置了标记就包装
+        return Boolean.TRUE.equals(request.getAttribute(RESPONSE_RESULT));
     }
 
     @Override

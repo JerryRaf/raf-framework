@@ -2,3 +2,4 @@ com.raf.framework.core.spring.EnvConfig
 com.raf.framework.core.spring.bean.SpringContext
 com.raf.framework.core.snowflake.SnowFlakeConfig
 com.raf.framework.core.jackson.JacksonConfig
+com.raf.framework.core.common.result.ErrorCodeConflictCheckAutoConfiguration

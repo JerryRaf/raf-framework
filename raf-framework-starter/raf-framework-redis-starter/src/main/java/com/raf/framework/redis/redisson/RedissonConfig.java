@@ -2,6 +2,9 @@ package com.raf.framework.redis.redisson;
 
 import java.util.Arrays;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.raf.framework.redis.aspect.DistributedLockAspect;
+import com.raf.framework.redis.aspect.IdempotentConsumerAspect;
+import com.raf.framework.redis.aspect.MultiLevelCacheAspect;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -186,5 +189,23 @@ public class RedissonConfig {
                                                          RedisJsonHelper redisJsonHelper) {
         log.info("Initializing MultiLevelCacheService with RedissonService");
         return new MultiLevelCacheService(redissonService, redisJsonHelper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DistributedLockAspect.class)
+    public DistributedLockAspect distributedLockAspect(RedissonService redissonService) {
+        return new DistributedLockAspect(redissonService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(MultiLevelCacheAspect.class)
+    public MultiLevelCacheAspect multiLevelCacheAspect(MultiLevelCacheService multiLevelCacheService) {
+        return new MultiLevelCacheAspect(multiLevelCacheService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IdempotentConsumerAspect.class)
+    public IdempotentConsumerAspect idempotentConsumerAspect(RedissonService redissonService) {
+        return new IdempotentConsumerAspect(redissonService);
     }
 }
