@@ -30,13 +30,9 @@ class ResponseResultConfigTest {
     // ─── supports ────────────────────────────────────────────────────────────
 
     @Test
-    void supports_withResponseResultAttribute_returnsTrue() throws Exception {
+    void supports_withResponseResultAttribute_returnsTrue() {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        // Get a real ResponseResult annotation instance from an annotated element
-        @ResponseResult
-        class AnnotatedClass {}
-        ResponseResult annotation = AnnotatedClass.class.getAnnotation(ResponseResult.class);
-        request.setAttribute(ResponseResultConfig.RESPONSE_RESULT, annotation);
+        request.setAttribute(ResponseResultConfig.RESPONSE_RESULT, Boolean.TRUE);
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         boolean result = config.supports(mock(MethodParameter.class), null);
