@@ -2,9 +2,9 @@
 
 # RAF Framework
 
-**企业级 Spring Boot 3.x 微服务开发框架**
+**AI-Ready Enterprise Microservices Framework for Spring Boot 3.x**
 
-让业务开发者只关注业务本身
+企业级微服务开发框架 · 内置 Spring AI 集成 · 让业务开发者只关注业务本身
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-17+-orange.svg)](https://www.oracle.com/java/)
@@ -17,6 +17,8 @@
 [![Security](https://github.com/JerryRaf/raf-framework/actions/workflows/dependency-check.yml/badge.svg)](https://github.com/JerryRaf/raf-framework/actions/workflows/dependency-check.yml)
 [![Contributors](https://img.shields.io/github/contributors/JerryRaf/raf-framework)](https://github.com/JerryRaf/raf-framework/graphs/contributors)
 [![文档](https://img.shields.io/badge/文档-GitHub%20Pages-blue?logo=github)](https://jerryraf.github.io/raf-framework/)
+[![Spring AI](https://img.shields.io/badge/Spring%20AI-1.0-green.svg)](https://spring.io/projects/spring-ai)
+[![AI Ready](https://img.shields.io/badge/AI-Ready-blueviolet.svg)](#ai-集成spring-ai)
 
 [快速开始](#快速开始) · [文档](#核心能力) · [更新日志](CHANGELOG.md) · [提交 Issue](https://github.com/jerry-raf/raf-framework/issues) · [贡献指南](#贡献指南)
 
@@ -144,7 +146,7 @@ raf:
 │                                                                     │
 │  Web    Gateway   Dubbo   Nacos    MyBatis   Redis   MongoDB        │
 │  RabbitMQ  RocketMQ  Kafka  OkHttp  ES  ShardingSphere  Monitor    │
-│  Sentry   OpenAPI                                                   │
+│  Sentry   OpenAPI   AI (Spring AI · Multi-Provider · Session)      │
 │                                                                     │
 │  所有 Starter 默认关闭，raf.{component}.enabled=true 显式启用          │
 └──────────────────────────┬──────────────────────────────────────────┘
@@ -190,6 +192,74 @@ raf:
 | 中间件覆盖 | 18+ Starter | 按需手写 | 有限 |
 | 侵入性 | 零侵入 | 高 | 高 |
 | 升级成本 | 改一行版本号 | 逐文件修改 | 重新生成 |
+
+---
+
+## AI 集成（Spring AI）
+
+raf-framework 内置 `raf-framework-ai-starter`，基于 [Spring AI 1.0](https://spring.io/projects/spring-ai) 封装，开箱即用地支持多 LLM 提供商接入、多轮会话管理、场景路由。
+
+```xml
+<dependency>
+    <groupId>io.github.jerryraf</groupId>
+    <artifactId>raf-framework-ai-starter</artifactId>
+</dependency>
+```
+
+```yaml
+raf:
+  ai:
+    enabled: true
+    default-provider: openai
+    routes:
+      code: claude        # code 场景路由到 Claude
+      summary: deepseek   # summary 场景路由到 DeepSeek
+    session:
+      max-history: 20
+      ttl: 3600
+    providers:
+      openai:
+        enabled: true
+        api-key: ${OPENAI_API_KEY}
+        model: gpt-4o
+      claude:
+        enabled: true
+        api-key: ${ANTHROPIC_API_KEY}
+        model: claude-opus-4-5
+      deepseek:
+        enabled: true
+        api-key: ${DEEPSEEK_API_KEY}
+        base-url: https://api.deepseek.com
+        model: deepseek-chat
+```
+
+**核心能力：**
+
+| 能力 | 说明 |
+|------|------|
+| 多 Provider | OpenAI · Anthropic Claude · DeepSeek，统一 API 调用 |
+| 场景路由 | 按业务场景自动选择最合适的模型 |
+| 会话管理 | 多轮对话历史，内存（Caffeine）或 Redis 双存储 |
+| 流式输出 | `streamChat()` 支持 SSE 实时推送 |
+| 分布式追踪 | AI 请求自动注入 traceId，与全链路追踪打通 |
+| 统一响应 | AI 接口自动包装为 `RafResult<T>`，与业务接口规范一致 |
+
+```java
+@Autowired
+private AiService aiService;
+
+// 同步调用（默认 Provider）
+String reply = aiService.chat("用一句话解释什么是分布式锁");
+
+// 指定场景路由
+String code = aiService.chat(AiRequest.builder()
+    .scene("code")
+    .prompt("用 Java 实现一个线程安全的单例模式")
+    .build());
+
+// 流式输出
+Flux<String> stream = aiService.streamChat("请逐步分析这段 SQL 的性能问题：...");
+```
 
 ---
 
