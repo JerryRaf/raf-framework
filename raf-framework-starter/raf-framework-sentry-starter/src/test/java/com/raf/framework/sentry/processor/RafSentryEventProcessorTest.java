@@ -23,6 +23,7 @@ class RafSentryEventProcessorTest {
     void shouldInjectTraceTagsAndFrameworkTagsWhenEventAccepted() {
         RafSentryProperties properties = new RafSentryProperties();
         properties.getExceptionFilter().setEnabled(false);
+        properties.setFrameworkVersion("3.0.0");
 
         TraceIdProvider traceIdProvider = new FixedTraceIdProvider("trace-id-001", "framework");
         RafSentryEventProcessor processor = new RafSentryEventProcessor(traceIdProvider, properties);
