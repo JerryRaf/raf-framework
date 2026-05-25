@@ -225,6 +225,7 @@ raf:
 **日志：** DEBUG 仅开发 | INFO 关键业务 | WARN 需减少 | ERROR 生产需消灭。默认路径 `/data/logs`，SQL 300ms/500ms 告警。
 **底层代码变更：** 需同步更README.md,examples/README.md,examples/xxx/README.md
 **文档统一放置：** 所有文档（示例说明、组件使用指南）统一放在 `docs-site/examples/` 或 `docs-site/components/` 下，禁止在 `examples/` 子目录中单独维护 .md 文件。
+**新增 Starter 必须同步：** 每新增一个 Starter，必须同步完成：(1) `docs-site/examples/` 下新增对应文档；(2) `docs-site/.vitepress/config.ts` 侧边栏加入导航条目；(3) `docs-site/.vitepress/theme/HomeFeatures.vue` 的 `catalog` 数组加入对应分组条目，`stats` 中 Starters 数量+1。
 **CLAUDE.md变更：** 必须人工确认
 
 **分布式追踪：** 

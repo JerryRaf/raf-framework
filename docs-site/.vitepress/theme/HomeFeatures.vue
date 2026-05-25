@@ -147,12 +147,12 @@ const features = [
 ]
 
 const stats = [
-  { value: '20+', label: 'Starters' },
+  { value: '21+', label: 'Starters' },
   { value: 'Spring Boot 3.4', label: '基础框架' },
   { value: 'Java 17+', label: '运行环境' },
   { value: '4 大云厂商', label: 'KMS 多云支持' },
   { value: '0 侵入', label: '不引入零副作用' },
-  { value: 'OWASP', label: '安全合规' },
+  { value: 'AI-Ready', label: 'Spring AI 集成' },
 ]
 
 const philosophy = [
@@ -247,6 +247,13 @@ const catalog = [
     items: [
       { name: 'monitor-starter', link: '/raf-framework/examples/raf-example-monitor-starter' },
       { name: 'sentry-starter', link: '/raf-framework/examples/raf-example-sentry-starter' },
+    ],
+  },
+  {
+    group: 'AI 集成',
+    icon: `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="3"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42"/></svg>`,
+    items: [
+      { name: 'ai-starter', link: '/raf-framework/examples/raf-framework-ai-starter' },
     ],
   },
 ]

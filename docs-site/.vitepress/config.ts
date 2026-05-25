@@ -85,6 +85,12 @@ export default defineConfig({
             { text: 'Prometheus 监控', link: '/examples/raf-example-monitor-starter' },
             { text: 'Sentry 错误追踪', link: '/examples/raf-example-sentry-starter' },
           ]
+        },
+        {
+          text: 'AI 集成',
+          items: [
+            { text: 'Spring AI 多模型', link: '/examples/raf-framework-ai-starter' },
+          ]
         }
       ]
     },
