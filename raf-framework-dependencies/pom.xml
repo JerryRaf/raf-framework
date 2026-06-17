@@ -46,7 +46,7 @@
         <mybatis.version>3.5.19</mybatis.version>
         <mybatis.spring.version>3.0.5</mybatis.spring.version>
         <mybatis.plus.version>3.5.16</mybatis.plus.version>
-        <pagehelper.version>6.1.0</pagehelper.version>
+        <pagehelper.version>6.1.1</pagehelper.version>
         <druid.starter.version>1.2.24</druid.starter.version>
         <redisson.starter.version>3.34.1</redisson.starter.version>
         <caffeine.version>3.1.8</caffeine.version>
